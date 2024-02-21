@@ -1,0 +1,23 @@
+\begin{tikzpicture}[y=-1cm]
+	\TensorThree{$\ten{X}$}{$D_1$}{$D_2$}{$N$}{2}{2}{1}
+	\node at (3.3,.5, 2) {$\approx$};
+	\begin{scope}[shift={(6,0)}]
+		\TensorThree{$\ten{G}^{(1)}$}{}{}{$N$}{1}{1}{1}
+	\end{scope}
+	\begin{scope}[shift={(3.9,0)}]
+		\TensorTwo{$\mat{A}_1^{(1)}$}{$r_1^{(1)}$}{$D_1$}{2}{1}
+	\end{scope}
+	\begin{scope}[shift={(6,1.1)}]
+		\TensorTwo{$\mat{A}_2^{(1)}$}{$D_2$}{$r_2^{(1)}$}{1}{2}
+	\end{scope}
+	\node at (8.6,.5, 2) {$+\cdots+$};
+	\begin{scope}[shift={(12,0)}]
+		\TensorThree{$\ten{G}^{(B)}$}{}{}{$N$}{1}{1}{1}
+	\end{scope}
+	\begin{scope}[shift={(9.9,0)}]
+		\TensorTwo{$\mat{A}_1^{(B)}$}{$r_1^{(B)}$}{$D_1$}{2}{1}
+	\end{scope}
+	\begin{scope}[shift={(12,1.1)}]
+		\TensorTwo{$\mat{A}_2^{(B)}$}{$D_2$}{$r_2^{(B)}$}{1}{2}
+	\end{scope}
+\end{tikzpicture}

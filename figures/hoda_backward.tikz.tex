@@ -1,0 +1,13 @@
+\begin{tikzpicture}[y=-1cm]
+	\TensorThree{$\ten{X}$}{}{}{$N$}{2}{2}{1}
+	\begin{scope}[shift={(-1.1,0)}]
+		\TensorTwo{$\mat{U}_1$}{$r_1$}{$D_1$}{1}{2}
+	\end{scope}
+	\begin{scope}[shift={(0,2.1)}]
+		\TensorTwo{$\mat{U}_2$}{$r_2$}{$D_2$}{2}{1}
+	\end{scope}
+	\node at (3.3,.5, 2) {$=$};
+	\begin{scope}[shift={(4,0)}]
+		\TensorThree{$\ten{G}$}{$r_1$}{$r_2$}{$N$}{1}{1}{1}
+	\end{scope}
+\end{tikzpicture}

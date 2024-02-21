@@ -1,0 +1,42 @@
+\newcommand{\Width}{2}
+\newcommand{\Height}{2}
+\newcommand{\Depth}{2}
+\newcommand{\TensorThree}[7]{
+	\renewcommand{\Width}{#5}
+	\renewcommand{\Height}{#6}
+	\renewcommand{\Depth}{#7}
+	\coordinate (O) at (0,0,0);
+	\coordinate (A) at (0,\Height,0);
+	\coordinate (B) at (0,\Height,\Depth);
+	\coordinate (C) at (0,0,\Depth);
+	\coordinate (D) at (\Width,0,0);
+	\coordinate (E) at (\Width,\Height,0);
+	\coordinate (F) at (\Width,\Height,\Depth);
+	\coordinate (G) at (\Width,0,\Depth);
+	\node at (\fpeval{0.5*#5},\fpeval{0.5*#6},\Depth) {#1};
+	\draw[densely dotted] (O) -- (A);
+	\draw (O) -- (C)node[midway,xshift=-.5em, yshift=.5em] {#4};
+	\draw (O) -- (D);
+	\draw (F) -- (B)node[midway,below] {#3};
+	\draw (F) -- (E);
+	\draw (F) -- (G);
+	\draw[densely dotted] (A) -- (B);
+	\draw (C) -- (G);
+	\draw (B) -- (C)node[midway,left] {#2};
+	\draw (G) -- (D);
+	\draw[densely dotted] (A) -- (E);
+	\draw (E) -- (D) ;
+}
+\newcommand{\TensorTwo}[5]{
+	\renewcommand{\Width}{#4}
+	\renewcommand{\Height}{#5}
+	\coordinate (B) at (0,\Height,\Depth);
+	\coordinate (C) at (0,0,\Depth);
+	\coordinate (F) at (\Width,\Height,\Depth);
+	\coordinate (G) at (\Width,0,\Depth);
+	\node at (\fpeval{0.5*#4},\fpeval{0.5*#5},\Depth) {#1};
+	\draw (B) -- (C) node[midway, left] {#2};
+	\draw (F) -- (B) node[midway, below] {#3};
+	\draw (F) -- (G);
+	\draw (C) -- (G);
+}
