@@ -66,8 +66,7 @@ scalars as lower case letters $k$.
 The $n^\text{th}$ sample of a tensor dataset with $N$ samples is written as
 $\ten{X}(n)$.
 A tensor $\ten{X}\in \mathbb{R}^{D_1\times D_2 \times \ldots \times D_K}$ can be unfolded in mode
-$k$ to a matrix $\mat{X}\in\mathbb{R}^{(D_k\times\prod_{j\neq k}^K D_j)}$ as
-$\ten{X}_k$.
+$k$ to a matrix $\mat{X}_k\in\mathbb{R}^{(D_k\times\prod_{j\neq k}^K D_j)}$.
 matrix
 The tensor-matrix product of tensor $\ten{X}$ with matrix $\mat{U}$ along a
 given mode $k$ is written as $\ten{X}\mpr{\mat{U}}{k}$. For ease of notation, let
@@ -76,9 +75,7 @@ $\ten{X}\mmpr{\mat{U}} =
 When skipping one of the modes $k$, this is
 written as $\ten{X}\mmprs{\mat{U}}{k} =
 	\ten{X}\mpr{\mat{U}}{1}\mpr{\mat{U}}{2}\cdots\mpr{\mat{U}}{k-1}\mpr{\mat{U}}{k+1}\ldots\mpr{\mat{U}}{K}$.
-The tensor-tensor outer product is noted as $\otimes$.
-Covariance tensors and matrices are indicated respectively with $\ten{\Sigma}$
-and $\mat{\Sigma}$.
+The Kronecker product is noted as $\otimes$, covariance matrices are indicated  with $\mat{\Sigma}$.
 
 \subsection{Higher-Order Discriminant Analysis (\textsc{hoda})}
 Higher Order Discriminant Analysis (\textsc{hoda})~\cite{Phan2010} is a tensor
@@ -132,11 +129,11 @@ projection of all but $\mat{U}_k$ corresponding to mode $k$.
 It then finds a partial core tensor $\ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}$
 Subsequently, a new projection matrix $U_k$ can be found analogous to Linear
 Discriminant Analysis by constructing the within- and between-class scatter
-matrices $\mat{S}_\text{w}^{(-k)}$ and $\mat{S}_\text{b}^{(-k)}$ of the partial
-core tensor unfolded towards mode $k$, and solving the generalized eigenvalue
-problem
+matrices $\mat{S}_{-k,\text{w}}$ and $\mat{S}_{-k,\text{b}}$ of
+$\mat{G}_{-k,k}$ the partial core tensor unfolded towards mode $k$, and solving
+the generalized eigenvalue problem
 \begin{equation}
-	\mat{S}_b^{(-k)}\mat{U}_k = \mat{\lambda}\mat{S}_w^{(-k)}\mat{U}_k
+  \mat{S}_{-k,\text{b}}\mat{U}_k = \mat{\lambda}\mat{S}_{-k,\text{w}}\mat{U}_k
 \end{equation}
 
 To apply \textsc{hoda} in a classification setting, the projections $\mat{U}_k$
@@ -191,7 +188,7 @@ and unkown error term $\ten{\mathbfcal{E}}$.
 	\caption{The forward projection for \textsc{hoda}. Leveraging activation
 		patterns $A_k$, the original tensor $\ten{X}$ can approximately be
 		reconstructed from projected core tensor of latent factors $\ten{G}$. $A_k$ are chosen such
-		that the variation captured in the latent factors is maximally expressed in
+		that the variability captured in the latent factors is maximally expressed in
 		the reconstructed tensor and not in the error term.}
 	\label{fig:hoda-forward}
 \end{figure}
@@ -199,31 +196,29 @@ and unkown error term $\ten{\mathbfcal{E}}$.
 A forward model should make sure that reconstruction error is minimized and
 variation captured in the latent factors is maximally captured by the forward
 projection term $\ten{G}\mmpr{\mat{A}^\intercal}$, and not by the error term
-$\ten{\mathbfcal{E}}$.
-According to \cite{Haufe2014}, this can be obtained for a linear (non-tensor)
-model by
-\begin{equation}
-	\mat{A} = \mat{\Sigma}_\vec{x}\mat{U}\mat{\Sigma}_\vec{g}^{-1}
-	\label{eq:haufe-linear}
-\end{equation}
-This approach is not directly applicable to our tensor model, since it would
-require working with the vectorized versions of our data, and constructing the
-full, vectorized data covariance matrix $\mat{\Sigma}_\vec{x}$, which requires
-a lot of memory for high-dimensional data and is prone to overfitting.
-Instead, we propose a multilinear version of Equation~\ref{eq:haufe-linear}.
+$\ten{\mathbfcal{E}}$~\cite{Haufe2014}.
+This gives rise to the following calculation for activation patterns
+$\mat{A}_k$:
 \begin{theorem}
 	The activation patterns $\mat{A_k}$ for the forward model in
 	Equation~\ref{eq:hoda-forward} can be calculated as
 	\begin{equation}
-		\mat{A}_k = \mat{\Sigma}_{\ten{X},k}\mat{U}_k\mat{\Sigma}_{\ten{G},k}^{-1}
+    \mat{A}_k = \mat{\Sigma}_{\mat{X}_k}\mat{U}_k\mat{\Sigma_{X_kU}}
 		\label{eq:ap}
 	\end{equation}
 	\label{the:ap}
-	with $\mat{\Sigma}_{\ten{X},k}$ the covariance of unfolded data tensors
-	$\ten{X}_k(n)$.
 \end{theorem}
+With $\mat{\Sigma}_{\mat{X}_k}$ the covariance matrix of $\mat{X}_k$ tensors $\ten{X}(n)$
+unfolded towards mode $k$, and $\mat{\Sigma_{X_kU}}$  the covariance matrix of
+$\mat{X}_k\mat{U}$.
 
 \subsection{Block-Term Tensor Discriminant Analysis (\textsc{bttda})}
+After defining the forward model, we can construct our proposed block-term
+tensor model through a deflation scheme. Assuming the core tensors $\ten{G}$
+obtained by the backward projection of \textsc{hoda} does not achieve perfect
+class separation, the error term $\ten{\mathbfcal{E}}$ in
+Equation~\ref{eq:hoda-forward} should still contain some discriminative
+information, which can be exploited to improve classifier performance.
 
 
 \begin{figure*}
@@ -234,6 +229,12 @@ Instead, we propose a multilinear version of Equation~\ref{eq:haufe-linear}.
 \subsection{Model selection}
 
 \section{Experiments}
+
+Decrease of MSE as f ratio increases
+
+ERP classification
+2-mode tensor
+1-mode tensor
 
 \section{Discussion}
 
@@ -256,24 +257,73 @@ of sample $n$ as
 		\label{eq:proj-fwd-n}
 	\end{align}
 \end{subequations}.
-We write Equations~\ref{eq:proj-back-n} and~\ref{eq:proj-fwd-n} respectively
-as their unfolded multi-mode products for mode $k$
+%We write Equations~\ref{eq:proj-back-n} and~\ref{eq:proj-fwd-n} respectively
+%as their unfolded multi-mode products for mode $k$
+%\begin{subequations}
+%	\label{eq:proj-unfold}
+%	\begin{align}
+%		%https://www5.in.tum.de/persons/huckle/tensor-kurs_1.pdf
+%		\mat{G}_k(n) & =
+%		\mat{U}_n\mat{X}_n(n)\left(\mat{U}_1\otimes\mat{U}_2\otimes\cdots\otimes\mat{U}_{k-1}\otimes\mat{U}_{k+1}\otimes\cdots\otimes\mat{U}_K\right)
+%		\label{eq:proj-back-unfold} \\
+%		\mat{X}_k(n) & =
+%		\mat{A}_n^\intercal\mat{G}_n(n)\left(\mat{A}^\intercal_1\otimes\mat{A}^\intercal_2\otimes\cdots\otimes\mat{A}^\intercal_{k-1}\otimes\mat{A}^\intercal_{k+1}\otimes\cdots\otimes\mat{A}^\intercal_K\right)
+%		+ \mat{\mathbfcal{E}}_k(n)
+%		\label{eq:proj-fwd-unfold}
+%	\end{align}
+%\end{subequations}
+%According to Theorem 1 in~\cite{Haufe2014}, the activation patterns defining the
+%unfolded forward model in Equation~\ref{eq:proj-fwd-unfold} corresponding to the
+%unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
+%\begin{align}
+%	\mat{A}_k = \mat{\Sigma}_{\mat{X}_k}\mat{U}_k
+%\end{align}
+Let us now express these backward and forward models in their vectorized forms:
 \begin{subequations}
-	\label{eq:proj-unfold}
+	\label{eq:proj-n}
 	\begin{align}
-		%https://www5.in.tum.de/persons/huckle/tensor-kurs_1.pdf
-		\mat{G}_k(n) & =
-		\mat{U}_n\mat{X}_n(n)\left(\mat{U}_1\otimes\mat{U}_2\otimes\cdots\otimes\mat{U}_{k-1}\otimes\mat{U}_{k+1}\otimes\cdots\otimes\mat{U}_K\right)
-		\label{eq:proj-back-unfold} \\
-		\mat{X}_k(n) & =
-		\mat{A}_n^\intercal\mat{G}_n(n)\left(\mat{A}^\intercal_1\otimes\mat{A}^\intercal_2\otimes\cdots\otimes\mat{A}^\intercal_{k-1}\otimes\mat{A}^\intercal_{k+1}\otimes\cdots\otimes\mat{A}^\intercal_K\right)
-		+ \mat{\mathbfcal{E}}_k(n)
-		\label{eq:proj-fwd-unfold}
+		\vec{g}(n) & = \vec{x}(n)\left(\bigotimes_k^K\mat{U}_k\right)
+		\label{eq:proj-back-vec}                                                  \\
+		\vec{x}(n) & = \vec{g}(n)\left(\bigotimes_k^K\mat{A}_k^\intercal\right) +
+		\vec{\boldsymbol\epsilon}(n)
+		\label{eq:proj-fwd-vec}
 	\end{align}
 \end{subequations}
-According to Theorem 1 in~\cite{Haufe2014}, the activation patterns defining the
-unfolded forward model in Equation~\ref{eq:proj-fwd-unfold} corresponding to the
-unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
+Since $\bigotimes_k^K\mat{U}_k$ is a Kronecker product of orthogonal matrices,
+which itself is orthogonal, the activation pattern $\mat{B}$ of a forward model
+corresponding to Equation~\ref{eq:proj-back-vec} is given according
+to~\cite{Haufe2014} as
+\begin{align*}
+	\mat{B} & =
+	\mat{\Sigma}_\vec{x}\left(\bigotimes_k^K\mat{U}_k\right)\mat{\Sigma}_\vec{g}^{-1} \\
+	        & =
+	\mat{\Sigma}_\vec{x}\left(\bigotimes_k^K\mat{U}_k\right)\left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\mat{\Sigma_\vec{x}}\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
+\end{align*}
+
+Because \textsc{hoda} assumes the data covariance can be expressed as a
+Kronecker product of mode-$k$ covariances
+$\mat{\Sigma}_{\ten{X}_k}$\todo{citation  needed}, we get
+\begin{align*}
+	\mat{B} & =
+	\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)
+  \\
+          & \quad \cdot \left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
+	\\
+	        &
+	=\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left(\bigotimes_k^K\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1} \\
+	        &
+	=\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left[\bigotimes_k^K\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}\right]
+	\\
+	        & = \bigotimes_k^K \mat{\Sigma}_{\ten{X}_k}
+	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}
+\end{align*}
+and finally
+\begin{align}
+  \mat{A}_k = \mat{\Sigma}_{\ten{X}_k}
+	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}
+\end{align}
+$\blacksquare$
+
 
 
 %Our proof follows the structure laid out in \cite{Haufe2014} (Appendix A).
@@ -304,15 +354,15 @@ unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
 %Taking the tensor outer product on the left with $\ten{G}$ yields
 %\begin{align*}
 %	\ten{G}(n)\otimes\ten{G}(n) & = \ten{G}(n)\otimes\ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} \\
-%	                            & \qquad +	\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}
+%	                            & \quad +	\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}
 %\end{align*}
 %and when taking the expected value over samples
 %\begin{align*}
 %	 & \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}                                                \\
-%	 & \qquad = \ev{\ten{G}(n)\otimes\ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}}{n} \\
-%	 & \qquad\qquad + \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}}{n}       \\
-%	 & \qquad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} \\
-%	 & \qquad\qquad +  \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)}{n}\mmpr{\mat{U}}
+%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}}{n} \\
+%	 & \quad\quad + \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}}{n}       \\
+%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} \\
+%	 & \quad\quad +  \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)}{n}\mmpr{\mat{U}}
 %\end{align*}
 %To find a forward projection that is corresponding to the backward projection,
 %ensuring any variation explained by the projections is maximally captured in the
@@ -324,7 +374,7 @@ unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
 %yielding
 %\begin{align*}
 %	 & \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}                                                \\
-%	 & \qquad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}
+%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}
 %\end{align*}
 %Since the covariance tensor of the latent tensor,
 %$\ev{\ten{G}(n)\otimes\ten{G}(n)}{n}$,
@@ -349,8 +399,8 @@ unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
 %If we mutiply both sides with matrices $\mat{U}_k$, we obtain
 %\begin{align*}
 %	 & \ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}                                                                   \\
-%	 & \qquad =  \ten{X}(n)(\ten{I}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal})\mmpr{\mat{U}}              \\
-%	 & \qquad =	\ten{X}(n)(\ten{I}\mmpr{\mat{U}}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}})
+%	 & \quad =  \ten{X}(n)(\ten{I}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal})\mmpr{\mat{U}}              \\
+%	 & \quad =	\ten{X}(n)(\ten{I}\mmpr{\mat{U}}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}})
 %\end{align*}
 %and by Equation~\ref{eq:identity}
 %\begin{equation}
@@ -364,20 +414,20 @@ unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
 %\begin{align*}
 %	\ten{\Sigma}_{\ten{X}} & =	\ten{\Sigma}_{\ten{G}}\times_{1,2,\ldots,K}\{\mat{A}^\intercal\}
 %	\times_{K+1,K+2,\ldots,2K}\{\mat{A}^\intercal\}                                             \\
-%	                       & \qquad+ \ten{\Sigma}_{\ten{\mathbfcal{E}}}
+%	                       & \quad+ \ten{\Sigma}_{\ten{\mathbfcal{E}}}
 %\end{align*}
 %leading to
 %\begin{align*}
 %	 & \ten{\Sigma}_{\ten{X}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                                 \\
-%	 & \qquad =(\{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\mmpr{\mat{A}^\intercal} +
+%	 & \quad =(\{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\mmpr{\mat{A}^\intercal} +
 %	\ten{\Sigma}_{\ten{\mathbfcal{E}}})\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                       \\
-%	 & \qquad=
+%	 & \quad=
 %	\{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1} \\
-%	 & \qquad\qquad + \ten{\Sigma}_{\ten{\mathbfcal{E}}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                      \\
-%	 & \qquad= \{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\ten{\Sigma}_{\ten{G}}^{-1}
+%	 & \quad\quad + \ten{\Sigma}_{\ten{\mathbfcal{E}}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                      \\
+%	 & \quad= \{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\ten{\Sigma}_{\ten{G}}^{-1}
 %	+ \ten{\Sigma}_{\ten{\mathbfcal{E}}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                      \\
-%	 & \qquad= \ten{I}\mmpr{\mat{A}^\intercal} + 0\ten{\Sigma}_{\ten{G}}^{-1}                                          \\
-%	 & \qquad= \ten{I}\mmpr{\mat{A}^\intercal}
+%	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal} + 0\ten{\Sigma}_{\ten{G}}^{-1}                                          \\
+%	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal}
 %\end{align*}
 
 \section{P300 Paradigm benchmark datasets}
