@@ -1,0 +1,13 @@
+
+---
+variables:
+  LATEX_IMAGE: texlive/texlive
+
+build:
+  image: $LATEX_IMAGE
+  script:
+    - latexmk main.tex
+
+  artifacts:
+    paths:
+      - "out/*.pdf"
