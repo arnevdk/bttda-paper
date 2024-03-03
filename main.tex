@@ -203,7 +203,8 @@ $\mat{A}_k$:
 	The activation patterns $\mat{A_k}$ for the forward model in
 	Equation~\ref{eq:hoda-forward} can be calculated as
 	\begin{equation}
-    \mat{A}_k = \mat{\Sigma}_{\mat{X}_k}\mat{U}_k\mat{\Sigma_{X_kU}}
+    \mat{A}_k =
+    \mat{\Sigma}_{\mat{X}_k}\mat{U}_k\mat{\Sigma}_{\mat{X}_k\mat{U}}
 		\label{eq:ap}
 	\end{equation}
 	\label{the:ap}
@@ -214,19 +215,66 @@ $\mat{X}_k\mat{U}$.
 
 \subsection{Block-Term Tensor Discriminant Analysis (\textsc{bttda})}
 After defining the forward model, we can construct our proposed block-term
-tensor model through a deflation scheme. Assuming the core tensors $\ten{G}$
-obtained by the backward projection of \textsc{hoda} does not achieve perfect
+tensor model. Assuming the core tensors $\ten{G}$
+obtained by the backward projection of \textsc{hoda} do not achieve perfect
 class separation, the error term $\ten{\mathbfcal{E}}$ in
 Equation~\ref{eq:hoda-forward} should still contain some discriminative
 information, which can be exploited to improve classifier performance.
-
-
+We thus extend the \textsc{hoda} feature extraction scheme with backward an
+forward models defined in respectively Equations~\ref{eq:hoda-backward}
+and~\ref{eq:hoda-forward} to Block-Term Tensor Discriminant Analysis
+(\textsc{bttda}), with
+a forward model given by
+\begin{align}
+  \ten{X} & = \ten{G}^{(1)}\mmpr{\mat{U}^{(1)}} +
+  \ten{G}^{(2)}\mmpr{\mat{U}^{(2)}} \\
+          &\quad + \cdots + \ten{G}^{(B)}\mmpr{\mat{U}^{(B)}} + \ten{\mathbfcal{E}}
+  \label{eq:bttda-forward}
+\end{align}
+which extracts $B$ core tensors $\ten{G}^{(b)}$ from input tensor $\ten{X}$
+until error term $\ten{\mathbfcal{E}}$ remains.
+Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
 \begin{figure*}
 	\centering
 	\input{figures/bttda.tikz.tex}
+  \caption{A forward model for Block-Term Tensor Discriminant Analysis
+  (\textsc{bttda}). \textsc{bttda} can extract more features
+ than \textsc{hoda} by iteratively finding a core tensor $\ten{G}^{(b)}$ in a
+ deflation scheme.
+ The \textsc{hoda} backward model is first applied. Next, the reconstructed
+ input data is reconstructed via the \textsc{hoda} forward model and the
+ difference between the two is found.
+ Finally, this process is repeated with this difference as input data, until a
+ desired number of blocks $B$ has been found.}
+  \label{fig:bttda}
 \end{figure*}
 
-\subsection{Model selection}
+Since the \textsc{bttda} is specified as a forward model, a procedure is
+required that finds the core tensors $\ten{G}^(b)$ from $\ten{X}$ for
+\textsc{bttda} to be useful as a feature extraction method.
+The extracted features represented by the core tensors $\ten{G}^{(b)}$ can be
+computed through a deflation scheme.
+The first block $\ten{G}^{(1)}$ can be obtained by applying
+Equation~\ref{eq:hoda-backward} to $\ten{X}$.
+\begin{equation}
+  \ten{G}^{(1)} = \ten{X}\mmpr{\mat{U}^{(1)}}
+\end{equation}
+For the next blocks $\ten{G}^{(b)}~\forall~ b\in2,3,\ldots,B$, we first compute
+the residual error after applying the \textsc{hoda} backward and forward
+projection.
+\begin{equation}
+  \ten{\mathbfcal{E}}^{(b)} =
+  \ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}\mmpr{\mat{A}^{\intercal(b)}}
+\end{equation}
+The next block of features can then be obtained by calculating the
+\textsc{hoda} backward projection on this residual error as
+\begin{equation}
+  \ten{G}^{(b+1)} = \ten{\mathbfcal{E}}^{(b)}\mmpr{\mat{U}^{(b+1)}}
+\end{equation}
+
+
+
+\subsection{Model and feature selection}
 
 \section{Experiments}
 
@@ -256,7 +304,7 @@ of sample $n$ as
 		\ten{X}(n) & = \ten{G}(n)\mmpr{\mat{A}^\intercal}+\ten{\mathbfcal{E}}(n)
 		\label{eq:proj-fwd-n}
 	\end{align}
-\end{subequations}.
+\end{subequations}
 %We write Equations~\ref{eq:proj-back-n} and~\ref{eq:proj-fwd-n} respectively
 %as their unfolded multi-mode products for mode $k$
 %\begin{subequations}
@@ -290,7 +338,8 @@ Let us now express these backward and forward models in their vectorized forms:
 	\end{align}
 \end{subequations}
 Since $\bigotimes_k^K\mat{U}_k$ is a Kronecker product of orthogonal matrices,
-which itself is orthogonal, the activation pattern $\mat{B}$ of a forward model
+which itself is orthogonal, the activation pattern
+$\mat{B}\in\mathbb{R}^{\prod_k^KD_k\times\prod_k^Kr_k} $ of a vectorized forward model
 corresponding to Equation~\ref{eq:proj-back-vec} is given according
 to~\cite{Haufe2014} as
 \begin{align*}
@@ -302,27 +351,28 @@ to~\cite{Haufe2014} as
 
 Because \textsc{hoda} assumes the data covariance can be expressed as a
 Kronecker product of mode-$k$ covariances
-$\mat{\Sigma}_{\ten{X}_k}$\todo{citation  needed}, we get
+$\mat{\Sigma}_{\mat{X}_k}$\todo{citation  needed}, we get
 \begin{align*}
 	\mat{B} & =
-	\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)
+	\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)
   \\
-          & \quad \cdot \left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
+          & \quad \cdot
+          \left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
 	\\
 	        &
-	=\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left(\bigotimes_k^K\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1} \\
+	=\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left(\bigotimes_k^K\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1} \\
 	        &
-	=\left(\bigotimes_k^K\mat{\Sigma}_{\ten{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left[\bigotimes_k^K\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}\right]
+	=\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left[\bigotimes_k^K\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}\right]
 	\\
-	        & = \bigotimes_k^K \mat{\Sigma}_{\ten{X}_k}
-	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}
+	        & = \bigotimes_k^K \mat{\Sigma}_{\mat{X}_k}
+	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}
 \end{align*}
 and finally
-\begin{align}
-  \mat{A}_k = \mat{\Sigma}_{\ten{X}_k}
-	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\ten{X}_k}\mat{U}_k\right)^{-1}
-\end{align}
-$\blacksquare$
+\begin{align*}
+  \mat{A}_k = \mat{\Sigma}_{\mat{X}_k}
+	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}
+\qquad\blacksquare
+\end{align*}
 
 
 
