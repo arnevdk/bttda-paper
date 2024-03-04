@@ -32,8 +32,12 @@
 \addbibresource{references.bib}
 \input{includes/tensorviz.tex}
 
+% Metadata
+\title{Block-Term Tensor Discriminant Analysis for Brain-Computer Interfacing}
+
 \begin{document}
 
+\maketitle
 
 \section{Introduction}
 
@@ -122,8 +126,9 @@ tensors $\ten{G}(n)$ of class $c$, and $\bar{\bar{\ten{G}}}$ the mean of
 these class mean core tensors.
 Equation~\ref{eq:fisher} can be solved by the iterative algorithm in
 Algorithm~\ref{alg:hoda}.
-To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g. by a
-Multi-Linear Singular Value Decomposition (MLSVD)~\cite{Lathauwer2000} of the input data.
+To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g. as random
+orthogonal matrices, by a per mode Singular Value Decomposition (\textsc{svd})
+or by a Multi-Linear Singular Value Decomposition (\textsc{mlsvd})~\cite{Lathauwer2000} of the input data.
 At each iteration, the algorithm loops trough the modes and fixes all the
 projection of all but $\mat{U}_k$ corresponding to mode $k$.
 It then finds a partial core tensor $\ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}$
@@ -253,7 +258,7 @@ Since the \textsc{bttda} is specified as a forward model, a procedure is
 required that finds the core tensors $\ten{G}^(b)$ from $\ten{X}$ for
 \textsc{bttda} to be useful as a feature extraction method.
 The extracted features represented by the core tensors $\ten{G}^{(b)}$ can be
-computed through a deflation scheme.
+computed through a deflation scheme summarized in Algorithm~\ref{alg:bttda}.
 The first block $\ten{G}^{(1)}$ can be obtained by applying
 Equation~\ref{eq:hoda-backward} to $\ten{X}$.
 \begin{equation}
@@ -272,18 +277,64 @@ The next block of features can then be obtained by calculating the
   \ten{G}^{(b+1)} = \ten{\mathbfcal{E}}^{(b)}\mmpr{\mat{U}^{(b+1)}}
 \end{equation}
 
+The resulting extracted feature tensors can be flattened and concatenated into
+one feature vector, so that they can be classified in a similar manner to
+\textsc{hoda}.
 
 
 \subsection{Model and feature selection}
+Similar to the unsupervised \textsc{btd}, the performance of \textsc{bttda} is
+heavily dependent on the shape $\left(r_1^{(b)}, r_2^{(b)}, \ldots,
+r_K^{(b)}\right)$ and on the number of blocks $B$.
+If these are not kown a priori, i.e. if they cannot be set base on insights in the
+data generation process, a model selection step is necessary in order to
+determine what the optimal values for $r_k^{(b)}$ and $B$ are.
+Hyperparameter tuning through cross-validation is straight-forward solution to
+determine these parameters, yet can be computationally expensive.
+To reduce the computational cost, Algorithm~\ref{alg:model-selection} propose a model selection algorithm that
+leverages cross-validation in a greedy way per block, to iteratively find the
+optimal size for the next block given the previous blocks.
+\todo{Algorithm}
+\todo{How to determine $B$}
+
+\textsc{hoda} can extract a substantial amount of redundant features, that can
+be dropped after projection and before proceeding to the classification
+step~\cite{Phan2010}.
+Since \textsc{bttda} extracts a set of \textsc{hoda}
+feature tensors, these redundant features can stack up over the number of
+blocks.
+Therefore, we apply feature selection after finding all \textsc{bttda} blocks
+by calculating the univariate Fisher score of the concatenated vectorized
+features, and retain only those features that have  statistical significant
+contribution to class separation with $p<\alpha$.
+Since the extracted features are already optimized for class separation,
+$\alpha$ should not be chosen too low.
+The significance thershold in this work is set to $\alpha=0.95$, for all
+evaluations of both \textsc{hoda} and \textsc{bttda}.
+
 
 \section{Experiments}
+\subsection{Datasets}
+We evaluate our proposed model in multiple off-line BCI decoding setting.
+MOABB~\cite{Aristimunha2023} is an openly available BCI benchmarking platform that contains
+multiple EEG datasets for different BCI tasks.
+Specifically, we will test our decoder on Event-Related Potential (ERP) tasks
+such as the P300 paradigm, and on Motor Imagery (MI) tasks.
+ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
+order tensor with 2 modes representing the channels and time samples.
+For MI, discriminatory information is represented in the EEG data as
+Event-Related Synchronizations/Desynchronizations (ERS/Ds).
+Contrary the the time domain analysis performed on ERPs, ERS/Ds are only
+detectable in the time-frequency domain.
+Hence, for the MI task, we will transform the EEG signal into the
+time-frequency domain, forming $3^\text{d}$ order tensors, with modes
+representing the channels, the frequencies and time samplies and time samples.
 
 Decrease of MSE as f ratio increases
+\subsection{Order-2 tensors: event-related potentials}
 
-ERP classification
-2-mode tensor
-1-mode tensor
 
+\subsection{Order-3 tensors: motor imagery}
 \section{Discussion}
 
 
@@ -480,44 +531,28 @@ and finally
 %	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal}
 %\end{align*}
 
-\section{P300 Paradigm benchmark datasets}
-% Please add the following required packages to your document preamble:
-% \usepackage{booktabs}
+\section{Event-related potentials benchmark datasets}
 \begin{table}[h]
-	\begin{tabular}{@{}llllllll@{}}
+  \scriptsize
+	\begin{tabular}{@{}lrrcrl@{}}
 		\toprule
-		Dataset        & \# Subjects                & \# Channels & \# Trials/class  & Trial
-		length         & Sample rate                & \# Sessions & Citation                   \\ \midrule
-		BI2012         & 25                         & 16          & 640 NT / 128 T   & 1s    &
-		128Hz          & 2                          &                                          \\
-		BI2013a        & 24                         & 16          & 3200 NT / 640 T  & 1s    &
-		512Hz          & 8 for subjects 1-7 else 1  &                                          \\
-		BI2014a        & 64                         & 16          & 990 NT / 198 T   & 1s    &
-		512Hz          & up to 3                    &                                          \\
-		BI2014b        & 38                         & 32          & 200 NT / 40 T    & 1s    &
-		512Hz          & 3                          &                                          \\
-		BI2015a        & 43                         & 32          & 4131 NT / 825 T  & 1s    &
-		512Hz          & 3                          &                                          \\
-		BI2015b        & 44                         & 32          & 2160 NT / 480 T  & 1s    &
-		512Hz          & 1                          &                                          \\
-		BNCI2014\_008  & 8                          & 8           & 3500 NT / 700 T  & 1s    &
-		256Hz          & 1                        1                                            \\
-		BNCI2014\_009  & 10                         & 16          & 1440 NT / 288 T  & 0.8s  &
-		256Hz          & 3                        1                                            \\
-		BNCI2015\_003  & 10                         & 8           & 1500 NT / 300 T  & 0.8s  &
-		256Hz          & 1                          &                                          \\
-		Cattan2019\_VR & 21                         & 16          & 600 NT / 120 T   & 1s    &
-		512Hz          & 2                          &                                          \\
-		EPFLP300       & 8                          & 32          & 2753 NT / 551 T  & 1s    &
-		2048Hz         & 4                          &                                          \\
-		Huebner2017    & 13                         & 31          & 364 NT / 112 T   & 0.9s  &
-		1000Hz         & 3                          &                                          \\
-		Huebner2018    & 12                         & 31          & 364 NT / 112 T   & 0.9s  &
-		1000Hz         & 3                          &                                          \\
-		Lee2019\_ERP   & 54                         & 62          & 6900 NT / 1380 T & 1s    &
-		1000Hz         & 2                          &                                          \\
-		Sosulski2019   & 13                         & 31          & 75 NT / 15 T     & 1.2s  &
-		1000Hz         & 3                          &                                          \\ \bottomrule
+		Dataset        & \# Sub.               & \# Chan. & \# Trials/class              & \# Sessions & Citation                   \\ \midrule
+		BI2012         & 25                         & 16          & 640 NT / 128 T           & 2                          &                                          \\
+		BI2013a        & 24                         & 16          & 3200 NT / 640 T
+                   & 8 (Sub. 1-7) or 1  &                                          \\
+		BI2014a        & 64                         & 16          & 990 NT / 198 T           & up to 3                    &                                          \\
+		BI2014b        & 38                         & 32          & 200 NT / 40 T            & 3                          &                                          \\
+		BI2015a        & 43                         & 32          & 4131 NT / 825 T          & 3                          &                                          \\
+		BI2015b        & 44                         & 32          & 2160 NT / 480 T          & 1                          &                                          \\
+		BNCI2014\_008  & 8                          & 8           & 3500 NT / 700 T          & 1                          &                                         \\
+		BNCI2014\_009  & 10                         & 16          & 1440 NT / 288 T          & 3                          &                                         \\
+		BNCI2015\_003  & 10                         & 8           & 1500 NT / 300 T          & 1                          &                                          \\
+		Cattan2019\_VR & 21                         & 16          & 600 NT / 120 T           & 2                          &                                          \\
+		EPFLP300       & 8                          & 32          & 2753 NT / 551 T          & 4                          &                                          \\
+		Huebner2017    & 13                         & 31          & 364 NT / 112 T           & 3                          &                                          \\
+		Huebner2018    & 12                         & 31          & 364 NT / 112 T           & 3                          &                                          \\
+		Lee2019\_ERP   & 54                         & 62          & 6900 NT / 1380 T         & 2                          &                                          \\
+		Sosulski2019   & 13                         & 31          & 75 NT / 15 T             & 3                          &                                          \\ \bottomrule
 	\end{tabular}
 \end{table}
 \end{document}
