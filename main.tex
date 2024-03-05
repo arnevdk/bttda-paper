@@ -13,7 +13,7 @@
 
 % Layout
 \setuptodonotes{inline}
-
+\renewcommand*{\bibfont}{\footnotesize}
 
 % Math declarations
 \DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
@@ -43,24 +43,48 @@
 
 EEG/neuroimaging and tensor data
 
+
+
+EEG BCI methods:
+
+tucker
+direct classification with tensor assumptions
+\begin{itemize}
+  \item Spatiotemporal discriminant analysis~\cite{Li2010,Zhang2013} finds a
+  \item Kronecker-STBF~\cite{Kerchove2022}
+\end{itemize}
+
+
+tensor feature extraction methods
+combeined with classifier (most commonly LDA or SVM)
+\begin{itemize}
+
+  \item HODA~\cite{Phan2010}, first introduced as DATER~\cite{Yan2005}
+  \item HODA/DATER for bci~\cite{Onishi2012,Liu2015,Higashi2016,Cai2021}
+  \item Spatiotemporal linear feature learning linear feature
+    learning~\cite{Aghili2023}
+  \item Oscillatory source Tensor Discriminant Analysis~\cite{Jorajuria2022}
+  \item Higher order spectral regression discriminant
+    analysis~\cite{Jamshidi2017}
+\end{itemize}
+
 tucker
 
-EEG methods:
-Oscillatory source Tensor Discriminant Analysis
-flavours of spatio-temporal discriminant analysis
-Higher order spectral regression discriminant analysis
-higher order linear feature learning
+other structures:
+ parafac
+ parafac da~\cite{Froelich2018}
 
-tucker, parafac, btd
-
-bttr
+ btd, more flexible
+ BTTR~\cite{Faes2022,Faes2022b} BTTC~\cite{Camarrone2021}
 
 
 
 Contribution:
-* Forward model for hoda
-* BTTDA and corresponding model selection scheme
-* Evaluation of proposed and parafac on eeg benchmark
+\begin{itemize}
+  \item Forward model for hoda
+  \item BTTDA and corresponding model selection scheme
+  \item Evaluation of proposed and parafac on eeg benchmark
+\end{itemize}
 \section{Methods}
 
 \subsection{Notation}
@@ -176,6 +200,7 @@ data, which can be optimised for tasks like regression or classification or
 informed by prior knowledge about source propagation, a \textit{forward model} is a
 generative model that expresses the observed data in function of some latent
 properties or sources that are given.
+\todo{interpretability and generative model}
 
 The \textsc{hoda} projection in Equation~\ref{eq:hoda-backward} is an example
 of a backward model.
@@ -246,7 +271,7 @@ Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
   (\textsc{bttda}). \textsc{bttda} can extract more features
  than \textsc{hoda} by iteratively finding a core tensor $\ten{G}^{(b)}$ in a
  deflation scheme.
- The \textsc{hoda} backward model is first applied. Next, the reconstructed
+ The \textsc{hoda} backward projection is first applied. Next, the reconstructed
  input data is reconstructed via the \textsc{hoda} forward model and the
  difference between the two is found.
  Finally, this process is repeated with this difference as input data, until a
@@ -259,23 +284,20 @@ required that finds the core tensors $\ten{G}^(b)$ from $\ten{X}$ for
 \textsc{bttda} to be useful as a feature extraction method.
 The extracted features represented by the core tensors $\ten{G}^{(b)}$ can be
 computed through a deflation scheme summarized in Algorithm~\ref{alg:bttda}.
-The first block $\ten{G}^{(1)}$ can be obtained by applying
-Equation~\ref{eq:hoda-backward} to $\ten{X}$.
+For each block $b$, the core tensor is extracted using the \textsc{hoda} backward
+projection in from a residual error term
+$\ten{\mathbfcal{E}}^{(b)}$
 \begin{equation}
-  \ten{G}^{(1)} = \ten{X}\mmpr{\mat{U}^{(1)}}
+  \ten{G}^{(b)} = \ten{\mathbfcal{E}}^{(b)}\mmpr{\mat{U}^{(b)}}
 \end{equation}
-For the next blocks $\ten{G}^{(b)}~\forall~ b\in2,3,\ldots,B$, we first compute
-the residual error after applying the \textsc{hoda} backward and forward
-projection.
+This residual error term is calculated by finding the difference between the
+previous error and its reconstruction after backward and forward \textsc{hoda}
+projection
 \begin{equation}
-  \ten{\mathbfcal{E}}^{(b)} =
-  \ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}\mmpr{\mat{A}^{\intercal(b)}}
+  \ten{\mathbfcal{E}}^{(b+1)} = \ten{\mathbfcal{E}}^{(b)} - \ten{G}^{(b)}
+  \mmpr{\mat{A}^{\intercal(b)}}
 \end{equation}
-The next block of features can then be obtained by calculating the
-\textsc{hoda} backward projection on this residual error as
-\begin{equation}
-  \ten{G}^{(b+1)} = \ten{\mathbfcal{E}}^{(b)}\mmpr{\mat{U}^{(b+1)}}
-\end{equation}
+with $\ten{\mathbfcal{E}}^{(1)}=\ten{X}$.
 
 The resulting extracted feature tensors can be flattened and concatenated into
 one feature vector, so that they can be classified in a similar manner to
