@@ -12,6 +12,7 @@
 \usepackage{todonotes}
 \usepackage{tabularx}
 \usepackage[inline]{enumitem}
+\usepackage{float}
 
 % Setup matplotlib pfg plots
 \usepackage{pgf}
@@ -181,10 +182,10 @@ visualized in Figure~\ref{fig:hoda-backward}.
 		$\ten{G}$ with reduced dimensionality $(r_1,r_2)$.}
 	\label{fig:hoda-backward}
 \end{figure}
-Analogous to the \textsc{tucker} decomposition, \textsc{hoda} is a dimensionality
+Analogous to the \textsc{hosvd}, \textsc{hoda} is a dimensionality
 reduction decomposition that results in a dense core tensor $\ten{G}$, and
 imposes an orthogonality constraint on $\mat{U}_k$ to ensure uniqueness.
-However, while for the \textsc{tucker} decomposition the projection matrices
+However, while for the \textsc{hosvd} decomposition the projection matrices
 are chosen to minimize the reconstruction error, the projection matrices
 $\mat{U}_k$ of \textsc{hoda} are optimized for maximal discriminability between
 $\ten{G}(n)$ belonging corresponding classes with labels $c_n$.
@@ -194,19 +195,21 @@ high-dimensional tensors.
 \textsc{hoda} optimizes discriminability in the Fisher sense, by optimizing the
 Fisher ratio $\phi$ between the core tensors $\ten{G}(n)$
 \begin{equation}
-  \left\{\mat{U}^*\right\} = \argmax_{\{\mat{U}\}}
-	\frac{\sum_c^CN_c\left\lVert\bar{\ten{G}}(c)-\bar{\bar{\ten{G}}}\right\rVert_F^2}
+  \phi = \frac{\sum_c^CN_c\left\lVert\bar{\ten{G}}(c)-\bar{\bar{\ten{G}}}\right\rVert_F^2}
 	{\sum_n^N\left\lVert\ten{G}(n)-\bar{\ten{G}}(c_n)\right\rVert_F^2}
 	\label{eq:fisher}
 \end{equation}
 for $C$ classes with each $N_c$ samples. $\bar{\ten{G}}(c)$ is the mean of core
 tensors $\ten{G}(n)$ of class $c$, and $\bar{\bar{\ten{G}}}$ the mean of
 these class mean core tensors.
-Equation~\ref{eq:fisher} can be solved by the iterative algorithm in
-Algorithm~\ref{alg:hoda}.
+The goal is now to find the optimal projection matrices
+\begin{equation}
+  \left\{\mat{U}^*\right\} = \argmax_{\{\mat{U}\}}\phi
+\end{equation}
+which can be solved by the iterative algorithm in Algorithm~\ref{alg:hoda}.
 To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g. as random
-orthogonal matrices, by a per mode Singular Value Decomposition (\textsc{svd})
-or by a Multi-Linear Singular Value Decomposition (\textsc{mlsvd})~\cite{Lathauwer2000} of the input data.
+orthogonal matrices, by a per mode Singular Value Decomposition (\textsc{svd}),
+or as the partial \textsc{hosvd} of the dataset.
 At each iteration, the algorithm loops trough the modes and fixes all the
 projection of all but $\mat{U}_k$ corresponding to mode $k$.
 It then finds a partial core tensor $\ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}$
@@ -401,18 +404,38 @@ evaluations of both \textsc{hoda} and \textsc{bttda}.
 
 \section{Experiments}
 \subsection{Datasets \& decoders}
-We evaluate our proposed model in two off-line BCI decoding setting.
-MOABB~\cite{Aristimunha2023} is an openly available BCI benchmarking platform
-containing multiple EEG datasets for different BCI tasks.
-Specifically, we will test our decoder on Event-Related Potential (ERP) tasks
-such as the P300 paradigm, and on Motor Imagery (MI) tasks.
-\subsection{Block contribution}
-Decrease of MSE with blocks
-increase of f ratio with blocks
-increase of validation score with blocks
-\begin{figure*}
-  \input{figures/blocks.pgf}
-\end{figure*}
+We evaluated our proposed model in two off-line BCI decoding settings: ERP
+paradigms and MI paradigms
+To this purpose, we made use the openly available MOABB benchmarking
+datasets~\cite{Aristimunha2023} for the paradigms in question.
+\todo{crossref to appendix tables}
+Within-session classification performance was assessed using stratified 5-fold
+cross-validation to calculate the area under the receiver operator
+characteristic curve (ROC-AUC).
+
+To use it as a decoder, \textsc{hoda} is paired with LDA to classify the
+extracted feature (HODA+LDA), with hyperparameters $r_k$.
+Similarly, we implemented BTTDA+LDA with the proposed \textsc{bttda} feature
+extraction with hyperparameters $r_k^(b)$ for each block $b$ and the number of blocks
+$B$).
+Finally, we also introduce PARAFACDA+LDA, BTTDA+LDA where each $r_k^(b)=1$, with
+as only hyperparameter $B$
+Hyperparameters were determined separately for each fold using nested
+stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
+greedy model selection algorithm proposed in \todo{crossref}
+For HODA+LDA and the \textsc{hoda} blocks in BTTDA+LDA, we choose
+$(r_1=r_2=\ldots=r_K)$ to reduce computational cost.
+As comparison methods, we used the methods based on
+Riemannian Geometry evaluated in~\cite{Chevallier2024} on
+the MOABB datasets for the ERP datasets (ERPCov+MDM, ERPCov(svd_n=4)+MDM,
+XDAWNCov+MDM, XDAWN+LDA,XDAWNCov+TS+SVM).
+\todo{mention MI methods}
+Implementation details can be found in~\cite{Chevallier2024}.
+Additionally, for the ERP paradigm, we compared our proposed methods to
+Toeplitz-LDA (tLDA)~\cite{Sosulski2022} since this algorithm generally yields state-of-the-art
+ERP classification performance.
+
+
 \subsection{Event-Related Potentials (ERPs)}
 ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
 order tensor with 2 modes representing the channels and time samples.
@@ -421,6 +444,9 @@ order tensor with 2 modes representing the channels and time samples.
   \input{include/score_erp.tex}
   \caption{Performances as described in \cite{Chevallier2024}}
 \end{table*}
+\todo{talk about observations rom table}
+\todo{statistically compare bttda to other methods (table or text, no figures),
+describe meta analysis}
 \subsection{Motor Imagery (MI)}
 For MI, discriminatory information is represented in the EEG data as
 Event-Related Synchronizations/Desynchronizations (ERS/Ds).
@@ -433,14 +459,35 @@ representing the channels, the frequencies and time samplies and time samples.
 \begin{table}
   \caption{Performances as described in \cite{Chevallier2024}}
 \end{table}
+
 \section{Discussion}
+Summarize positive results
+
+Discuss contribution over first hoda block
+Decrease of MSE with blocks
+increase of f ratio with blocks
+increase of validation score with blocks
+\begin{figure*}
+  \input{figures/blocks.pgf}
+\end{figure*}
+
+
+Discuss interpretability, include plots of first blocks
+
+better time complexity for same number of features than hoda
+
+Limitations: high computational cost of setting the parameters, future efforts
+should focus on automatic parameter setting e.g. using information criteria
+such as in BTTR/C
 
 
 %https://sci-hub.ru/https://ieeexplore.ieee.org/abstract/document/6287946
 %https://www.sciencedirect.com/science/article/abs/pii/S0031320317301875
 \printbibliography
 
+\clearpage
 \appendix
+
 %\section{Proof of Theorem~\ref{the:ap}}
 %
 %Equations~\ref{eq:hoda-backward} and~\ref{eq:hoda-forward} can be expressed in fuction
@@ -629,27 +676,11 @@ representing the channels, the frequencies and time samplies and time samples.
 %	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal}
 %\end{align*}
 
-\section{Benchmark datasets}
-\begin{table*}[h]
-\begin{tabularx}{\linewidth}{@{}Xrrcrl@{}}
-		\toprule
-		Dataset        & \# Sub.               & \# Chan. & \# Trials/class              & \# Sessions & Citation                   \\ \midrule
-		BI2012         & 25                         & 16          & 640 NT / 128 T           & 2                          &                                          \\
-		BI2013a        & 24                         & 16          & 3200 NT / 640 T
-                   & 8 (Sub. 1-7) or 1  &                                          \\
-		BI2014a        & 64                         & 16          & 990 NT / 198 T           & up to 3                    &                                          \\
-		BI2014b        & 38                         & 32          & 200 NT / 40 T            & 3                          &                                          \\
-		BI2015a        & 43                         & 32          & 4131 NT / 825 T          & 3                          &                                          \\
-		BI2015b        & 44                         & 32          & 2160 NT / 480 T          & 1                          &                                          \\
-		BNCI2014\_008  & 8                          & 8           & 3500 NT / 700 T          & 1                          &                                         \\
-		BNCI2014\_009  & 10                         & 16          & 1440 NT / 288 T          & 3                          &                                         \\
-		BNCI2015\_003  & 10                         & 8           & 1500 NT / 300 T          & 1                          &                                          \\
-		Cattan2019\_VR & 21                         & 16          & 600 NT / 120 T           & 2                          &                                          \\
-		EPFLP300       & 8                          & 32          & 2753 NT / 551 T          & 4                          &                                          \\
-		Huebner2017    & 13                         & 31          & 364 NT / 112 T           & 3                          &                                          \\
-		Huebner2018    & 12                         & 31          & 364 NT / 112 T           & 3                          &                                          \\
-		Lee2019\_ERP   & 54                         & 62          & 6900 NT / 1380 T         & 2                          &                                          \\
-		Sosulski2019   & 13                         & 31          & 75 NT / 15 T             & 3                          &                                          \\ \bottomrule
-	\end{tabularx}
+\onecolumn
+\section{Benchmark ERP datasets}
+\begin{table*}[htp]
+  \input{include/moabb_erp.tex}
 \end{table*}
+\todo{mention 'adapted from'}
+\section{Benchmark MI datasets}
 \end{document}
