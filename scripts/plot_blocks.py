@@ -15,18 +15,17 @@ lineplot_kwargs = dict(
     data=df,
     x="block",
     hue="dataset",
-    style="session",
-    legend=False,
+    # style="session",
     errorbar=None,
     # units="subject",
     # estimator=None,
 )
-sns.lineplot(y="F_rt", ax=axs[0, 0], **lineplot_kwargs)
+sns.lineplot(y="F_rt", ax=axs[0, 0], legend=True, **lineplot_kwargs)
 axs[0, 0].set_ylabel("$\phi$")
 axs[0, 0].ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
-sns.lineplot(y="mse", ax=axs[0, 1], **lineplot_kwargs)
+sns.lineplot(y="mse", ax=axs[0, 1], legend=False, **lineplot_kwargs)
 axs[0, 1].set_ylabel("MSE")
-sns.lineplot(y="val_score", ax=axs[0, 2], **lineplot_kwargs)
+sns.lineplot(y="val_score", ax=axs[0, 2], legend=False, **lineplot_kwargs)
 axs[0, 2].set_ylabel("ROC-AUC")
 for ax in axs.flatten():
     ax.set_xlabel("$b$")

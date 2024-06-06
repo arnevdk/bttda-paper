@@ -11,93 +11,134 @@
 \usepackage{amssymb}
 \usepackage{todonotes}
 \usepackage{tabularx}
+\usepackage[inline]{enumitem}
 
 % Setup matplotlib pfg plots
 \usepackage{pgf}
 \def\mathdefault#1{#1}
 \everymath=\expandafter{\the\everymath\displaystyle}
-
 \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 
 % Layout
 \setuptodonotes{inline}
 \renewcommand*{\bibfont}{\footnotesize}
 
-% Math declarations
-\DeclareMathAlphabet\mathbfcal{OMS}{cmsy}{b}{n}
-\newcommand{\ten}[1]{\underline{\mathbf{#1}}} % tensor
-\newcommand{\mat}[1]{\mathbf{#1}} % matrix
-\renewcommand{\vec}[1]{\mathbf{#1}} % matrix
-\newcommand{\mpr}[2]{\times_{#2} {#1}_{#2}} % mode product
-\newcommand{\mmpr}[1]{\times\{#1\}} % multi-mode product
-\newcommand{\mmprs}[2]{\times_{-#2}\{#1\}} % multi-mode product
-\newcommand{\ev}[2]{\text{E}\left[#1\right]_{#2}}
-\DeclareMathOperator*{\argmax}{arg\,max}
-\DeclareMathOperator*{\argmin}{arg\,min}
-\newtheorem{theorem}{Theorem}
-
-% Includes
 \addbibresource{references.bib}
+\input{include/math.tex}
 \input{include/tensorviz.tex}
 
 % Metadata
 \title{Block-Term Tensor Discriminant Analysis for Brain-Computer Interfacing}
+\author{Arne Van Den Kerchove}
 
 \begin{document}
 
 \maketitle
 
 \section{Introduction}
+Brain-computer interfaces (BCIs) can replace, supplement, or enhance neural
+communication pathways by enabling direct interaction between the brain and
+external devices, with applications in the development of neuroprosthetics and
+assistive technologies, among other fields~\cite{NicolasAlonso2012}.
+To achieve their functionality, BCIs record and process neural data obtained
+through neuroimaging techniques, with the electroencephalogram (EEG) being the
+most commonly used method.
 
-EEG/neuroimaging and tensor data
+EEG data, like most neural signal acquisition modalities used for BCIs,
+naturally exist as multi-channel time series, capturing information in both
+spatial and temporal domains.
+Common preprocessing transformations, such as time-frequency transformation,
+time-binning, or integrating information across multiple subjects or conditions,
+can further expand the data into additional analysis domains.
+This can result in high-dimensional datasets, yet with a certain decoupling
+between the domains.
+Therefore, the intrinsic multiway structure of neural data~\cite{Erol2022} is
+well-suited for representation as multiway arrays, or \emph{tensors}, which
+provide a structured data representation that counteracts some of the drawbacks
+resulting from this high dimensionality.
 
+Machine learning techniques dealing with this datatype are referred to a tensor
+methods.
+Tensor methods can consider each analysis domain (tensor \emph{mode}) separately to
+reduce a given problem into partial, per mode problems.
+This has given rise to efficient dimensionality reduction techniques, such as
+the Higher-Order Singular Value Decomposition
+(\textsc{hosvd})~\cite{DeLathauwer2000} or Canonical Polyadic Decomposition
+(\textsc{cpd})\todo{cite}.\todo{find examples of use in EEG/neural data/BCI and cite}
 
+The former are all examples of unsupervised techniques with applications in EEG
+processing.Given the specific task-related output required in the BCI applications, however,
+supervised feature extraction and machine learning techniques are often of
+interest in this field.
 
-EEG BCI methods:
+One approach is to incorporate some assumptions of the tensor structure of the
+data directly into the estimation of parameters of classic linear machine
+learning methods, such as in Linear Discriminant Analysis or beamforming.
+Advances have been made by leveraging the decoupling of the spatial and temporal
+domains in EEG event-related potential (ERP) classification using Spatiotemporal
+Discriminant analysis~\cite{Li2010,Zhang2013} or methods regularizing covariance
+matrix estimation~\cite{Kerchove2022,Sosulski2022}.\todo{include this
+paragraph?}
 
-tucker
-direct classification with tensor assumptions
-\begin{itemize}
-  \item Spatiotemporal discriminant analysis~\cite{Li2010,Zhang2013} finds a
-  \item Kronecker-STBF~\cite{Kerchove2022}
-\end{itemize}
+A more structured approach to the same problem is to design a supervised
+tensor dimensionality tensor method that optimizes discriminability between the
+extracted features, as is the case for Higher Order Discriminant
+Analysis (\textsc{hoda})~\cite{Yan2005,Phan2010,Froelich2018}.
+These extracted features can subsequently be further classified, most commonly
+using LDA or a support vector machine (SVM) to obtain predictions.
+Variants of \textsc{hoda} have been applied to BCI problems such as
+ERP~\cite{Onishi2012,Higashi2016} and motor imagery (MI)~\cite{Liu2015,Cai2021}.
+Recent adaptations improve on these results by using suited objective
+functions and regularization, such as in Higher order spectral regression
+discriminant analysis~\cite{Jamshidi2017}, Spatiotemporal Linear
+Feature~\cite{Aghili2023}, Oscillatory source Tensor Discriminant
+Analysis~\cite{Jorajuria2022}.
 
+The previous methods adhere to the \textsc{tucker} tensor decomposition
+structure, meaning that they reduce input tensors of size
+$(D_1,D_2,\ldots,D_K)$ to a smaller tensor of size $(r_1,r_2,\ldots,r_K)$ with
+each $r_k\leq D_k$, similar to \textsc{hosvd}.
+While effective, other structures such as the \textsc{parafac} employed in
+\textsc{cpd}, where a tensor is decomposed into a sum of rank-1 tensors,
+might be more appropriate to represent the neural data of interest.
+Discriminant tensor features can also be extracted
+in the \textsc{parafac} structure with, for instance using manifold
+optimization~\cite{Froelich2018}.
 
-tensor feature extraction methods
-combeined with classifier (most commonly LDA or SVM)
-\begin{itemize}
+Nevertheless, the \textsc{parafac} structure might still not be able to
+efficiently represent all relevant information in a compressed format.
+The block-term tensor structure is a generalization of the \textsc{tucker} and
+\textsc{parafac} structures, and can be calculated in an unsupervised way using
+the Block-term Tensor Decomposition
+(\textsc{btd})~\cite{DeLathauwer2008,DeLathauwer2008a,DeLathauwer2008b,Rontogiannis2021}.
+\textsc{btd}, of which the \textsc{hosvd} and \textsc{cpd} are special cases,
+represents a tensor a sum of \textsc{tucker} terms.
+Research has shown that this more flexible structure can improve BCI performance
+when adapted to supervised methods, such as in Higher-Order Parial Least
+Squares~\cite{Camarrone2018} or Block-Term Tensor Regression (\textsc{bttr})~\cite{Faes2022,Faes2022b}
+\textsc{bttr} has been adapted into a classification variant, named Block-Term
+Tensor Classification (\textsc{bttc})~\cite{Camarrone2021}, but since features
+are not directly optimized for class separability but rather regressed towards
+a dummy independent variable, results can be improved upon and the method
+cannot be extended to a multi-class setting.
+Furthermore, structures employed in \textsc{hopls}, \textsc{bttdr} and
+\textsc{bttc} are still more constrained than what could be achieved with a
+full block-term tensor structured decomposition optimized for discriminability.
 
-  \item HODA~\cite{Phan2010}, first introduced as DATER~\cite{Yan2005}
-  \item HODA/DATER for bci~\cite{Onishi2012,Liu2015,Higashi2016,Cai2021}
-  \item Spatiotemporal linear feature learning linear feature
-    learning~\cite{Aghili2023}
-Spectrum-Weighted Tensor Discriminant Analysis
-for Motor Imagery-Based BCI
-SHOULIN HUANG 1, YANG CHEN1, TONG WANG 1, (Member, IEEE),
-AND TING MA1,2,3,4, (Member, IEEE)
-Regularized tensor discriminant analysis for single trial EEG classification in BCI
-  \item Oscillatory source Tensor Discriminant Analysis~\cite{Jorajuria2022}
-  \item Higher order spectral regression discriminant
-    analysis~\cite{Jamshidi2017}
-\end{itemize}
+\todo{talk about spectrum-weighted tda~\cite{Huang2020}, criticize structure}
 
-tucker
+In this work, we propose the following contributions:
+\begin{enumerate*}[label={\arabic*)}]
+  \item first, we develop a forward model for \textsc{hoda} to reconstruct a
+    given input tensor from the extracted features.
+  \item This allows us to introduce a state-of-the-art BCI classification method based on the
+    block-term tensor structure, named Block-Term Tensor Discriminant Analysis
+    (\textsc{BTTDA}) and
+  \item evaluate this decoder together with other tensor methods and the
+    special \textsc{parafac}-structured case on an extensive benchmark of BCI
+    datasets for ERP and MI decoding).
+\end{enumerate*}
 
-other structures:
- parafac
- parafac da~\cite{Froelich2018}
-
- btd, more flexible
- HOPLS,BTTR~\cite{Faes2022,Faes2022b} BTTC~\cite{Camarrone2021}
-
-
-
-Contribution:
-\begin{itemize}
-  \item Forward model for hoda
-  \item BTTDA and corresponding model selection scheme
-  \item Evaluation of proposed and parafac on eeg benchmark
-\end{itemize}
 \section{Methods}
 
 \subsection{Notation}
@@ -116,7 +157,7 @@ $\ten{X}\mmpr{\mat{U}} =
 When skipping one of the modes $k$, this is
 written as $\ten{X}\mmprs{\mat{U}}{k} =
 	\ten{X}\mpr{\mat{U}}{1}\mpr{\mat{U}}{2}\cdots\mpr{\mat{U}}{k-1}\mpr{\mat{U}}{k+1}\ldots\mpr{\mat{U}}{K}$.
-The Kronecker product is noted as $\otimes$, covariance matrices are indicated  with $\mat{\Sigma}$.
+%The Kronecker product is noted as $\otimes$, covariance matrices are indicated  with $\mat{\Sigma}$.
 
 \subsection{Higher-Order Discriminant Analysis (\textsc{hoda})}
 Higher Order Discriminant Analysis (\textsc{hoda})~\cite{Phan2010} is a tensor
@@ -151,9 +192,9 @@ This is a desirable property in a classification setting where samples are
 high-dimensional tensors.
 
 \textsc{hoda} optimizes discriminability in the Fisher sense, by optimizing the
-Fisher ratio between the core tensors $\ten{G}(n)$
+Fisher ratio $\phi$ between the core tensors $\ten{G}(n)$
 \begin{equation}
-  \left\{\mat{U}^*\right\} = \arg\max_{\{\mat{U}\}}
+  \left\{\mat{U}^*\right\} = \argmax_{\{\mat{U}\}}
 	\frac{\sum_c^CN_c\left\lVert\bar{\ten{G}}(c)-\bar{\bar{\ten{G}}}\right\rVert_F^2}
 	{\sum_n^N\left\lVert\ten{G}(n)-\bar{\ten{G}}(c_n)\right\rVert_F^2}
 	\label{eq:fisher}
@@ -171,7 +212,8 @@ projection of all but $\mat{U}_k$ corresponding to mode $k$.
 It then finds a partial core tensor $\ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}$
 Subsequently, a new projection matrix $U_k$ can be found analogous to Linear
 Discriminant Analysis by constructing the within- and between-class scatter
-matrices $\mat{S}_{-k,\text{w}}$ and $\mat{S}_{-k,\text{b}}$ of
+matrices $\mat{S}_{-k,\text{w}}$ and $\mat{S}_{-k,\text{b}}$ \todo{equations
+for scatter matrices} of
 $\mat{G}_{-k,k}$ the partial core tensor unfolded towards mode $k$, and solving
 the generalized eigenvalue problem
 \begin{equation}
@@ -253,8 +295,8 @@ or, equivalently~\cite{Parra2005,Haufe2014},
   \left\{\mat{A}^*\right\} = \arg\min_{\{\mat{A}\}}\sum_n^N\left(\ten{X}(n) - \ten{G}(n)\mmpr{\mat{A}}\right)^2
 \end{equation}
 This least squares tensor approximation problem can be solved efficiently using the
-alternating least squares (ALS) algorithm~\cite{Comon2009}, which that
-iteratively fixes all but one of the activation patterns such that
+alternating least squares (ALS) algorithm~\cite{Comon2009},
+iteratively fixing all but one of the activation patterns such that
 \begin{equation}
   \mat{A}_k = \arg\min_{\mat{A}_k}
   \sum_n^N\left[\mat{X}_k(n) -
@@ -293,7 +335,7 @@ Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
   (\textsc{bttda}). \textsc{bttda} can extract more features
  than \textsc{hoda} by iteratively finding a core tensor $\ten{G}^{(b)}$ in a
  deflation scheme.
- The \textsc{hoda} backward projection is first applied. Next, the reconstructed
+ The \textsc{hoda} backward projection is first applied. Next, the
  input data is reconstructed via the \textsc{hoda} forward model and the
  difference between the two is found.
  Finally, this process is repeated with this difference as input data, until a
@@ -358,7 +400,7 @@ evaluations of both \textsc{hoda} and \textsc{bttda}.
 
 
 \section{Experiments}
-\subsection{Datasets decoders}
+\subsection{Datasets \& decoders}
 We evaluate our proposed model in two off-line BCI decoding setting.
 MOABB~\cite{Aristimunha2023} is an openly available BCI benchmarking platform
 containing multiple EEG datasets for different BCI tasks.
