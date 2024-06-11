@@ -13,8 +13,11 @@
 \usepackage{tabularx}
 \usepackage[inline]{enumitem}
 \usepackage{float}
+\usepackage{makecell}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
-% Setup matplotlib pfg plots
+% Setup matplotlib pgf plots
 \usepackage{pgf}
 \def\mathdefault#1{#1}
 \everymath=\expandafter{\the\everymath\displaystyle}
@@ -23,6 +26,7 @@
 % Layout
 \setuptodonotes{inline}
 \renewcommand*{\bibfont}{\footnotesize}
+\newfloat{algorithm}{t}{lop}
 
 \addbibresource{references.bib}
 \input{include/math.tex}
@@ -64,8 +68,8 @@ Tensor methods can consider each analysis domain (tensor \emph{mode}) separately
 reduce a given problem into partial, per mode problems.
 This has given rise to efficient dimensionality reduction techniques, such as
 the Higher-Order Singular Value Decomposition
-(\textsc{hosvd})~\cite{DeLathauwer2000} or Canonical Polyadic Decomposition
-(\textsc{cpd})\todo{cite}.\todo{find examples of use in EEG/neural data/BCI and cite}
+(\textsc{hosvd})~\cite{DeLathauwer2000,SoleCasals2018} or Canonical Polyadic Decomposition
+(\textsc{cpd})\cite{Nazarpour2006}\todo{cite original}.
 
 The former are all examples of unsupervised techniques with applications in EEG
 processing.Given the specific task-related output required in the BCI applications, however,
@@ -148,7 +152,7 @@ letters $\mat{U}$, fixed scalars as uppercase letters $K$ and variable
 scalars as lower case letters $k$.
 The $n^\text{th}$ sample of a tensor dataset with $N$ samples is written as
 $\ten{X}(n)$.
-A tensor $\ten{X}\in \mathbb{R}^{D_1\times D_2 \times \ldots \times D_K}$ can be unfolded in mode
+A tensor $\ten{X}\in \mathbb{R}^{D_1\times D_2 \times \cdots \times D_K}$ can be unfolded in mode
 $k$ to a matrix $\mat{X}_k\in\mathbb{R}^{(D_k\times\prod_{j\neq k}^K D_j)}$.
 matrix
 The tensor-matrix product of tensor $\ten{X}$ with matrix $\mat{U}$ along a
@@ -200,25 +204,40 @@ Fisher ratio $\phi$ between the core tensors $\ten{G}(n)$
 	\label{eq:fisher}
 \end{equation}
 for $C$ classes with each $N_c$ samples. $\bar{\ten{G}}(c)$ is the mean of core
-tensors $\ten{G}(n)$ of class $c$, and $\bar{\bar{\ten{G}}}$ the mean of
+tensors of class $c$, and $\bar{\bar{\ten{G}}}$ the mean of
 these class mean core tensors.
 The goal is now to find the optimal projection matrices
 \begin{equation}
   \left\{\mat{U}^*\right\} = \argmax_{\{\mat{U}\}}\phi
 \end{equation}
 which can be solved by the iterative algorithm in Algorithm~\ref{alg:hoda}.
+\begin{algorithm}
+  \caption{Higher-order Discriminant Analysis (\textsc{hoda}) backward solution}
+  \label{alg:hoda}
+  \input{include/alg_hoda.tex}
+\end{algorithm}
 To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g. as random
 orthogonal matrices, by a per mode Singular Value Decomposition (\textsc{svd}),
 or as the partial \textsc{hosvd} of the dataset.
 At each iteration, the algorithm loops trough the modes and fixes all the
 projection of all but $\mat{U}_k$ corresponding to mode $k$.
-It then finds a partial core tensor $\ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}$
-Subsequently, a new projection matrix $U_k$ can be found analogous to Linear
-Discriminant Analysis by constructing the within- and between-class scatter
-matrices $\mat{S}_{-k,\text{w}}$ and $\mat{S}_{-k,\text{b}}$ \todo{equations
-for scatter matrices} of
-$\mat{G}_{-k,k}$ the partial core tensor unfolded towards mode $k$, and solving
-the generalized eigenvalue problem
+It then finds a partial core tensor
+\begin{equation}
+  \ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}
+\end{equation}
+Subsequently, a new projection matrix $\mat{U}_k$ can be found analogous to Linear
+Discriminant Analysis by constructing the within-class scatter matrix
+\begin{equation}
+  \mat{S}_{-k,\text{w}} = \sum_n^N\tilde{\mat{G}}_{-k,k}(n)\cdot\tilde{\mat{G}}_{-k,k}^\intercal(n)
+\end{equation}
+with $\tilde{\ten{G}}_{-k}(n) = \ten{G}_{-k}(n) - \bar{\ten{G}}_{-k}(c_n)$,
+and the between-class scatter matrix
+\begin{equation}
+  \mat{S}_{-k,\text{b}} =
+  \sum_c^CN_c\tilde{\bar{\mat{G}}}_{-k,k}(c)\cdot\tilde{\bar{\mat{G}}}_{-k,k}^\intercal(c)
+\end{equation}
+with $\tilde{\bar{\ten{G}}}_{-k}(c) = \bar{\ten{G}}_{-k}(c) - \bar{\bar{\ten{G}}}_{-k}$,
+and solving the generalized eigenvalue problem
 \begin{equation}
   \mat{S}_{-k,\text{b}}\mat{U}_k = \mat{\lambda}\mat{S}_{-k,\text{w}}\mat{U}_k
 \end{equation}
@@ -254,10 +273,10 @@ e.g., using the Ledoit-Wolf procedure~\cite{Ledoit2003}.
 As a prerequisite for our proposed \textsc{bttda} model, we must first find a
 way to reconstruct the original data tensor $\ten{X}$ as accurately as possible
 from $\ten{G}$ after dimensionality reduction.
-In neuroimaging, this is referred to as a \textit{forward model}.
-While a \textit{backward model} extracts latent sources or properties from the observed
-data, which can be optimised for tasks like regression or classification or
-informed by prior knowledge about source propagation, a \textit{forward model} is a
+In neuroimaging, this is referred to as a \emph{forward model}.
+While a \emph{backward model} extracts latent sources or properties from the observed
+data, which can be optimized for tasks like regression or classification or
+informed by prior knowledge about source propagation, a forward model is a
 generative model that expresses the observed data in function of some latent
 properties or sources that are given.
 \todo{interpretability and generative model}
@@ -303,15 +322,23 @@ iteratively fixing all but one of the activation patterns such that
 \begin{equation}
   \mat{A}_k = \arg\min_{\mat{A}_k}
   \sum_n^N\left[\mat{X}_k(n) -
-  \left(\ten{G}(n)\mmprs{\mat{A}}{k}\right)_k\right]^2
+  \mat{A}_k\left(\ten{G}(n)\mmprs{\mat{A}}{k}\right)_k\right]^2
 \end{equation}
+\todo{check multiplication dimensionalities here and in algorithm}
 at every iteration, which can be solved directly by ordinary least squares.
 The activation patterns are initialized to the weights $\{\mat{U}\}$ of the
 backward model.
 Similar to fitting the backward model, the iterative process for the forward
 model halts after a fixed amount of iterations or when the update of each
 $\mat{A}_k$ is lower than a predetermined threshold.
-\todo{pseudocode}
+The full algorithm to determine the \textsc{hoda} forward projection is listed
+in Algorithm~\ref{alg:hoda-fw}.
+\begin{algorithm}
+  \caption{Higher-order Discriminant Analysis (\textsc{hoda}) forward solution}
+  \label{alg:hoda-fw}
+  \input{include/alg_hoda_fw.tex}
+\end{algorithm}
+
 
 \subsection{Block-Term Tensor Discriminant Analysis (\textsc{bttda})}
 After defining the forward model, we can construct our proposed block-term
@@ -351,6 +378,11 @@ procedure is required which finds the core tensors $\ten{G}^{(b)}$ given $\ten{X
 \textsc{bttda} to be useful as a feature extraction method.
 The extracted features represented by the core tensors $\ten{G}^{(b)}$ can be
 computed through a deflation scheme summarized in Algorithm~\ref{alg:bttda}.
+\begin{algorithm}
+  \caption{Block-term Tensor Discriminant Analysis (\textsc{bttda})}
+  \label{alg:bttda}
+  \input{include/alg_bttda.tex}
+\end{algorithm}
 For each block $b$, the core tensor is extracted using the \textsc{hoda} backward
 projection in from a residual error term
 $\ten{\mathbfcal{E}}^{(b)}$
@@ -416,18 +448,20 @@ characteristic curve (ROC-AUC).
 To use it as a decoder, \textsc{hoda} is paired with LDA to classify the
 extracted feature (HODA+LDA), with hyperparameters $r_k$.
 Similarly, we implemented BTTDA+LDA with the proposed \textsc{bttda} feature
-extraction with hyperparameters $r_k^(b)$ for each block $b$ and the number of blocks
-$B$).
-Finally, we also introduce PARAFACDA+LDA, BTTDA+LDA where each $r_k^(b)=1$, with
-as only hyperparameter $B$
+extraction with hyperparameters $r_k^{(b)}$ for each block $b$ and the number of blocks
+$1\leq B\leq16$.
+Finally, we also introduce PARAFACDA+LDA, BTTDA+LDA where each $r_k^{(b)}=1$, with
+as only hyperparameter $B$.
 Hyperparameters were determined separately for each fold using nested
 stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
 greedy model selection algorithm proposed in \todo{crossref}
 For HODA+LDA and the \textsc{hoda} blocks in BTTDA+LDA, we choose
-$(r_1=r_2=\ldots=r_K)$ to reduce computational cost.
+$r=r_1=r_2=\ldots=r_K$ with possible values $1,2,4,8,\ldots,\min_kD_k$
+to reduce computational cost.
+\todo{mention z-scoring}
 As comparison methods, we used the methods based on
 Riemannian Geometry evaluated in~\cite{Chevallier2024} on
-the MOABB datasets for the ERP datasets (ERPCov+MDM, ERPCov(svd_n=4)+MDM,
+the MOABB datasets for the ERP datasets (ERPCov+MDM, ERPCov-SVD+MDM,
 XDAWNCov+MDM, XDAWN+LDA,XDAWNCov+TS+SVM).
 \todo{mention MI methods}
 Implementation details can be found in~\cite{Chevallier2024}.
@@ -438,19 +472,31 @@ ERP classification performance.
 
 \subsection{Event-Related Potentials (ERPs)}
 ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
-order tensor with 2 modes representing the channels and time samples.
+order tensor with 2 modes ($K=2$), representing EEG channels and time samples
+per epoch.
+EEG signals for the evaluated datasets were recorded at the sample rate given
+by Table~\ref{tab:moabb-erp} and band-pass filtered between 1Hz
+and 24Hz.
+The signals were then cut into epochs starting from stimulus onset with a
+dataset specific length given by Table~\ref{tab:moabb-erp}.
+For tLDA, HODA+LDA, PARAFAC+LDA and BTTDA+LDA decoders, epochs were downsampled to 48Hz.
+Table~\ref{tab:erp-score} lists the cross-validated ROC-AUC for all evaluated
+decoders.
 \begin{table*}
   \footnotesize
   \input{include/score_erp.tex}
-  \caption{Performances as described in \cite{Chevallier2024}}
+  \caption{Scores for (list) were taken from \cite{Chevallier2024}}
+  \label{tab:erp-score}
 \end{table*}
 \todo{talk about observations rom table}
 \todo{statistically compare bttda to other methods (table or text, no figures),
 describe meta analysis}
+
+
 \subsection{Motor Imagery (MI)}
 For MI, discriminatory information is represented in the EEG data as
 Event-Related Synchronizations/Desynchronizations (ERS/Ds).
-Contrary the the time domain analysis performed on ERPs, ERS/Ds are only
+Contrary to the time domain analysis performed on ERPs, ERS/Ds are only
 detectable in the time-frequency domain.
 Hence, for the MI task, we will transform the EEG signal into the
 time-frequency domain, forming $3^\text{d}$ order tensors, with modes
@@ -464,17 +510,18 @@ representing the channels, the frequencies and time samplies and time samples.
 Summarize positive results
 
 Discuss contribution over first hoda block
-Decrease of MSE with blocks
-increase of f ratio with blocks
-increase of validation score with blocks
 \begin{figure*}
   \input{figures/blocks.pgf}
 \end{figure*}
-
+\begin{itemize}
+  \item Decrease of MSE with blocks
+  \item increase of f ratio with blocks
+  \item increase of validation score with blocks
+\end{itemize}
 
 Discuss interpretability, include plots of first blocks
 
-better time complexity for same number of features than hoda
+better memory/time complexity for same number of features than hoda
 
 Limitations: high computational cost of setting the parameters, future efforts
 should focus on automatic parameter setting e.g. using information criteria
@@ -489,198 +536,16 @@ such as in BTTR/C
 \appendix
 
 %\section{Proof of Theorem~\ref{the:ap}}
-%
-%Equations~\ref{eq:hoda-backward} and~\ref{eq:hoda-forward} can be expressed in fuction
-%of sample $n$ as
-%\begin{subequations}
-%	\label{eq:proj-n}
-%	\begin{align}
-%		\ten{G}(n) & = \ten{X}(n)\mmpr{\mat{U}}
-%		\label{eq:proj-back-n}                                                   \\
-%		\ten{X}(n) & = \ten{G}(n)\mmpr{\mat{A}^\intercal}+\ten{\mathbfcal{E}}(n)
-%		\label{eq:proj-fwd-n}
-%	\end{align}
-%\end{subequations}
-%%We write Equations~\ref{eq:proj-back-n} and~\ref{eq:proj-fwd-n} respectively
-%%as their unfolded multi-mode products for mode $k$
-%%\begin{subequations}
-%%	\label{eq:proj-unfold}
-%%	\begin{align}
-%%		%https://www5.in.tum.de/persons/huckle/tensor-kurs_1.pdf
-%%		\mat{G}_k(n) & =
-%%		\mat{U}_n\mat{X}_n(n)\left(\mat{U}_1\otimes\mat{U}_2\otimes\cdots\otimes\mat{U}_{k-1}\otimes\mat{U}_{k+1}\otimes\cdots\otimes\mat{U}_K\right)
-%%		\label{eq:proj-back-unfold} \\
-%%		\mat{X}_k(n) & =
-%%		\mat{A}_n^\intercal\mat{G}_n(n)\left(\mat{A}^\intercal_1\otimes\mat{A}^\intercal_2\otimes\cdots\otimes\mat{A}^\intercal_{k-1}\otimes\mat{A}^\intercal_{k+1}\otimes\cdots\otimes\mat{A}^\intercal_K\right)
-%%		+ \mat{\mathbfcal{E}}_k(n)
-%%		\label{eq:proj-fwd-unfold}
-%%	\end{align}
-%%\end{subequations}
-%%According to Theorem 1 in~\cite{Haufe2014}, the activation patterns defining the
-%%unfolded forward model in Equation~\ref{eq:proj-fwd-unfold} corresponding to the
-%%unfolded backward model in Equation~\ref{eq:proj-back-unfold} is given by
-%%\begin{align}
-%%	\mat{A}_k = \mat{\Sigma}_{\mat{X}_k}\mat{U}_k
-%%\end{align}
-%Let us now express these backward and forward models in their vectorized forms:
-%\begin{subequations}
-%	\label{eq:proj-n}
-%	\begin{align}
-%		\vec{g}(n) & = \vec{x}(n)\left(\bigotimes_k^K\mat{U}_k\right)
-%		\label{eq:proj-back-vec}                                                  \\
-%		\vec{x}(n) & = \vec{g}(n)\left(\bigotimes_k^K\mat{A}_k^\intercal\right) +
-%		\vec{\boldsymbol\epsilon}(n)
-%		\label{eq:proj-fwd-vec}
-%	\end{align}
-%\end{subequations}
-%Since $\bigotimes_k^K\mat{U}_k$ is a Kronecker product of orthogonal matrices,
-%which itself is orthogonal, the activation pattern
-%$\mat{B}\in\mathbb{R}^{\prod_k^KD_k\times\prod_k^Kr_k} $ of a vectorized forward model
-%corresponding to Equation~\ref{eq:proj-back-vec} is given according
-%to~\cite{Haufe2014} as
-%\begin{align*}
-%	\mat{B} & =
-%	\mat{\Sigma}_\vec{x}\left(\bigotimes_k^K\mat{U}_k\right)\mat{\Sigma}_\vec{g}^{-1} \\
-%	        & =
-%	\mat{\Sigma}_\vec{x}\left(\bigotimes_k^K\mat{U}_k\right)\left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\mat{\Sigma_\vec{x}}\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
-%\end{align*}
-%
-%Because \textsc{hoda} assumes the data covariance can be expressed as a
-%Kronecker product of mode-$k$ covariances
-%$\mat{\Sigma}_{\mat{X}_k}$\todo{citation  needed}, we get
-%\begin{align*}
-%	\mat{B} & =
-%	\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)
-%  \\
-%          & \quad \cdot
-%          \left[\left(\bigotimes_k^K\mat{U}_k\right)^\intercal\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\right]^{-1}
-%	\\
-%	        &
-%	=\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left(\bigotimes_k^K\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1} \\
-%	        &
-%	=\left(\bigotimes_k^K\mat{\Sigma}_{\mat{X}_k}\right)\left(\bigotimes_k^K\mat{U}_k\right)\left[\bigotimes_k^K\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}\right]
-%	\\
-%	        & = \bigotimes_k^K \mat{\Sigma}_{\mat{X}_k}
-%	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}
-%\end{align*}
-%and finally
-%\begin{align*}
-%  \mat{A}_k = \mat{\Sigma}_{\mat{X}_k}
-%	\mat{U}_k\left(\mat{U}_k^\intercal\mat{\Sigma}_{\mat{X}_k}\mat{U}_k\right)^{-1}
-%\qquad\blacksquare
-%\end{align*}
-
-
-
-%Our proof follows the structure laid out in \cite{Haufe2014} (Appendix A).
-%In the general case when $r_k<D_k$, $\mat{U}_k$ are not square and hence non-invertible.
-%The backward and forward projections given by
-%Equations~\ref{eq:hoda-backward} and~\ref{eq:hoda-forward} can be expressed in fuction
-%of sample $n$ as
-%\begin{equation}
-%	\ten{G}(n) = \ten{X}(n)\mmpr{\mat{U}}
-%	\label{eq:proj-back-n}
-%\end{equation}
-%and
-%\begin{equation}
-%	\ten{X}(n) = \ten{G}(n)\mmpr{\mat{A}^\intercal}+\ten{\mathbfcal{E}}(n)
-%	\label{eq:proj-fwd-n}
-%\end{equation}
-%respectively, with unkown error term $\ten{\mathbfcal{E}}(n)$.
-%
-%Plugging the forward projection in Equation~\ref{eq:proj-fwd-n} into the backward projection in
-%Equation~\ref{eq:proj-back-n} gives
-%\begin{align*}
-%	\ten{G}(n) & = \ten{X}(n)\mmpr{\mat{U}}                           \\
-%	           & = (\ten{G}(n)\mmpr{\mat{A}^\intercal} +
-%	\ten{\mathbfcal{E}}(n))\mmpr{\mat{U}}                             \\
-%	           & = \ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} +
-%	\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}
-%\end{align*}
-%Taking the tensor outer product on the left with $\ten{G}$ yields
-%\begin{align*}
-%	\ten{G}(n)\otimes\ten{G}(n) & = \ten{G}(n)\otimes\ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} \\
-%	                            & \quad +	\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}
-%\end{align*}
-%and when taking the expected value over samples
-%\begin{align*}
-%	 & \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}                                                \\
-%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}}{n} \\
-%	 & \quad\quad + \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}}{n}       \\
-%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}} \\
-%	 & \quad\quad +  \ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)}{n}\mmpr{\mat{U}}
-%\end{align*}
-%To find a forward projection that is corresponding to the backward projection,
-%ensuring any variation explained by the projections is maximally captured in the
-%activation patterns, we assume
-%\begin{equation}
-%	\ev{\ten{G}(n)\otimes\ten{\mathbfcal{E}}(n)}{n} = 0
-%	\label{eq:uncorr}
-%\end{equation}
-%yielding
-%\begin{align*}
-%	 & \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}                                                \\
-%	 & \quad = \ev{\ten{G}(n)\otimes\ten{G}(n)}{n}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}
-%\end{align*}
-%Since the covariance tensor of the latent tensor,
-%$\ev{\ten{G}(n)\otimes\ten{G}(n)}{n}$,
-%has full tensor rank due to the linear independance of columns in projection
-%matrices $\mat{U}_k$, and it exists in $\mathbb{R}^{r_1\times r_1\times
-%		r_2\times \ldots\times r_K\times r_1\times r_2\times \ldots\times r_K}$, its tensor inverse exists and we derive
-%\begin{equation}
-%	\ten{I} = \ten{I}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}
-%	\label{eq:identity}
-%\end{equation}
-%
-%Plugging in the backward projection in Equation~\ref{eq:proj-back-n} into the
-%forward projection in Equation~\ref{eq:proj-fwd-n} gives
-%\begin{align*}
-%	\ten{X}(n) & = \ten{G}(n)\mmpr{\mat{A^\intercal}}+\ten{\mathbfcal{E}}(n)   \\
-%	           & = \ten{X}(n)\mmpr{U}\mmpr{A^\intercal}+\ten{\mathbfcal{E}}(n)
-%\end{align*}
-%From here, we can write $\ten{\mathbfcal{E}}(n)$ as
-%\begin{align*}
-%	\ten{\mathbfcal{E}}(n) & = \ten{X}(n) -	\ten{X}(n)\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal} \\	                       & =	\ten{X}(n)(\ten{I}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal})
-%\end{align*}
-%If we mutiply both sides with matrices $\mat{U}_k$, we obtain
-%\begin{align*}
-%	 & \ten{\mathbfcal{E}}(n)\mmpr{\mat{U}}                                                                   \\
-%	 & \quad =  \ten{X}(n)(\ten{I}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal})\mmpr{\mat{U}}              \\
-%	 & \quad =	\ten{X}(n)(\ten{I}\mmpr{\mat{U}}-\ten{I}\mmpr{\mat{U}}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}})
-%\end{align*}
-%and by Equation~\ref{eq:identity}
-%\begin{equation}
-%	\ten{\mathbfcal{E}}(n)\mmpr{\mat{U}} =
-%	\ten{X}(n)(\ten{I}\mmpr{\mat{U}}-\ten{I}\mmpr{\mat{U}})
-%	= 0
-%\end{equation}
-%
-%
-%From Equations~\ref{eq:proj-fwd-n} and~\ref{eq:uncorr}
-%\begin{align*}
-%	\ten{\Sigma}_{\ten{X}} & =	\ten{\Sigma}_{\ten{G}}\times_{1,2,\ldots,K}\{\mat{A}^\intercal\}
-%	\times_{K+1,K+2,\ldots,2K}\{\mat{A}^\intercal\}                                             \\
-%	                       & \quad+ \ten{\Sigma}_{\ten{\mathbfcal{E}}}
-%\end{align*}
-%leading to
-%\begin{align*}
-%	 & \ten{\Sigma}_{\ten{X}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                                 \\
-%	 & \quad =(\{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\mmpr{\mat{A}^\intercal} +
-%	\ten{\Sigma}_{\ten{\mathbfcal{E}}})\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                       \\
-%	 & \quad=
-%	\{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\mmpr{\mat{A}^\intercal}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1} \\
-%	 & \quad\quad + \ten{\Sigma}_{\ten{\mathbfcal{E}}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                      \\
-%	 & \quad= \{\mat{A}^\intercal\}\times\ten{\Sigma}_{\ten{G}}\ten{\Sigma}_{\ten{G}}^{-1}
-%	+ \ten{\Sigma}_{\ten{\mathbfcal{E}}}\mmpr{\mat{U}}\ten{\Sigma}_{\ten{G}}^{-1}                                      \\
-%	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal} + 0\ten{\Sigma}_{\ten{G}}^{-1}                                          \\
-%	 & \quad= \ten{I}\mmpr{\mat{A}^\intercal}
-%\end{align*}
-
 \onecolumn
-\section{Benchmark ERP datasets}
+\section{ERP Benchmark datasets}
 \begin{table*}[htp]
   \input{include/moabb_erp.tex}
+  \caption{MOABB ERP benchmark datasets used for evaluation, with the number of
+  subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
+per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
+frequency (S. freq.) and the number of sessions per subject (\# Sessions).
+Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
+  \label{tab:moabb-erp}
 \end{table*}
-\todo{mention 'adapted from'}
-\section{Benchmark MI datasets}
+\section{MI Benchmark datasets}
 \end{document}

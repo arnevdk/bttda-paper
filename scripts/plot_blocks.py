@@ -29,6 +29,7 @@ sns.lineplot(y="val_score", ax=axs[0, 2], legend=False, **lineplot_kwargs)
 axs[0, 2].set_ylabel("ROC-AUC")
 for ax in axs.flatten():
     ax.set_xlabel("$b$")
+    ax.set_xlim([1, 32])
 fig.set_size_inches(set_size(width_pt=textwidth, subplots=(2, 3)))
 fig.tight_layout()
 fig.savefig("figures/blocks.pgf", bbox_inches="tight", pad_inches=0)
