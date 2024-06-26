@@ -154,7 +154,6 @@ The $n^\text{th}$ sample of a tensor dataset with $N$ samples is written as
 $\ten{X}(n)$.
 A tensor $\ten{X}\in \mathbb{R}^{D_1\times D_2 \times \cdots \times D_K}$ can be unfolded in mode
 $k$ to a matrix $\mat{X}_k\in\mathbb{R}^{(D_k\times\prod_{j\neq k}^K D_j)}$.
-matrix
 The tensor-matrix product of tensor $\ten{X}$ with matrix $\mat{U}$ along a
 given mode $k$ is written as $\ten{X}\mpr{\mat{U}}{k}$. For ease of notation, let
 $\ten{X}\mmpr{\mat{U}} =
@@ -412,11 +411,16 @@ data generation process, a model selection step is necessary in order to
 determine what the optimal values for $r_k^{(b)}$ and $B$ are.
 Hyperparameter tuning through cross-validation is straight-forward solution to
 determine these parameters, yet can be computationally expensive.
-To reduce the computational cost, Algorithm~\ref{alg:model-selection} proposes a model selection algorithm that
-leverages cross-validation in a greedy way per block, to iteratively find the
+To reduce the computational cost, Algorithm~\ref{alg:model-selection} proposes a model selection algorithm that leverages cross-validation in a greedy way per block, to iteratively find the
 optimal rank for the next block given the ranks of the previous block the previous blocks.
+\begin{algorithm}
+  \caption{Greedy model selection}
+  \label{alg:model-selection}
+  \input{include/alg_model_selection.tex}
+\end{algorithm}
 \todo{Algorithm}
-\todo{How to determine $B$}
+Finally, the series of blocks can be truncated to the number of blocks with the
+highest validation score to determine $B$.
 
 \textsc{hoda} can extract a substantial amount of redundant features, that can
 be dropped after projection and before proceeding to the classification
@@ -472,7 +476,7 @@ ERP classification performance.
 
 \subsection{Event-Related Potentials (ERPs)}
 ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
-order tensor with 2 modes ($K=2$), representing EEG channels and time samples
+order tensor with $K=2$ modes, representing EEG channels and time samples
 per epoch.
 EEG signals for the evaluated datasets were recorded at the sample rate given
 by Table~\ref{tab:moabb-erp} and band-pass filtered between 1Hz
@@ -499,20 +503,51 @@ Event-Related Synchronizations/Desynchronizations (ERS/Ds).
 Contrary to the time domain analysis performed on ERPs, ERS/Ds are only
 detectable in the time-frequency domain.
 Hence, for the MI task, we will transform the EEG signal into the
-time-frequency domain, forming $3^\text{d}$ order tensors, with modes
-representing the channels, the frequencies and time samplies and time samples.
+time-frequency domain, forming $3^\text{d}$ order tensors, with $K=3$ modes
+representing the channels, frequencies and time bins.
 
-\begin{table}
-  \caption{Performances as described in \cite{Chevallier2024}}
-\end{table}
+The MI datasets listed in Table~\ref{tab:moabb-mi} were first band-pass filtered between 8 and 32Hz and cut into
+epochs with windows specified Table~\ref{tab:moabb-mi}.
+Next, time-frequency transformation was performed using a complex Morlet wavelet
+convolution, with 23 wavelet frequencies logarithmically spaced between 8 and
+32Hz.
+The number of wavelet cycles $c$ varied with wavelet frequency $f$ as
+$c=0.7*f$.
+Features were extracted by taking the amplitude of the complex wavelet
+coefficients, averaging each epoch along the time axis into time bins of
+length $1/25$s and z-scoring.
+
+
+\begin{table*}
+  \footnotesize
+  \input{include/score_mi.tex}
+  \caption{Scores for (list) were taken from \cite{Chevallier2024}}
+  \label{tab:mi-score}
+\end{table*}
 
 \section{Discussion}
 Summarize positive results
+For which datasets does it work? For which does it not? (largs vs small, model
+complexity)
 
-Discuss contribution over first hoda block
+Figure~\ref{fig:blocks} shows that there is added value in finding extra blocks
+over the first \textsc{hoda} block.
 \begin{figure*}
   \input{figures/blocks.pgf}
+  \caption{figure blocks}
+  \label{fig:blocks}
 \end{figure*}
+While no proof is given, we notice that the Fisher score $\phi$ increases
+monotonically with the number of blocks, indicating that solving the
+\textsc{bttda} problem further optimizes the Fisher criterion feature
+extraction problem.
+On the other hand, NMSE \todo{NMSE equation, monotonically decreasing}
+Together, these results point to the conclusion that \textsc{bttda} will
+eventually model the full signal while still extracting features that are
+maximally discriminant.
+Eventually, the amount of blocks will reach a point of diminishing validation
+score returns, when adding extra features to the decision classifier increases
+its risk of overfitting instead of adding extra discriminatory information.
 \begin{itemize}
   \item Decrease of MSE with blocks
   \item increase of f ratio with blocks
@@ -523,10 +558,22 @@ Discuss interpretability, include plots of first blocks
 
 better memory/time complexity for same number of features than hoda
 
-Limitations: high computational cost of setting the parameters, future efforts
+Despite favorable results in BCI decoding, the applications of the proposed
+\textsc{bttda} model are limited mainly by the model selection approached used
+to determine the individual block ranks.
+While our proposed greedy model selection algorithm is a step in the right
+direction, the high computational cost of setting hyperparameters through cross
+validation
+
+Limitations: high computational cost of setting the parameters through cross
+validation, greedy model
+selection does not necessarily find most optimal and most interpretable
+clusters of features. future efforts
 should focus on automatic parameter setting e.g. using information criteria
 such as in BTTR/C
+does not work for specific datasets
 
+\section{Conclusion}
 
 %https://sci-hub.ru/https://ieeexplore.ieee.org/abstract/document/6287946
 %https://www.sciencedirect.com/science/article/abs/pii/S0031320317301875
