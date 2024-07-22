@@ -62,14 +62,14 @@ well-suited for representation as multiway arrays, or \emph{tensors}, which
 provide a structured data representation that counteracts some of the drawbacks
 resulting from this high dimensionality.
 
-Machine learning techniques dealing with this datatype are referred to a tensor
+Machine learning techniques dealing with this datatype are referred to as tensor
 methods.
 Tensor methods can consider each analysis domain (tensor \emph{mode}) separately to
 reduce a given problem into partial, per mode problems.
 This has given rise to efficient dimensionality reduction techniques, such as
 the Higher-Order Singular Value Decomposition
 (\textsc{hosvd})~\cite{DeLathauwer2000,SoleCasals2018} or Canonical Polyadic Decomposition
-(\textsc{cpd})\cite{Nazarpour2006}\todo{cite original}.
+(\textsc{cpd})\cite{Hitchcock1927,Nazarpour2006}.
 
 The former are all examples of unsupervised techniques with applications in EEG
 processing.Given the specific task-related output required in the BCI applications, however,
@@ -82,8 +82,7 @@ learning methods, such as in Linear Discriminant Analysis or beamforming.
 Advances have been made by leveraging the decoupling of the spatial and temporal
 domains in EEG event-related potential (ERP) classification using Spatiotemporal
 Discriminant analysis~\cite{Li2010,Zhang2013} or methods regularizing covariance
-matrix estimation~\cite{Kerchove2022,Sosulski2022}.\todo{include this
-paragraph?}
+matrix estimation~\cite{Kerchove2022,Sosulski2022}.
 
 A more structured approach to the same problem is to design a supervised
 tensor dimensionality tensor method that optimizes discriminability between the
@@ -92,22 +91,23 @@ Analysis (\textsc{hoda})~\cite{Yan2005,Phan2010,Froelich2018}.
 These extracted features can subsequently be further classified, most commonly
 using LDA or a support vector machine (SVM) to obtain predictions.
 Variants of \textsc{hoda} have been applied to BCI problems such as
-ERP~\cite{Onishi2012,Higashi2016} and motor imagery (MI)~\cite{Liu2015,Cai2021}.
+ERP~\cite{Onishi2012,Higashi2016} and motor imagery (MI)~\cite{Liu2015,Cai2021}
+decoding.
 Recent adaptations improve on these results by using suited objective
-functions and regularization, such as in Higher order spectral regression
-discriminant analysis~\cite{Jamshidi2017}, Spatiotemporal Linear
-Feature~\cite{Aghili2023}, Oscillatory source Tensor Discriminant
+functions and regularization, such as in Higher-Order Spectral Regression
+Discriminant Analysis~\cite{Jamshidi2017}, Spatiotemporal Linear
+Feature Learning~\cite{Aghili2023}, and Oscillatory source Tensor Discriminant
 Analysis~\cite{Jorajuria2022}.
 
-The previous methods adhere to the \textsc{tucker} tensor decomposition
+The methods above adhere to the \textsc{tucker} tensor decomposition
 structure, meaning that they reduce input tensors of size
 $(D_1,D_2,\ldots,D_K)$ to a smaller tensor of size $(r_1,r_2,\ldots,r_K)$ with
 each $r_k\leq D_k$, similar to \textsc{hosvd}.
-While effective, other structures such as the \textsc{parafac} employed in
+While effective, other approached such as the \textsc{parafac} structure employed in
 \textsc{cpd}, where a tensor is decomposed into a sum of rank-1 tensors,
-might be more appropriate to represent the neural data of interest.
+might also be suitable to represent the neural data of interest.
 Discriminant tensor features can also be extracted
-in the \textsc{parafac} structure with, for instance using manifold
+in the \textsc{parafac} structure, for instance through manifold
 optimization~\cite{Froelich2018}.
 
 Nevertheless, the \textsc{parafac} structure might still not be able to
@@ -138,9 +138,9 @@ In this work, we propose the following contributions:
     given input tensor from the extracted features.
   \item This allows us to introduce a state-of-the-art BCI classification method based on the
     block-term tensor structure, named Block-Term Tensor Discriminant Analysis
-    (\textsc{BTTDA}) and
-  \item evaluate this decoder together with other tensor methods and the
-    special \textsc{parafac}-structured case on an extensive benchmark of BCI
+    (\textsc{BTTDA}).
+  \item Finallyn we evaluate this decoder and it's special
+    \textsc{parafac}-structured case on an extensive benchmark of BCI
     datasets for ERP and MI decoding).
 \end{enumerate*}
 
@@ -164,11 +164,15 @@ written as $\ten{X}\mmprs{\mat{U}}{k} =
 %The Kronecker product is noted as $\otimes$, covariance matrices are indicated  with $\mat{\Sigma}$.
 
 \subsection{Higher-Order Discriminant Analysis (\textsc{hoda})}
-Higher Order Discriminant Analysis (\textsc{hoda})~\cite{Phan2010} is a tensor
-feature extraction technique. For a $K^{th}$ order input tensor $\ten{X}$ of
-shape $(D_1,D_2,\ldots,D_K)$, \textsc{hoda} finds projection matrices $\mat{U_k}$ for each mode $k$
-that project $\ten{X}$ a core tensor $\ten{G}$, usually with lower
-dimensionality $(r_1,r_2,\ldots,r_K)$ using tensor-matrix mode products
+Higher Order Discriminant Analysis (\textsc{hoda})~\cite{Phan2010} is a
+supervised tensor
+feature extraction technique. For a set of $N$ $K^{th}$ order input tensors
+$\left\{\ten{X}(n)\in\mathbb{R}^{D_1\times D_2 \times \cdots \times
+D_K}\right\}_n^N$, \textsc{hoda} finds projection matrices $\mat{U_k}$ for each mode $k$
+that project a given $\ten{X}$ to a latent tensor
+$\ten{G}\in\mathbb{R}^{r_1\times r_2\times\cdots\times r_K}$, usually with lower
+dimensionality $(r_1\leq D_1,r_2\leq D_2,\ldots,r_K\leq D_K)$ using
+tensor-matrix mode products
 \begin{equation}
 	\ten{G}  = \ten{X}\mmpr{\mat{U}}
 	\label{eq:hoda-backward}
@@ -181,12 +185,12 @@ visualized in Figure~\ref{fig:hoda-backward}.
 		Discriminant Analysis (\textsc{hoda}) for a dataset of $N$ second order tensors
 		$\ten{X}$ of shape $(D_1,D_2)$.
 		\textsc{hoda} finds projection matrices $\mat{U}_k$ such that maximal
-		discriminability between classes is achieved in the projected core tensors
+		discriminability between classes is achieved in the projected latent tensors
 		$\ten{G}$ with reduced dimensionality $(r_1,r_2)$.}
 	\label{fig:hoda-backward}
 \end{figure}
 Analogous to the \textsc{hosvd}, \textsc{hoda} is a dimensionality
-reduction decomposition that results in a dense core tensor $\ten{G}$, and
+reduction decomposition that results in a dense latent tensor $\ten{G}$, and
 imposes an orthogonality constraint on $\mat{U}_k$ to ensure uniqueness.
 However, while for the \textsc{hosvd} decomposition the projection matrices
 are chosen to minimize the reconstruction error, the projection matrices
@@ -196,15 +200,16 @@ This is a desirable property in a classification setting where samples are
 high-dimensional tensors.
 
 \textsc{hoda} optimizes discriminability in the Fisher sense, by optimizing the
-Fisher ratio $\phi$ between the core tensors $\ten{G}(n)$
+Fisher ratio $\phi$ between the latent tensors $\ten{G}(n)$
 \begin{equation}
   \phi = \frac{\sum_c^CN_c\left\lVert\bar{\ten{G}}(c)-\bar{\bar{\ten{G}}}\right\rVert_F^2}
 	{\sum_n^N\left\lVert\ten{G}(n)-\bar{\ten{G}}(c_n)\right\rVert_F^2}
 	\label{eq:fisher}
 \end{equation}
-for $C$ classes with each $N_c$ samples. $\bar{\ten{G}}(c)$ is the mean of core
+for $C$ classes with each $N_c$ samples. $\bar{\ten{G}}(c)$ is the mean of
+latent
 tensors of class $c$, and $\bar{\bar{\ten{G}}}$ the mean of
-these class mean core tensors.
+these class mean latent tensors.
 The goal is now to find the optimal projection matrices
 \begin{equation}
   \left\{\mat{U}^*\right\} = \argmax_{\{\mat{U}\}}\phi
@@ -217,14 +222,14 @@ which can be solved by the iterative algorithm in Algorithm~\ref{alg:hoda}.
 \end{algorithm}
 To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g. as random
 orthogonal matrices, by a per mode Singular Value Decomposition (\textsc{svd}),
-or as the partial \textsc{hosvd} of the dataset.
+or as the partial \textsc{hosvd} of all stacked tensors in the dataset.
 At each iteration, the algorithm loops trough the modes and fixes all the
 projection of all but $\mat{U}_k$ corresponding to mode $k$.
-It then finds a partial core tensor
+It then finds a partial latent tensor
 \begin{equation}
   \ten{G}_{-k}=\ten{X}\mmprs{\mat{U}}{k}
 \end{equation}
-Subsequently, a new projection matrix $\mat{U}_k$ can be found analogous to Linear
+Subsequently, a new projection matrix $\mat{V}_k$ can be found analogous to Linear
 Discriminant Analysis by constructing the within-class scatter matrix
 \begin{equation}
   \mat{S}_{-k,\text{w}} = \sum_n^N\tilde{\mat{G}}_{-k,k}(n)\cdot\tilde{\mat{G}}_{-k,k}^\intercal(n)
@@ -236,36 +241,55 @@ and the between-class scatter matrix
   \sum_c^CN_c\tilde{\bar{\mat{G}}}_{-k,k}(c)\cdot\tilde{\bar{\mat{G}}}_{-k,k}^\intercal(c)
 \end{equation}
 with $\tilde{\bar{\ten{G}}}_{-k}(c) = \bar{\ten{G}}_{-k}(c) - \bar{\bar{\ten{G}}}_{-k}$,
-and solving the generalized eigenvalue problem
+and solving for the $r_k$ leading eigenvectors in the eigenvalue problem
 \begin{equation}
-  \mat{S}_{-k,\text{b}}\mat{U}_k = \mat{\lambda}\mat{S}_{-k,\text{w}}\mat{U}_k
+   \mat{S}_{-k,\text{b}}-\varphi_k\mat{S}_{-k,\text{w}} =
+   \mat{V}_k\mat{\Lambda}\mat{V}_k^\intercal
 \end{equation}
+with $\varphi_k=\Tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{b}}\mat{U}_k\right)/\Tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{w}}\mat{U}_k\right)$
+using the $\mat{U}_k$ obtained in the previous iteration.
+Finally, the orthogonal transformation invariant projections $\mat{U}_k$
+are obtained by calculating the
+per-mode total scatter matrices
+\begin{equation}
+  S_{k,\text{t}} = \sum_n^N\mat{X}_k(n)\cdot\mat{X}_k^\intercal(n)
+\end{equation}
+and finding the $r_k$ leading eigenvectors of
+\begin{equation}
+  \mat{V}_k\mat{V}_k^\intercal\mat{S}_{k,\text{t}}\mat{V}_k\mat{V}_k^\intercal
+  = \mat{U}_k\mat{\Lambda}\mat{U}_k^\intercal
+\end{equation}
+at each iteration~\cite{Wang2007}.
+%and solving the generalized eigenvalue problem
+%\begin{equation}
+%  = \mat{\lambda}\mat{S}_{-k,\text{w}}\mat{U}_k
+%\end{equation}
 The iterative process halts after a fixed amount or iterations, or when the
 update of each $\mat{U}_k$ is lower than a predetermined threshold.
 
-To apply \textsc{hoda} in a classification setting, the projections $\mat{U}_k$
-can first be learned on a training dataset
-$\left\{\ten{X}^\text{train}(m)\right\}_m^M$ with known class labels, and
-training features $\left\{\ten{G}^\text{train}(m)\right\}_m^M$ can be extracted.
-Next, these training features are reshaped (vectorized) into vectors
-$\left\{\vec{g}^\text{train}(m) \in \mathbb{R}^{\prod_k^Kr_k}\right\}_m^M$ and a classifier is
-trained on these features and the corresponding class labels.
-Finally, the learnt projections $\mat{U}_k$ can be applied to unseen testing
-dataset $\left\{\ten{X}(n)^\text{test}\right\}_n^N$ and the exctracted features
-$\left\{\ten{G}^\text{test}(n)\right\}_n^N$ vectorized into
-$\left\{\vec{g}^\text{train}(n)\right\}_n^N$ can be
-classified by the trained classifier.\todo{remove set notations for brevity}
+To apply \textsc{hoda} in a classification setting, the projections
+are first learned on a training dataset  with known class labels.
+Next, these projections are used to extract latent tensors from the
+tensors in the training dataset.
+These latent training tensors are then reshaped (\emph{vectorized}) into feature vectors
+$\vec{g} =  \vect(\ten{G})$ and used to train a decision classifier with the corresponding class labels.
+At the evaluation stage the projections learned from the training dataset are
+used to extract latent tensors from an unseen test dataset with unknown class
+labels, which can also be vectorized and passed on to the trained decision
+classifier.
+
 To avoid overfitting and improve performance in low sample size settings, the
-\textsc{HODA} problem can be regularized by shrinking the the partial
-whithin-class scatter matrix~\cite{Phan2010} with a shrinkage factor
-$\alpha_k$ at each step such that the generalized eigenvalue problem becomes
+\textsc{hoda} problem can be regularized by shrinking the partial
+within-class scatter matrices~\cite{Phan2010} with a shrinkage factor
+$\alpha_k$ at each step such that the eigenvalue problem becomes
 \begin{equation}
-	\mat{S}_b^{(-k)}\mat{U}_k =
-\mat{\lambda}\left[(1-\alpha_k)\mat{S}_w^{(-k)}-\alpha_k\mat{I}\right]\mat{U}_k
+  \mat{S}_b^{(-k)} -
+  \varphi\left[\left(1-\alpha_k\right)\mat{S}_{-k,\text{w}}+\alpha_k\mat{I}\right] =
+  \mat{V}_k\mat{\Lambda}\mat{V}_k^\intercal
 \end{equation}
 Like in Linear Discriminant Analysis, the shrinkage parameter $\alpha_k$ can
 also be estimated in a data driven way in \textsc{hoda}~\cite{Jorajuria2022},
-e.g., using the Ledoit-Wolf procedure~\cite{Ledoit2003}.
+e.g., using the Ledoit-Wolf procedure~\cite{Ledoit2003} at every iteration.
 
 
 \subsection{A forward model for \textsc{hoda}}
@@ -288,26 +312,25 @@ forward model is
 	\ten{X} = \ten{G}\mmpr{\mat{A}^\intercal} + \ten{\mathbfcal{E}}
 	\label{eq:hoda-forward}
 \end{equation}
-with \textit{activation patterns} $\mat{A}_k \in \mathbb{R}^{D_k\times r_k}$
+with \emph{activation patterns} $\mat{A}_k \in \mathbb{R}^{D_k\times r_k}$
 and error term $\ten{\mathbfcal{E}}$.
 \begin{figure}
 	\centering
 	\input{figures/hoda_forward.tikz.tex}
 	\caption{The forward projection for \textsc{hoda}. Leveraging activation
 		patterns $A_k$, the original tensor $\ten{X}$ can approximately be
-		reconstructed from projected core tensor of latent factors $\ten{G}$. $A_k$ are chosen such
-		that the variability captured in the latent factors is maximally expressed in
+		reconstructed from projected latent tensor $\ten{G}$. $A_k$ are chosen such
+		that the variability captured in the latent tensor is maximally expressed in
 		the reconstructed tensor and not in the error term.}
 	\label{fig:hoda-forward}
 \end{figure}
 
 A forward model should make sure that reconstruction error is minimized and
-variation captured in the latent factors is maximally captured by the forward
+variation captured in the latent tensor is maximally captured by the forward
 projection term $\ten{G}\mmpr{\mat{A}^\intercal}$, and not by the error term
 $\ten{\mathbfcal{E}}$~\cite{Haufe2014}.
 Hence, we aim to minimize the expected value of the cross-covariance between
-the noise term and the latent factors\todo{consistently use 'core tensor' or
-'latent factors'}
+the noise term and the extracted latent tensors
 \begin{equation}
   \left\{\mat{A}^*\right\} = \arg\min_{\{\mat{A}\}}\text{E}\left[\text{vec}\left({\ten{\mathbfcal{E}}(n)}\right)\text{vec}\left({\ten{G}(n)}\right)\right]_n
 \end{equation}
@@ -319,7 +342,7 @@ This least squares tensor approximation problem can be solved efficiently using 
 alternating least squares (ALS) algorithm~\cite{Comon2009},
 iteratively fixing all but one of the activation patterns such that
 \begin{equation}
-  \mat{A}_k = \arg\min_{\mat{A}_k}
+  \mat{A}_k = \argmin_{\mat{A}_k}
   \sum_n^N\left[\mat{X}_k(n) -
   \mat{A}_k\left(\ten{G}(n)\mmprs{\mat{A}}{k}\right)_k\right]^2
 \end{equation}
@@ -341,7 +364,7 @@ in Algorithm~\ref{alg:hoda-fw}.
 
 \subsection{Block-Term Tensor Discriminant Analysis (\textsc{bttda})}
 After defining the forward model, we can construct our proposed block-term
-tensor model. Assuming the core tensors $\ten{G}$
+tensor model. Assuming the latent tensors $\ten{G}$
 obtained by the backward projection of \textsc{hoda} do not achieve perfect
 class separation, the error term $\ten{\mathbfcal{E}}$ in
 Equation~\ref{eq:hoda-forward} should still contain some discriminative
@@ -354,7 +377,7 @@ and~\ref{eq:hoda-forward} to Block-Term Tensor Discriminant Analysis
   \ten{X} & = \sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}} + \ten{\mathbfcal{E}}
   \label{eq:bttda-forward}
 \end{align}
-which extracts $B$ core tensors $\ten{G}^{(b)}$ from input tensor $\ten{X}$
+which extracts $B$ latent tensors $\ten{G}^{(b)}$ from input tensor $\ten{X}$
 until error term $\ten{\mathbfcal{E}}$ remains.
 Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
 \begin{figure*}
@@ -362,7 +385,7 @@ Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
 	\input{figures/bttda.tikz.tex}
   \caption{A forward model for Block-Term Tensor Discriminant Analysis
   (\textsc{bttda}). \textsc{bttda} can extract more features
- than \textsc{hoda} by iteratively finding a core tensor $\ten{G}^{(b)}$ in a
+ than \textsc{hoda} by iteratively finding a latent tensor $\ten{G}^{(b)}$ in a
  deflation scheme.
  The \textsc{hoda} backward projection is first applied. Next, the
  input data is reconstructed via the \textsc{hoda} forward model and the
@@ -373,16 +396,16 @@ Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
 \end{figure*}
 
 Since \textsc{bttda} is specified as a forward model, a backward modelling
-procedure is required which finds the core tensors $\ten{G}^{(b)}$ given $\ten{X}$ for
+procedure is required which finds the latent tensors $\ten{G}^{(b)}$ given $\ten{X}$ for
 \textsc{bttda} to be useful as a feature extraction method.
-The extracted features represented by the core tensors $\ten{G}^{(b)}$ can be
+The extracted features represented by the latent tensors $\ten{G}^{(b)}$ can be
 computed through a deflation scheme summarized in Algorithm~\ref{alg:bttda}.
 \begin{algorithm}
   \caption{Block-term Tensor Discriminant Analysis (\textsc{bttda})}
   \label{alg:bttda}
   \input{include/alg_bttda.tex}
 \end{algorithm}
-For each block $b$, the core tensor is extracted using the \textsc{hoda} backward
+For each block $b$, the latent tensor is extracted using the \textsc{hoda} backward
 projection in from a residual error term
 $\ten{\mathbfcal{E}}^{(b)}$
 \begin{equation}
@@ -397,9 +420,16 @@ projection
 \end{equation}
 with $\ten{\mathbfcal{E}}^{(1)}=\ten{X}$.
 
-The resulting extracted feature tensors can be flattened and concatenated into
-one feature vector, so that they can be classified in a similar manner to
-\textsc{hoda}.
+The resulting latent tensors can be vectorized and concatenated into
+one single feature vector per input tensor
+\begin{equation}
+\vec{g}
+  =\left[\vect(\ten{G}^{(1)})\
+  \vect(\ten{G}^{(2)})\
+  \cdots\
+  \vect(\ten{G}^{(B)})\right]
+\end{equation}
+so that they can be classified in a similar manner to \textsc{hoda}.
 
 
 \subsection{Model and feature selection}
@@ -409,34 +439,36 @@ r_K^{(b)}\right)$ and on the number of blocks $B$.
 If these are not kown a priori, i.e. if they cannot be set based on insights in the
 data generation process, a model selection step is necessary in order to
 determine what the optimal values for $r_k^{(b)}$ and $B$ are.
+
+Furthermore, \textsc{hoda}, and by extension \textsc{bttda} can extract a substantial amount
+of redundant features, which can be dropped after projection and before proceeding to the classification
+step~\cite{Phan2010}.
+Specifcally in \textsc{bttda} redundant features can stack up over the number of
+blocks, hampering performance.
+Relevant features can be retained by sorting all features in the feature vector
+by their univariate Fisher score
+\begin{equation}
+  \phi(i) = \frac
+  {\sum_c^C N_c \left(\bar{g}_i(c)-\bar\bar{{g}}_i\right)^2}
+  {\sum_n^N \left(g_i(n)-\bar{g}_i(c_n)\right)^2}
+\end{equation}
+in decreasing order, and retaining the $L$ features with highest $\phi(i)$
+
+Hyperparameters $B$, $L$ and the individual
+block ranks must be tuned to select a performant classification model.
 Hyperparameter tuning through cross-validation is straight-forward solution to
 determine these parameters, yet can be computationally expensive.
 To reduce the computational cost, Algorithm~\ref{alg:model-selection} proposes a model selection algorithm that leverages cross-validation in a greedy way per block, to iteratively find the
-optimal rank for the next block given the ranks of the previous block the previous blocks.
+optimal rank for the next block and the number of features to retain $L$,
+given the ranks of the previous block.
 \begin{algorithm}
   \caption{Greedy model selection}
   \label{alg:model-selection}
   \input{include/alg_model_selection.tex}
 \end{algorithm}
 \todo{Algorithm}
-Finally, the series of blocks can be truncated to the number of blocks with the
+Finally, the series of blocks can be truncated to the point with
 highest validation score to determine $B$.
-
-\textsc{hoda} can extract a substantial amount of redundant features, that can
-be dropped after projection and before proceeding to the classification
-step~\cite{Phan2010}.
-Since \textsc{bttda} extracts a set of \textsc{hoda}
-feature tensors, these redundant features can stack up over the number of
-blocks.
-Therefore, we apply feature selection after finding all \textsc{bttda} blocks
-by calculating the univariate Fisher score of the concatenated vectorized
-features, and retain only those features that have  statistical significant
-contribution to class separation with $p<\alpha$.
-Since the extracted features are already optimized for class separation,
-$\alpha$ should not be chosen too low.
-The significance thershold in this work is set to $\alpha=0.95$, for all
-evaluations of both \textsc{hoda} and \textsc{bttda}.
-
 
 \section{Experiments}
 \subsection{Datasets \& decoders}
@@ -529,6 +561,7 @@ length $1/25$s and z-scoring.
 Summarize positive results
 For which datasets does it work? For which does it not? (largs vs small, model
 complexity)
+compare with parafac
 
 Figure~\ref{fig:blocks} shows that there is added value in finding extra blocks
 over the first \textsc{hoda} block.
@@ -563,8 +596,8 @@ Despite favorable results in BCI decoding, the applications of the proposed
 to determine the individual block ranks.
 While our proposed greedy model selection algorithm is a step in the right
 direction, the high computational cost of setting hyperparameters through cross
-validation
-
+validation can still hinder the portability of decoders relying on
+\textsc{bttda}
 Limitations: high computational cost of setting the parameters through cross
 validation, greedy model
 selection does not necessarily find most optimal and most interpretable
@@ -575,9 +608,17 @@ does not work for specific datasets
 
 \section{Conclusion}
 
+Because of the flexibility and minimal assumptions (only tensor structure)
+can equally be applied to other neuroimaging modalities (ECoG,fMRI, EMG)
+
 %https://sci-hub.ru/https://ieeexplore.ieee.org/abstract/document/6287946
 %https://www.sciencedirect.com/science/article/abs/pii/S0031320317301875
 \printbibliography
+
+\section*{Acknowledgements}
+We thank the Flemish Supercomputer Center (VSC) and the High-Performance
+Computing (HPC) center of the KU Leuven for allowing us to execute our
+computational experiments on their systems.
 
 \clearpage
 \appendix
