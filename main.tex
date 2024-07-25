@@ -301,8 +301,8 @@ While a \emph{backward model} extracts latent sources or properties from the obs
 data, which can be optimized for tasks like regression or classification or
 informed by prior knowledge about source propagation, a forward model is a
 generative model that expresses the observed data in function of some latent
-properties or sources that are given.
-\todo{interpretability and generative model}
+properties or sources that are given. Forward models are useful for
+interpretability and data compression.
 
 The \textsc{hoda} projection in Equation~\ref{eq:hoda-backward} is an example
 of a backward model.
@@ -434,8 +434,8 @@ so that they can be classified in a similar manner to \textsc{hoda}.
 
 \subsection{Model and feature selection}
 Similar to the unsupervised \textsc{btd}, the performance of \textsc{bttda} is
-heavily dependent on the rank $\left(r_1^{(b)}, r_2^{(b)}, \ldots,
-r_K^{(b)}\right)$ and on the number of blocks $B$.
+heavily dependent on the rank $(r_1^{(b)}, r_2^{(b)}, \ldots,
+r_K^{(b)})$ and on the number of blocks $B$.
 If these are not kown a priori, i.e. if they cannot be set based on insights in the
 data generation process, a model selection step is necessary in order to
 determine what the optimal values for $r_k^{(b)}$ and $B$ are.
@@ -449,34 +449,38 @@ Relevant features can be retained by sorting all features in the feature vector
 by their univariate Fisher score
 \begin{equation}
   \phi(i) = \frac
-  {\sum_c^C N_c \left(\bar{g}_i(c)-\bar\bar{{g}}_i\right)^2}
+  {\sum_c^C N_c \left(\bar{g}_i(c)-\bar{\bar{g}}_i\right)^2}
   {\sum_n^N \left(g_i(n)-\bar{g}_i(c_n)\right)^2}
 \end{equation}
-in decreasing order, and retaining the $L$ features with highest $\phi(i)$
+in decreasing order, and retaining the $L$ features with highest $\phi(i)$.
 
 Hyperparameters $B$, $L$ and the individual
 block ranks must be tuned to select a performant classification model.
-Hyperparameter tuning through cross-validation is straight-forward solution to
-determine these parameters, yet can be computationally expensive.
-To reduce the computational cost, Algorithm~\ref{alg:model-selection} proposes a model selection algorithm that leverages cross-validation in a greedy way per block, to iteratively find the
-optimal rank for the next block and the number of features to retain $L$,
-given the ranks of the previous block.
+These hyperparameters can be set through cross-validation, yet this can be
+computationally expensive.
+To reduce the computational cost of model selection,
+Algorithm~\ref{alg:model-selection} proposes a heuristic model selection
+algorithm that leverages cross-validation in a greedy way per block, to
+iteratively find the optimal rank for the next block and the number of features
+$L$, given the ranks of the previous block.
+Area under the Receiver Operating Characteristic curve (ROC-AUC) for
+classification of extracted feature vectors after feature selection is used as
+cross-validation score.
 \begin{algorithm}
   \caption{Greedy model selection}
   \label{alg:model-selection}
   \input{include/alg_model_selection.tex}
 \end{algorithm}
-\todo{Algorithm}
 Finally, the series of blocks can be truncated to the point with
 highest validation score to determine $B$.
 
 \section{Experiments}
 \subsection{Datasets \& decoders}
 We evaluated our proposed model in two off-line BCI decoding settings: ERP
-paradigms and MI paradigms
-To this purpose, we made use the openly available MOABB benchmarking
-datasets~\cite{Aristimunha2023} for the paradigms in question.
-\todo{crossref to appendix tables}
+paradigms and MI paradigms using the openly available MOABB benchmarking
+datasets~\cite{Aristimunha2023}.
+Details about the ERP and MI datasets are found in Table~\ref{tab:moabb_erp}
+and Table~\ref{tab:moabb_mi} respectively.
 Within-session classification performance was assessed using stratified 5-fold
 cross-validation to calculate the area under the receiver operator
 characteristic curve (ROC-AUC).
@@ -486,11 +490,11 @@ extracted feature (HODA+LDA), with hyperparameters $r_k$.
 Similarly, we implemented BTTDA+LDA with the proposed \textsc{bttda} feature
 extraction with hyperparameters $r_k^{(b)}$ for each block $b$ and the number of blocks
 $1\leq B\leq16$.
-Finally, we also introduce PARAFACDA+LDA, BTTDA+LDA where each $r_k^{(b)}=1$, with
-as only hyperparameter $B$.
+Additionally, we also introduce PARAFACDA+LDA, which is the spacial case of
+BTTDA+LDA where each $r_k^{(b)}=1$, with $B$ and $L$ as only hyperparameters.
 Hyperparameters were determined separately for each fold using nested
 stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
-greedy model selection algorithm proposed in \todo{crossref}
+greedy model selection algorithm in Algorithm~\ref{alg:model-selection}
 For HODA+LDA and the \textsc{hoda} blocks in BTTDA+LDA, we choose
 $r=r_1=r_2=\ldots=r_K$ with possible values $1,2,4,8,\ldots,\min_kD_k$
 to reduce computational cost.
@@ -501,10 +505,9 @@ the MOABB datasets for the ERP datasets (ERPCov+MDM, ERPCov-SVD+MDM,
 XDAWNCov+MDM, XDAWN+LDA,XDAWNCov+TS+SVM).
 \todo{mention MI methods}
 Implementation details can be found in~\cite{Chevallier2024}.
-Additionally, for the ERP paradigm, we compared our proposed methods to
-Toeplitz-LDA (tLDA)~\cite{Sosulski2022} since this algorithm generally yields state-of-the-art
-ERP classification performance.
-
+%Additionally, for the ERP paradigm, we compared our proposed methods to
+%Toeplitz-LDA (tLDA)~\cite{Sosulski2022} since this algorithm generally yields state-of-the-art
+%ERP classification performance.
 
 \subsection{Event-Related Potentials (ERPs)}
 ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
@@ -516,6 +519,7 @@ and 24Hz.
 The signals were then cut into epochs starting from stimulus onset with a
 dataset specific length given by Table~\ref{tab:moabb-erp}.
 For tLDA, HODA+LDA, PARAFAC+LDA and BTTDA+LDA decoders, epochs were downsampled to 48Hz.
+
 Table~\ref{tab:erp-score} lists the cross-validated ROC-AUC for all evaluated
 decoders.
 \begin{table*}
@@ -524,6 +528,11 @@ decoders.
   \caption{Scores for (list) were taken from \cite{Chevallier2024}}
   \label{tab:erp-score}
 \end{table*}
+Highest performance is reached with the proposed BTTDA+LDA or PARAFAC+LDA
+decoders, except for datasets\todo{which datasets}
+A Stouffer meta-analysis per pair of evaluated algorithms (HODA+LDA, PARAFAC+LDA and
+BTTDA+LDA) of Wilcoxon signed rank tests per dataset, reveals that\todo{what}
+
 \todo{talk about observations rom table}
 \todo{statistically compare bttda to other methods (table or text, no figures),
 describe meta analysis}
@@ -557,7 +566,7 @@ length $1/25$s and z-scoring.
   \label{tab:mi-score}
 \end{table*}
 
-\section{Discussion}
+\section{Conclusion}
 Summarize positive results
 For which datasets does it work? For which does it not? (largs vs small, model
 complexity)
@@ -567,9 +576,16 @@ Figure~\ref{fig:blocks} shows that there is added value in finding extra blocks
 over the first \textsc{hoda} block.
 \begin{figure*}
   \input{figures/blocks.pgf}
-  \caption{figure blocks}
-  \label{fig:blocks}
-\end{figure*}
+  \caption{Normalized Mean Square Error (NMSE), (left), and difference in area
+  under the receiver operating cure (ROC-AUC) for the training and validation
+  folds in the model selection procedure (without feature selection) and test set obtained by a 20\% hold
+  out (right), as a function of the number of BTTDA blocks $b$.
+  While NMSE monotonically decreases for the evaluated datasets, better class
+  separation will be achieved, but eventually overfitting occurs and validation
+  and test scores will plateau or drop.
+}
+  \label{fig:blocks} \end{figure*}
+\todo{capitalization receiver operating characteristic}
 While no proof is given, we notice that the Fisher score $\phi$ increases
 monotonically with the number of blocks, indicating that solving the
 \textsc{bttda} problem further optimizes the Fisher criterion feature
@@ -606,7 +622,6 @@ should focus on automatic parameter setting e.g. using information criteria
 such as in BTTR/C
 does not work for specific datasets
 
-\section{Conclusion}
 
 Because of the flexibility and minimal assumptions (only tensor structure)
 can equally be applied to other neuroimaging modalities (ECoG,fMRI, EMG)
@@ -625,15 +640,26 @@ computational experiments on their systems.
 
 %\section{Proof of Theorem~\ref{the:ap}}
 \onecolumn
+\todo{check capitalization of event-related potential}
 \section{ERP Benchmark datasets}
 \begin{table*}[htp]
   \input{include/moabb_erp.tex}
-  \caption{MOABB ERP benchmark datasets used for evaluation, with the number of
+  \caption{MOABB event-related potential benchmark datasets used for evaluation, with the number of
   subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
 per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
 frequency (S. freq.) and the number of sessions per subject (\# Sessions).
 Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
   \label{tab:moabb-erp}
 \end{table*}
+
 \section{MI Benchmark datasets}
+\begin{table*}[htp]
+  \caption{MOABB motor imagery benchmark datasets used for evaluation, with the number of
+  subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
+per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
+frequency (S. freq.) and the number of sessions per subject (\# Sessions).
+Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
+  \label{tab:moabb-mi}
+\end{table*}
+
 \end{document}
