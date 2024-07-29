@@ -178,7 +178,7 @@ tensor-matrix mode products
 	\label{eq:hoda-backward}
 \end{equation}
 visualized in Figure~\ref{fig:hoda-backward}.
-\begin{figure}
+\begin{figure}[t]
 	\centering
 	\input{figures/hoda_backward.tikz.tex}
 	\caption{A visualization of the multilinear projection learnt by Higher Order
@@ -314,7 +314,7 @@ forward model is
 \end{equation}
 with \emph{activation patterns} $\mat{A}_k \in \mathbb{R}^{D_k\times r_k}$
 and error term $\ten{\mathbfcal{E}}$.
-\begin{figure}
+\begin{figure}[t]
 	\centering
 	\input{figures/hoda_forward.tikz.tex}
 	\caption{The forward projection for \textsc{hoda}. Leveraging activation
@@ -380,7 +380,7 @@ and~\ref{eq:hoda-forward} to Block-Term Tensor Discriminant Analysis
 which extracts $B$ latent tensors $\ten{G}^{(b)}$ from input tensor $\ten{X}$
 until error term $\ten{\mathbfcal{E}}$ remains.
 Figure~\ref{fig:bttda} further illustrates the \textsc{bttda} model.
-\begin{figure*}
+\begin{figure*}[t]
 	\centering
 	\input{figures/bttda.tikz.tex}
   \caption{A forward model for Block-Term Tensor Discriminant Analysis
@@ -522,21 +522,20 @@ For tLDA, HODA+LDA, PARAFAC+LDA and BTTDA+LDA decoders, epochs were downsampled 
 
 Table~\ref{tab:erp-score} lists the cross-validated ROC-AUC for all evaluated
 decoders.
-\begin{table*}
+\begin{table*}[t]
   \footnotesize
-  \input{include/score_erp.tex}
+  \centering
+  %\input{include/score_erp.tex}
+  \input{include/moabb_erp_score.tex}
   \caption{Scores for (list) were taken from \cite{Chevallier2024}}
   \label{tab:erp-score}
 \end{table*}
 Highest performance is reached with the proposed BTTDA+LDA or PARAFAC+LDA
 decoders, except for datasets\todo{which datasets}
-A Stouffer meta-analysis per pair of evaluated algorithms (HODA+LDA, PARAFAC+LDA and
-BTTDA+LDA) of Wilcoxon signed rank tests per dataset, reveals that\todo{what}
-
-\todo{talk about observations rom table}
-\todo{statistically compare bttda to other methods (table or text, no figures),
-describe meta analysis}
-
+\todo{report average increase}
+A Stouffer meta-analysis over all ERP datasets per pair of evaluated algorithms
+(HODA+LDA, PARAFAC+LDA and BTTDA+LDA) of Wilcoxon signed rank tests per dataset,
+reveals that\todo{what}
 
 \subsection{Motor Imagery (MI)}
 For MI, discriminatory information is represented in the EEG data as
@@ -548,7 +547,7 @@ time-frequency domain, forming $3^\text{d}$ order tensors, with $K=3$ modes
 representing the channels, frequencies and time bins.
 
 The MI datasets listed in Table~\ref{tab:moabb-mi} were first band-pass filtered between 8 and 32Hz and cut into
-epochs with windows specified Table~\ref{tab:moabb-mi}.
+epochs with time windows as specified by Table~\ref{tab:moabb-mi}.
 Next, time-frequency transformation was performed using a complex Morlet wavelet
 convolution, with 23 wavelet frequencies logarithmically spaced between 8 and
 32Hz.
@@ -557,14 +556,42 @@ $c=0.7*f$.
 Features were extracted by taking the amplitude of the complex wavelet
 coefficients, averaging each epoch along the time axis into time bins of
 length $1/25$s and z-scoring.
-
-
-\begin{table*}
+\begin{table*}[t]
   \footnotesize
   \input{include/score_mi.tex}
   \caption{Scores for (list) were taken from \cite{Chevallier2024}}
   \label{tab:mi-score}
 \end{table*}
+
+\subsection{Block contribution}
+To analyze the contribution of extra feature blocks extracted by {bttda} over
+the first one found by \textsc{hoda}, we pick n ERP ($K=2$) dataset
+(BNCI2014-008) and an MI ($K=3$) dataset (BNCI2014-001)
+We report within-session ROC-AUC scores for training, validation and test data as a function
+of the number of blocks increases, Figure~\ref{fig:blocks}.
+Training and validation folds were taken from the model selection procedure,
+for the test data, 20\% of epochs were held out of each session.
+Additionally, the Normalized Mean Squared Error (NMSE) is reported for the
+reconstructed from the truncated \textsc{bttda} decomposition
+$\textstyle{\ten{X}_\text{rec}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}}$.
+NMSE is calculated as
+\begin{equation}
+  \nmse\left(\ten{X}, \ten{X}_\text{rec}^{(B)}\right) =
+  \frac{\sum_n^N\left\lVert\ten{X}(n)-\ten{X}_\text{rec}^{(B)}(n)\right\rVert_F^2}
+  {\sum_n^N\left\lVert\ten{X}(n)\right\rVert_F^2}
+\end{equation}
+\begin{figure*}[t]
+  \input{figures/blocks.pgf}
+  \caption{Normalized Mean Square Error (NMSE), (left), and difference in area
+  under the receiver operating cure (ROC-AUC) for the training, validation and
+  test data without feature selection (right), as a function of the number of BTTDA blocks $b$.
+  While NMSE monotonically decreases for the evaluated datasets, better class
+  separation will be achieved, but eventually overfitting occurs and validation
+  and test scores will plateau or drop.
+}
+  \label{fig:blocks}
+\end{figure*}
+
 
 \section{Conclusion}
 Summarize positive results
@@ -574,17 +601,6 @@ compare with parafac
 
 Figure~\ref{fig:blocks} shows that there is added value in finding extra blocks
 over the first \textsc{hoda} block.
-\begin{figure*}
-  \input{figures/blocks.pgf}
-  \caption{Normalized Mean Square Error (NMSE), (left), and difference in area
-  under the receiver operating cure (ROC-AUC) for the training and validation
-  folds in the model selection procedure (without feature selection) and test set obtained by a 20\% hold
-  out (right), as a function of the number of BTTDA blocks $b$.
-  While NMSE monotonically decreases for the evaluated datasets, better class
-  separation will be achieved, but eventually overfitting occurs and validation
-  and test scores will plateau or drop.
-}
-  \label{fig:blocks} \end{figure*}
 \todo{capitalization receiver operating characteristic}
 While no proof is given, we notice that the Fisher score $\phi$ increases
 monotonically with the number of blocks, indicating that solving the

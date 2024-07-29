@@ -2,3 +2,5 @@ matplotlib
 seaborn
 scienceplots
 jinja2
+moabb
+setuptools
