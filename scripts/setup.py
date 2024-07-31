@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import scienceplots
 
-plt.style.use(["science"])
+plt.style.use(["science", "ieee"])
 plt.rcParams.update({"font.size": 8})
+plt.rcParams["lines.linewidth"] = 0.5
 
 textwidth = 469.0
 linewidth = 229.5

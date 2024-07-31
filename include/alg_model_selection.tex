@@ -1,12 +1,12 @@
 \begin{algorithmic}[1]
-  \Require $\{\ten{X}(n)\}_n^N$, $\{c_n\}_n^N$,$B_\text{max}$
+  \Require $\{\ten{X}(n)\}_n^N$, $\{c_n\}_n^N$,$B_\text{max}, \alpha$
   \For{$b = 1,2,\ldots,B_\text{max}$}
 
   \For{$\textstyle{r=1,2,4,\ldots,\min_kD_k}$}
   \State $\textstyle{(r_1^{(b)},r_2^{(b)},\ldots,r_k^{(b)}) \gets (r,r,\ldots,r)}$
   \State $\sigma^{(b)}_r \gets$ \parbox[t]{5cm}{Cross-validated BTTDA+LDA classification
   ROC-AUC for $\{\ten{X}(n)\}_n^N$ and $\{c_n\}_n^N$ with ranks  $\{(r_1^{(c)},r_2^{(c)},\ldots,r_k^{(c)}) \forall
-c\leq b\}$}
+c\leq b\}$ and features where $p(i)<\alpha$}
   \EndFor
   \State $\textstyle{\sigma^{(b)}_* \gets \max_r\sigma^{(b)}_r}$
   \State $\textstyle{r^{(b)}_* \gets \argmax_r\sigma^{(b)}_r}$

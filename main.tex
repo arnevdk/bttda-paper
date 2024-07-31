@@ -16,6 +16,7 @@
 \usepackage{makecell}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage[font=small]{caption}
 
 % Setup matplotlib pgf plots
 \usepackage{pgf}
@@ -41,22 +42,24 @@
 \maketitle
 
 \section{Introduction}
-Brain-computer interfaces (BCIs) can replace, supplement, or enhance neural
-communication pathways by enabling direct interaction between the brain and
-external devices, with applications in the development of neuroprosthetics and
-assistive technologies, among other fields~\cite{NicolasAlonso2012}.
-To achieve their functionality, BCIs record and process neural data obtained
-through neuroimaging techniques, with the electroencephalogram (EEG) being the
-most commonly used method.
+Brain-computer interfaces (BCIs) have the potential to replace, supplement, or enhance
+neural communication pathways by enabling direct interaction between the brain and
+external devices.
+These interfaces find applications in the development of neuroprosthetics and assistive
+technologies, among other fields~\cite{NicolasAlonso2012}.
+To achieve their functionality, BCIs record and process neural data obtained through
+various neuroimaging techniques, with the electroencephalogram (EEG) being the most
+commonly used method.
 
-EEG data, like most neural signal acquisition modalities used for BCIs,
-naturally exist as multi-channel time series, capturing information in both
-spatial and temporal domains.
+EEG data, like most neural signal acquisition modalities used for BCIs, naturally
+exist as multi-channel time series, capturing information in both spatial and
+temporal domains.
 Common preprocessing transformations, such as time-frequency transformation,
 time-binning, or integrating information across multiple subjects or conditions,
 can further expand the data into additional analysis domains.
 This can result in high-dimensional datasets, yet with a certain decoupling
-between the domains.
+between the domains, in that they can be interpreted and analyzed separately
+from each other.
 Therefore, the intrinsic multiway structure of neural data~\cite{Erol2022} is
 well-suited for representation as multiway arrays, or \emph{tensors}, which
 provide a structured data representation that counteracts some of the drawbacks
@@ -64,24 +67,24 @@ resulting from this high dimensionality.
 
 Machine learning techniques dealing with this datatype are referred to as tensor
 methods.
-Tensor methods can consider each analysis domain (tensor \emph{mode}) separately to
-reduce a given problem into partial, per mode problems.
-This has given rise to efficient dimensionality reduction techniques, such as
-the Higher-Order Singular Value Decomposition
-(\textsc{hosvd})~\cite{DeLathauwer2000,SoleCasals2018} or Canonical Polyadic Decomposition
-(\textsc{cpd})\cite{Hitchcock1927,Nazarpour2006}.
+Tensor methods can consider each analysis domain (tensor \emph{mode}) separately,
+reducing a given problem into partial, per-mode problems.
+This approach has given rise to efficient dimensionality reduction techniques,
+such as the Higher-Order Singular Value Decomposition (\textsc{hosvd})~\cite{DeLathauwer2000,SoleCasals2018}
+and Canonical Polyadic Decomposition (\textsc{cpd})~\cite{Hitchcock1927,Nazarpour2006}.
 
 The former are all examples of unsupervised techniques with applications in EEG
-processing.Given the specific task-related output required in the BCI applications, however,
+processing.
+Given the specific task-related output required in BCI applications, however,
 supervised feature extraction and machine learning techniques are often of
 interest in this field.
 
-One approach is to incorporate some assumptions of the tensor structure of the
-data directly into the estimation of parameters of classic linear machine
-learning methods, such as in Linear Discriminant Analysis or beamforming.
+One approach is to incorporate assumptions of the tensor structure of the data
+directly into the estimation of parameters of classic linear machine learning
+methods, such as Linear Discriminant Analysis or beamforming.
 Advances have been made by leveraging the decoupling of the spatial and temporal
 domains in EEG event-related potential (ERP) classification using Spatiotemporal
-Discriminant analysis~\cite{Li2010,Zhang2013} or methods regularizing covariance
+Discriminant Analysis~\cite{Li2010,Zhang2013} or methods regularizing covariance
 matrix estimation~\cite{Kerchove2022,Sosulski2022}.
 
 A more structured approach to the same problem is to design a supervised
@@ -109,6 +112,7 @@ might also be suitable to represent the neural data of interest.
 Discriminant tensor features can also be extracted
 in the \textsc{parafac} structure, for instance through manifold
 optimization~\cite{Froelich2018}.
+\todo{unify small caps large caps}
 
 Nevertheless, the \textsc{parafac} structure might still not be able to
 efficiently represent all relevant information in a compressed format.
@@ -424,10 +428,10 @@ The resulting latent tensors can be vectorized and concatenated into
 one single feature vector per input tensor
 \begin{equation}
 \vec{g}
-  =\left[\vect(\ten{G}^{(1)})\
-  \vect(\ten{G}^{(2)})\
+  =\left[\vect\left(\ten{G}^{(1)}\right)\
+  \vect\left(\ten{G}^{(2)}\right)\
   \cdots\
-  \vect(\ten{G}^{(B)})\right]
+  \vect\left(\ten{G}^{(B)}\right)\right]
 \end{equation}
 so that they can be classified in a similar manner to \textsc{hoda}.
 
@@ -445,24 +449,32 @@ of redundant features, which can be dropped after projection and before proceedi
 step~\cite{Phan2010}.
 Specifcally in \textsc{bttda} redundant features can stack up over the number of
 blocks, hampering performance.
-Relevant features can be retained by sorting all features in the feature vector
-by their univariate Fisher score
+Relevant features can be retained by calculating the
+univariate Fisher score
 \begin{equation}
   \phi(i) = \frac
   {\sum_c^C N_c \left(\bar{g}_i(c)-\bar{\bar{g}}_i\right)^2}
   {\sum_n^N \left(g_i(n)-\bar{g}_i(c_n)\right)^2}
 \end{equation}
-in decreasing order, and retaining the $L$ features with highest $\phi(i)$.
+for all features.
+The features can then either be sorted by $\phi(i)$ and a given amount of
+features retained for classification, or the decision to retain a feature can
+be made by calculating the statistical $p$-values corrsponding to the
+$\phi(i)$.
+We opted for the latter strategy since it does not require us to redetermine the
+optimal number of features to retain at each block.
 
-Hyperparameters $B$, $L$ and the individual
-block ranks must be tuned to select a performant classification model.
+Combined, this results in hyperparameters $B$ for the number of blocks, the
+$\alpha$ value for feature retention, and the ranks of the individual blocks.
+While we can reasonably set $\alpha=0.05$, $B$ and the block ranks must be
+tuned to select a performant classification model.
 These hyperparameters can be set through cross-validation, yet this can be
 computationally expensive.
 To reduce the computational cost of model selection,
 Algorithm~\ref{alg:model-selection} proposes a heuristic model selection
 algorithm that leverages cross-validation in a greedy way per block, to
-iteratively find the optimal rank for the next block and the number of features
-$L$, given the ranks of the previous block.
+iteratively find the optimal rank for the next block given the ranks of the
+previous block.
 Area under the Receiver Operating Characteristic curve (ROC-AUC) for
 classification of extracted feature vectors after feature selection is used as
 cross-validation score.
@@ -477,15 +489,30 @@ highest validation score to determine $B$.
 \section{Experiments}
 \subsection{Datasets \& decoders}
 We evaluated our proposed model in two off-line BCI decoding settings: ERP
-paradigms and MI paradigms using the openly available MOABB benchmarking
+paradigms and MI paradigms using a selection of the openly available MOABB benchmarking
 datasets~\cite{Aristimunha2023}.
-Details about the ERP and MI datasets are found in Table~\ref{tab:moabb_erp}
-and Table~\ref{tab:moabb_mi} respectively.
+2 ERP and 2 MI dataset were retained for their size to reduce computational
+demand.
+Details about these datasets are found in Table~\ref{tab:moabb}.
+For the ERP datasets, the task is to distinguish target from non-target ERPs,
+while the MI datasets consist of left and right hand trials.
 Within-session classification performance was assessed using stratified 5-fold
 cross-validation to calculate the area under the receiver operator
 characteristic curve (ROC-AUC).
+\begin{table*}[t]
+  \centering
+  \footnotesize
+  \input{include/moabb.tex}
+  \caption{MOABB datasets used for evaluation, with the number of
+  subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
+per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
+frequency (S. freq.), the number of sessions per subject (\# Sess) and the
+number of runs (\#Runs).
+Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
+  \label{tab:moabb}
+\end{table*}
 
-To use it as a decoder, \textsc{hoda} is paired with LDA to classify the
+To use \textsc{hoda} as a decoder, it is paired with LDA to classify the
 extracted feature (HODA+LDA), with hyperparameters $r_k$.
 Similarly, we implemented BTTDA+LDA with the proposed \textsc{bttda} feature
 extraction with hyperparameters $r_k^{(b)}$ for each block $b$ and the number of blocks
@@ -496,48 +523,58 @@ Hyperparameters were determined separately for each fold using nested
 stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
 greedy model selection algorithm in Algorithm~\ref{alg:model-selection}
 For HODA+LDA and the \textsc{hoda} blocks in BTTDA+LDA, we choose
-$r=r_1=r_2=\ldots=r_K$ with possible values $1,2,4,8,\ldots,\min_kD_k$
+$r=r_1=r_2=\ldots=r_K$ with possible values
+$\textstyle{1,2,4,8,\ldots,\min_kD_k}$
 to reduce computational cost.
-\todo{mention z-scoring}
-As comparison methods, we used the methods based on
-Riemannian Geometry evaluated in~\cite{Chevallier2024} on
-the MOABB datasets for the ERP datasets (ERPCov+MDM, ERPCov-SVD+MDM,
-XDAWNCov+MDM, XDAWN+LDA,XDAWNCov+TS+SVM).
-\todo{mention MI methods}
-Implementation details can be found in~\cite{Chevallier2024}.
-%Additionally, for the ERP paradigm, we compared our proposed methods to
-%Toeplitz-LDA (tLDA)~\cite{Sosulski2022} since this algorithm generally yields state-of-the-art
-%ERP classification performance.
 
-\subsection{Event-Related Potentials (ERPs)}
+As comparison methods, we used the methods evaluated in~\cite{Chevallier2024}.
+For the ERP datasets, these were the Riemannian Geometry-based methods
+using augmented ERP covariance matrices with and without SVD dimensionality
+reduction features for a Minimum Riemannian Distance to Mean classifier
+(ERPCov+MDM and ERPCovSVD+MDM), augmented ERP covariance matrices after XDAWN\todo{cite}
+filtering paired with a Riemannian Minimum Distance to Mean classifier or a
+projection to tangent space and a support vector machine (XDAWNCov+MDM and
+XDAWNCov+TS+SVM) and LDA applied after XDAWN filtering (XDAWN+LDA).
+\todo{mention MI methods}
+Implementation details of these comparison methods can be found
+in~\cite{Chevallier2024}.
+
+\subsection{Event-Related Potentials}
 ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
 order tensor with $K=2$ modes, representing EEG channels and time samples
 per epoch.
 EEG signals for the evaluated datasets were recorded at the sample rate given
-by Table~\ref{tab:moabb-erp} and band-pass filtered between 1Hz
+by Table~\ref{tab:moabb} and band-pass filtered between 1Hz
 and 24Hz.
-The signals were then cut into epochs starting from stimulus onset with a
-dataset specific length given by Table~\ref{tab:moabb-erp}.
-For tLDA, HODA+LDA, PARAFAC+LDA and BTTDA+LDA decoders, epochs were downsampled to 48Hz.
+The signals were cut into epochs starting from stimulus onset with a
+dataset specific length given by Table~\ref{tab:moabb}.
+For HODA+LDA, PARAFAC+LDA and BTTDA+LDA decoders, epochs were downsampled to 48Hz.
 
 Table~\ref{tab:erp-score} lists the cross-validated ROC-AUC for all evaluated
 decoders.
-\begin{table*}[t]
+\begin{table}[t]
+  \centering
   \footnotesize
   \centering
-  %\input{include/score_erp.tex}
-  \input{include/moabb_erp_score.tex}
-  \caption{Scores for (list) were taken from \cite{Chevallier2024}}
+  \input{include/score_erp.tex}
+  \caption{Area under the receiver operating characteristic curve for
+  cross-validated whithin-session evaluation for HODA+LDA and our proposed decoders
+  PARAFACDA+LDA and BTTDA+LDA evaluated on 2 event-related potential datasets.
+  Scores for other decoders were taken from \cite{Chevallier2024}.
+  BTTDA+LDA reaches the highest performance for both evaluated datasets, closely
+  followed by PARAFACDA+LDA.
+}
   \label{tab:erp-score}
-\end{table*}
-Highest performance is reached with the proposed BTTDA+LDA or PARAFAC+LDA
-decoders, except for datasets\todo{which datasets}
+\end{table}
+Highest performance is reached with the proposed BTTDA+LDA .
 \todo{report average increase}
-A Stouffer meta-analysis over all ERP datasets per pair of evaluated algorithms
-(HODA+LDA, PARAFAC+LDA and BTTDA+LDA) of Wilcoxon signed rank tests per dataset,
-reveals that\todo{what}
+One-sided Wilcoxon signed-rank tests with significance level $alpha=0.05$ reveal that both PARAFAC+LDA
+significantly outperform HODA+LDA in both the BNCI2014-008 (PARAFAC+LDA:
+$p=0.0039$, BTTDA+LDA: $p=0.0039$) and the BNCI2015-003 (PARAFAC+LDA:
+$p=0.0001$, BTTDA+LDA: $p=0.0049$) datasets.
+No significant difference was found between BTTDA+LDA and PARAFAC+LDA
 
-\subsection{Motor Imagery (MI)}
+\subsection{Motor Imagery}
 For MI, discriminatory information is represented in the EEG data as
 Event-Related Synchronizations/Desynchronizations (ERS/Ds).
 Contrary to the time domain analysis performed on ERPs, ERS/Ds are only
@@ -546,22 +583,24 @@ Hence, for the MI task, we will transform the EEG signal into the
 time-frequency domain, forming $3^\text{d}$ order tensors, with $K=3$ modes
 representing the channels, frequencies and time bins.
 
-The MI datasets listed in Table~\ref{tab:moabb-mi} were first band-pass filtered between 8 and 32Hz and cut into
-epochs with time windows as specified by Table~\ref{tab:moabb-mi}.
+The MI datasets listed in Table~\ref{tab:moabb} were first band-pass filtered
+between 8 and 32Hz and cut into
+epochs with time windows as specified by Table~\ref{tab:moabb}.
 Next, time-frequency transformation was performed using a complex Morlet wavelet
 convolution, with 23 wavelet frequencies logarithmically spaced between 8 and
 32Hz.
 The number of wavelet cycles $c$ varied with wavelet frequency $f$ as
 $c=0.7*f$.
-Features were extracted by taking the amplitude of the complex wavelet
-coefficients, averaging each epoch along the time axis into time bins of
-length $1/25$s and z-scoring.
-\begin{table*}[t]
+Features were extracted by taking the power of the wavelet transformed data,
+averaging each epoch along the time axis into time bins of
+length $1/25$s.
+\begin{table}[t]
   \footnotesize
-  \input{include/score_mi.tex}
+  %\input{include/score_mi.tex}
   \caption{Scores for (list) were taken from \cite{Chevallier2024}}
   \label{tab:mi-score}
-\end{table*}
+\end{table}
+\todo{caption}
 
 \subsection{Block contribution}
 To analyze the contribution of extra feature blocks extracted by {bttda} over
@@ -593,35 +632,56 @@ NMSE is calculated as
 \end{figure*}
 
 
-\section{Conclusion}
+\section{Discussion}
 Summarize positive results
 For which datasets does it work? For which does it not? (largs vs small, model
 complexity)
 compare with parafac
+Reason for BTTDA better than PARAFAC in MI might be higher dimensionality of 3d
+order tensor: less accurate forward model hence error introduced by forward
+model outweighs discriminatory power gained by single feature
 
 Figure~\ref{fig:blocks} shows that there is added value in finding extra blocks
 over the first \textsc{hoda} block.
 \todo{capitalization receiver operating characteristic}
-While no proof is given, we notice that the Fisher score $\phi$ increases
-monotonically with the number of blocks, indicating that solving the
-\textsc{bttda} problem further optimizes the Fisher criterion feature
-extraction problem.
-On the other hand, NMSE \todo{NMSE equation, monotonically decreasing}
-Together, these results point to the conclusion that \textsc{bttda} will
-eventually model the full signal while still extracting features that are
-maximally discriminant.
+While no proof is given, we notice that the training score goes up with the
+number of blocks, while the NMSE monotonically decreases, indicating that
+eventually all the variation in the signal will be explained by the model, while
+extracting features that are maximally discriminant.
 Eventually, the amount of blocks will reach a point of diminishing validation
 score returns, when adding extra features to the decision classifier increases
-its risk of overfitting instead of adding extra discriminatory information.
-\begin{itemize}
-  \item Decrease of MSE with blocks
-  \item increase of f ratio with blocks
-  \item increase of validation score with blocks
-\end{itemize}
+its risk of overfitting instead of adding extra useful discriminatory
+information.
 
-Discuss interpretability, include plots of first blocks
+The forward modeling step inherent to the \textsc{bttda} results
+in an interpretable model, since we can use the activation patterns or the
+forward projection to inspect the neural patterns corresponding to the
+relevant discriminatory information at each block~\cite{Haufe2014}.
+Figure~\ref{fig:forward} shows the activation patterns
+of two blocks obtained from the BNCI2014-008 dataset as well as the forward
+projection of the difference between the averages of the mean latent tensor per
+class (\emph{contrasts}) after forward projection.
+While the weights of the backward projection are
+uninterpretable~\cite{Haufe2014},
+the activation patterns and contrasts after forward projection clearly show
+that ERP components can be recognized and separated into different
+\textsc{bttda} blocks.
+\begin{figure*}[t]
+    \includegraphics[width=\linewidth]{figures/forward_block-0.png}
+    \includegraphics[width=\linewidth]{figures/forward_block-1.png}
+    \caption{Spatial (left) and temporal (middle) activation patterns and
+      condition contrasts obtained after forward projection of the latent
+      features for 2 blocks (row 1 and row 2) of rank $(2,2)$ of \textsc{bttda}
+    fit on the full dataset BNCI2014-008.
+    The separate blocks model different ERP
+    components.}
+    \label{fig:forward}
+\end{figure*}
+Given informed or correctly tuned hyperparameters, this method could be used to
+e.g. separate ERP components or neural processes based on the task-related
+information in the class labels.
 
-better memory/time complexity for same number of features than hoda
+%better memory/time complexity for same number of features than hoda
 
 Despite favorable results in BCI decoding, the applications of the proposed
 \textsc{bttda} model are limited mainly by the model selection approached used
@@ -629,18 +689,37 @@ to determine the individual block ranks.
 While our proposed greedy model selection algorithm is a step in the right
 direction, the high computational cost of setting hyperparameters through cross
 validation can still hinder the portability of decoders relying on
-\textsc{bttda}
-Limitations: high computational cost of setting the parameters through cross
-validation, greedy model
-selection does not necessarily find most optimal and most interpretable
-clusters of features. future efforts
-should focus on automatic parameter setting e.g. using information criteria
-such as in BTTR/C
-does not work for specific datasets
+\textsc{bttda}.
+Due to its heuristic nature, the greedy algorithm does not always result in the
+set of ranks with the highest achievable performance.
+In combination with the fact that the feature selection cutoff parameter
+$\alpha$ was fixed somewhat arbitrarily, it is clear that thorough
+hyperparameter optimization could improve performance.
+Furthermore, it is clear that our proposed model selection procedure does not
+necessarily result in an optimal set of blocks that group coherent projections
+within the same block, according to some some desirable metric.
+Examples of this are sparsity, pattern interpretability, minimal or maximal between- or within-block feature
+correlation, decreasing discriminability etc.
+Future efforts should focus on automatic parameter setting, e.g. using
+information criteria such as used in BTTR/C~\cite{Faes2022} or other
+statistical measures based on the models application.
 
+While \textsc{bttda} naturally extends to multi-class setting, it has not been
+evaluated on datasets containing more than two classes.
+It should also thoroughly be investigated what the impact is of going beyond
+the 3 order case to higher order tensors, since this could have a large impact
+on the model.
+This could especially be the case for the accuracy of the forward
+modeling step, where regressing from a low dimensionality towards a very high
+dimensionality could harm numerical stability, calling for regularization of
+the forward modeling procedure and the introduction of a corresponding
+regularization hyperparameter.
 
+\section{Conclusion}
+\todo{summarize improvement}
 Because of the flexibility and minimal assumptions (only tensor structure)
-can equally be applied to other neuroimaging modalities (ECoG,fMRI, EMG)
+can equally be applied to other neuroimaging modalities (ECoG,fMRI, EMG) or
+other tensor problems like hyperspectral image classification.
 
 %https://sci-hub.ru/https://ieeexplore.ieee.org/abstract/document/6287946
 %https://www.sciencedirect.com/science/article/abs/pii/S0031320317301875
@@ -650,32 +729,7 @@ can equally be applied to other neuroimaging modalities (ECoG,fMRI, EMG)
 We thank the Flemish Supercomputer Center (VSC) and the High-Performance
 Computing (HPC) center of the KU Leuven for allowing us to execute our
 computational experiments on their systems.
-
-\clearpage
-\appendix
-
-%\section{Proof of Theorem~\ref{the:ap}}
-\onecolumn
-\todo{check capitalization of event-related potential}
-\section{ERP Benchmark datasets}
-\begin{table*}[htp]
-  \input{include/moabb_erp.tex}
-  \caption{MOABB event-related potential benchmark datasets used for evaluation, with the number of
-  subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
-per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
-frequency (S. freq.) and the number of sessions per subject (\# Sessions).
-Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
-  \label{tab:moabb-erp}
-\end{table*}
-
-\section{MI Benchmark datasets}
-\begin{table*}[htp]
-  \caption{MOABB motor imagery benchmark datasets used for evaluation, with the number of
-  subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
-per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
-frequency (S. freq.) and the number of sessions per subject (\# Sessions).
-Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
-  \label{tab:moabb-mi}
-\end{table*}
+We also wish to acknowledge dr. Axel Faes for his inspiration in conceptualizing this
+work.
 
 \end{document}

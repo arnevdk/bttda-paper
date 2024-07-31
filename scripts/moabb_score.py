@@ -25,6 +25,7 @@ df = df.rename(
         "Sosulski2019": "Sosulski2019",
     }
 )
+df = df.replace({"ERPCov(svd_n=4)+MDM": "ERPCovSVD+MDM"})
 val_cols = df.columns[1:]
 df["DemonsP300"] = np.nan
 df[val_cols] = df[val_cols].apply(
@@ -49,6 +50,17 @@ df_res = df_res.reset_index()
 df_res = df_res.rename(columns=dict(pipeline="Pipelines"))
 df = df.append(df_res, ignore_index=True)
 
+# Drop invalid datasets
+# del df["Sosulski2019"]
+# del df["Huebner2017"]
+# del df["DemonsP300"]
+# del df["Huebner2018"]
+# del df["Lee2019-ERP"]
+# val_cols = df.columns[1:]
+
+df = df[["Pipelines", "BNCI2014-008", "BNCI2015-003"]]
+
+
 # Sort dataset names
 val_cols = df.columns[1:]
 df_sorted = pd.DataFrame()
@@ -61,6 +73,14 @@ order = list(range(len(df)))
 order = order[:-3] + [-2, -1, -3]
 df = df.iloc[order, :]
 
+# Calculate average column
+# mean_score = df[val_cols].applymap(lambda x: x[0], na_action="ignore")
+# mean_score = mean_score.aggregate(np.nanmean, axis=1)
+# mean_std = df[val_cols].applymap(lambda x: x[1], na_action="ignore")
+# mean_std = mean_std.aggregate(np.nanstd, axis=1)
+# df["Average"] = list(zip(mean_score, mean_std))
+# val_cols = df.columns[1:]
+
 # Indicate max
 df_max = df[val_cols].applymap(lambda x: x[0], na_action="ignore")
 df_max = df_max.aggregate("max")
@@ -68,10 +88,6 @@ for c in val_cols:
     df[c] = df[c].apply(
         lambda x: np.nan if np.any(np.isnan(x)) else (*x, x[0] == df_max[c])
     )
-
-# Drop Sosulski dataset
-del df["Sosulski2019"]
-val_cols = df.columns[1:]
 
 # Construct wrapped table
 wrap = 5
@@ -87,16 +103,22 @@ for r in range(n_rows):
             for c in val_cols
         },
         escape=False,
-        column_format="@{}l" + "c" * len(val_cols) + "@{}",
+        # column_format="@{}l" + "c" * len(val_cols) + "@{}",
+        column_format="l" + "c" * len(val_cols) + "@{}",
         index=False,
         na_rep="-",
     )
+
+    table_rows_moabb = "\n".join(table_rows.split("\n")[: 6 + 3])
+    table_rows_own = "\n".join(table_rows.split("\n")[6 + 3 :]) + "\n"
+    table_rows = table_rows_moabb + "\\midrule" + table_rows_own
+
     if r < n_rows - 1:
-        table_rows = "\n".join(table_rows.split("\n")[:-3]) + "\n"
+        table_rows = "\n".join(table_rows.split("\n")[:-4]) + "\n"
     if r > 0:
         table_rows = "\\midrule\n" + "\n".join(table_rows.split("\n")[2:]) + "\n"
     table += table_rows
 
-path = "include/moabb_erp_score.tex"
+path = "include/score_erp.tex"
 with open(path, "w") as file:
     file.write(table)

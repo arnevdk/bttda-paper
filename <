@@ -1,0 +1,9 @@
+\begin{tabularx}{\linewidth}{@{}Xlrrcrrrrr@{}}
+  \toprule
+  Dataset    &   Paradigm & \# Sub. & \# Chan.  & \# Trials/class & \makecell{Epoch len.\\ (s)}  & \makecell{S. freq.\\(Hz)} & \# Sessions  & \# Runs & Ref. \\
+  \midrule
+  BNCI2014-008  & ERP & 8       & 8         & 3500 NT / 700 T & 1                              & 256                         & 1             & 1      & \cite{Riccio2013}  \\
+  BNCI2015-003  & ERP & 10      & 8         & 1500 NT / 300 T & 0.8                           & 256                         & 1             & 1       & \cite{Guger2009} \\
+
+  \bottomrule
+\end{tabularx}

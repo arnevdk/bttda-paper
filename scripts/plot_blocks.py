@@ -52,9 +52,10 @@ sns.lineplot(
     style="split",
     ax=axs[1],
     legend=True,
+    markers=True,
     **lineplot_kwargs
 )
-axs[1].set_ylabel("$\Delta$ROC-AUC (%.)")
+axs[1].set_ylabel("$\\Delta$ROC-AUC (%.)")
 for ax in axs.flatten():
     ax.set_xlabel("$b$")
     ax.set_xlim([1, 10])
