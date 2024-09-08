@@ -1,4 +1,5 @@
 FROM texlive/texlive:latest
+WORKDIR /project
 COPY scripts/requirements.txt scripts/requirements.txt
 RUN apt-get update && apt-get install -y \
 	python3-pip \

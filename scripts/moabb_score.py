@@ -30,12 +30,12 @@ def wrapped_table(df, wrap=5):
 
         table_rows_moabb = "\n".join(table_rows.split("\n")[: 6 + 3])
         table_rows_own = "\n".join(table_rows.split("\n")[6 + 3 :]) + "\n"
-        table_rows = table_rows_moabb + "\\midrule" + table_rows_own
+        table_rows = table_rows_moabb + "\\midrule \n" + table_rows_own
 
         if r < n_rows - 1:
             table_rows = "\n".join(table_rows.split("\n")[:-4]) + "\n"
         if r > 0:
-            table_rows = "\\midrule\n" + "\n".join(table_rows.split("\n")[2:]) + "\n"
+            table_rows = "\\midrule \n" + "\n".join(table_rows.split("\n")[2:]) + "\n"
         table += table_rows
     return table
 
@@ -145,7 +145,7 @@ df_moabb = format_moabb_results(df_moabb)
 # Read and format own results
 df_res = pd.read_csv("data/results_erp.csv")
 df_res = format_own_results(df_res)
-df = df_moabb.append(df_res, ignore_index=True)
+df = pd.concat([df_moabb, df_res], ignore_index=True)
 
 # Select datasets
 df = df[["Pipelines", "BNCI2014-008", "BNCI2015-003"]]
@@ -159,24 +159,27 @@ with open(path, "w") as file:
 # MI ==========================================================================
 
 # Read and format MOABB ERP results
-df_moabb = pd.read_csv("data/moabb_mi_lr.csv")
+df_moabb = pd.read_csv("data/moabb_mi.csv")
 df_moabb = df_moabb.set_index("Pipelines")
-df_moabb_multi = pd.read_csv("data/moabb_mi_multi.csv")
+df_moabb_multi = pd.read_csv("data/moabb_lr.csv")
 df_moabb_multi = df_moabb_multi.set_index("Pipelines")
 df_moabb[df_moabb_multi.columns[1:]] = df_moabb_multi[df_moabb_multi.columns[1:]]
 df_moabb = df_moabb.dropna()
 df_moabb = df_moabb.reset_index()
-df_moabb = df_moabb.rename(columns={"BNCI2014_004": "BNCI2014-004"})
+df_moabb = df_moabb.rename(
+    columns={"BNCI2014_001": "BNCI2014-001", "BNCI2014_004": "BNCI2014-004"}
+)
 df_moabb = format_moabb_results(df_moabb)
 
 # Read and format own results
-df_res = pd.read_csv("data/results_mi.csv")
+df_res = pd.read_csv("data/results_lr.csv")
+df_res = pd.concat([pd.read_csv("data/results_mi.csv"), df_res], ignore_index=True)
 df_res = format_own_results(df_res)
-df_res = df_res.rename(columns={"AlexandreMotorImagery": "AlexMI"})
-df = df_moabb.append(df_res, ignore_index=True)
+# df_res = df_res.rename(columns={"AlexandreMotorImagery": "AlexMI"})
+df = pd.concat([df_moabb, df_res], ignore_index=True)
 
 # Select datasets
-df = df[["Pipelines", "AlexMI", "BNCI2014-004"]]
+df = df[["Pipelines", "BNCI2014-001", "BNCI2014-004"]]
 
 # Generate and save table
 table = generate_table(df)

@@ -4,3 +4,4 @@ scienceplots
 jinja2
 moabb
 setuptools
+scipy

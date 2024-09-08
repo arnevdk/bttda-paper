@@ -1,0 +1,7 @@
+services:
+  bttda-paper:
+    build:
+      context: .
+      dockerfile: Containerfile
+    volumes:
+      - ${PWD}:/project:z

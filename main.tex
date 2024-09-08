@@ -179,8 +179,7 @@ written as $\ten{X}\mmprs{\mat{U}}{k} =
 
 \subsection{Higher-Order Discriminant Analysis}
 Higher Order Discriminant Analysis (\textsc{HODA})~\cite{Phan2010} is a
-supervised tensor-based\todo{check tensor-based instead of tensor}
-feature extraction technique.
+supervised tensor-based feature extraction technique.
 For a set of $N$ tensors of order $K$
 $\left\{\ten{X}(n)\in\mathbb{R}^{D_1\times D_2 \times \cdots \times
 		D_K}\right\}_n^N$, \textsc{HODA} finds projection matrices $\mat{U_k}$ for each mode $k$
@@ -196,16 +195,14 @@ visualized in Figure~\ref{fig:HODA-backward}.
 \begin{figure}[t]
 	\centering
 	\input{figures/HODA_backward.tikz.tex}
-	\caption{A visualization of the multilinear projection learnt by Higher Order
-		Discriminant Analysis (\textsc{HODA}) for a dataset of $N$ second order tensors
-		$\ten{X}$ of shape $(D_1,D_2)$.
+	\caption{A visualization of the multilinear projection obtained by Higher Order
+    Discriminant Analysis (\textsc{HODA}) applied to a third-order tensor
+    sample $\ten{X}$ with shape $(D_1,D_2, D_3)$.
 		\textsc{HODA} finds projection matrices $\mat{U}_k$ such that maximal
 		discriminability between classes is achieved in the projected latent tensors
-		$\ten{G}$ with reduced dimensionality $(r_1,r_2)$.}
+		$\ten{G}$ with reduced dimensionality $(r_1,r_2,r_3)$.}
 	\label{fig:HODA-backward}
 \end{figure}
-\todo{figures do not fully correspond to notation used in text (samples vs
-	dataset tensors)}
 Analogous to the \textsc{HOSVD}, \textsc{HODA} is a dimensionality
 reduction decomposition that results in a dense latent tensor $\ten{G}$, and
 imposes an orthogonality constraint on $\mat{U}_k$ to ensure uniqueness.
@@ -333,7 +330,7 @@ and error term $\ten{\mathbfcal{E}}$.
 \begin{figure}[t]
 	\centering
 	\input{figures/HODA_forward.tikz.tex}
-	\caption{The forward projection for \textsc{HODA}. Leveraging activation
+	\caption{The forward projection for \textsc{HODA}. By calculating activation
 		patterns $A_k$, the original tensor $\ten{X}$ can approximately be
 		reconstructed from projected latent tensor $\ten{G}$. $A_k$ are chosen such
 		that the variability captured in the latent tensor is maximally expressed in
@@ -515,8 +512,8 @@ retained to reduce computational
 demand.
 Details about these datasets are found in Table~\ref{tab:moabb}.
 For the ERP datasets, the task is to distinguish target from non-target ERPs,
-while the MI datasets consist of left and right hand trials.\todo{Actual or
-	imagined?}
+while the MI datasets consist of distinguishing different imagined limb
+movements.
 Within-session classification performance was assessed using stratified 5-fold
 cross-validation to calculate the area under the receiver operator
 characteristic curve (ROC-AUC).
@@ -525,8 +522,9 @@ characteristic curve (ROC-AUC).
 	\footnotesize
 	\input{include/moabb.tex}
 	\caption{MOABB datasets used for evaluation, with the number of
-		subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials
-		per data class (\# Trials/class), the epoch length (Epoch len.), the sampling
+		subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of
+    classes (\# Classes), the number of trials or trials per class for ERP
+    datasets (\# Trials), the epoch length (Epoch len.), the sampling
 		frequency (S. freq.), the number of sessions per subject (\# Sess.) and the
 		number of runs (\#Runs).
 		Adapted from~\cite{Aristimunha2023} and~\cite{Chevallier2024}.}
@@ -539,7 +537,8 @@ Similarly, we implemented BTTDA+LDA with the proposed \textsc{BTTDA} feature
 extraction with hyperparameters $r_k^{(b)}$ for each block $b$ and the number of blocks
 $1\leq B\leq16$.
 Additionally, we also introduce PARAFACDA+LDA, which is the special case of
-BTTDA+LDA where each $r_k^{(b)}=1$, with $B$ and $\alpha$ as only hyperparameters.
+BTTDA+LDA where each $r_k^{(b)}=1$, with $B$ and the feature selection
+threshold as only hyperparameters.
 Hyperparameters were determined separately for each fold using nested
 stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
 greedy model selection algorithm in Algorithm~\ref{alg:model-selection}.
@@ -579,7 +578,6 @@ dimensionality $(8,48)$ and $(8,38)$ respectively.
 Table~\ref{tab:erp-score} lists the cross-validated ROC-AUC for all evaluated
 decoders.
 \begin{table}[t]
-	\centering
 	\footnotesize
 	\centering
 	\input{include/score_erp.tex}
@@ -593,7 +591,7 @@ decoders.
 	\label{tab:erp-score}
 \end{table}
 Highest performance is reached with the proposed BTTDA+LDA.
-One-sided Wilcoxon signed-rank tests with significance level $alpha=0.05$ reveal that both PARAFAC+LDA and BTTDA+LDA
+One-sided Wilcoxon signed-rank tests with significance level $\alpha=0.05$ reveal that both PARAFAC+LDA and BTTDA+LDA
 significantly outperform HODA+LDA in both the BNCI2014-008 (PARAFAC+LDA:
 $p=0.0039$, BTTDA+LDA: $p=0.0039$) and the BNCI2015-003 (PARAFAC+LDA:
 $p=0.0001$, BTTDA+LDA: $p=0.0049$) datasets.
@@ -616,16 +614,15 @@ convolution, with 16 wavelet frequencies logarithmically spaced between 8 and
 32Hz.
 The number of wavelet cycles $c$ varied with wavelet frequency $f$ as
 $c=0.7*f$.
-Features were extracted by taking the envelope of the complex wavelet
-transformation and
-averaging each epoch along the time axis into time bins of
-length $1/16$s.
-For the BNCI2014-004 dataset, this resulted in tensors of dimensionality
-$(3,16,72)$.
-\todo{calculate dimensionality for second dataset}
+Features were extracted by taking the log-transformed envelope of the complex
+wavelet transformation an daveraging each epoch along the time axis into time bins of
+length $1/4$s.
+For the BNCI2014-001 and BNCI2014-004 dataset, this resulted in tensors of dimensionality
+\todo{dimensionality} respectively.
 
 \todo{Include, test and discuss MI results}
 \begin{table}[t]
+  \centering
 	\footnotesize
 	\input{include/score_mi.tex}
 	\caption{Area under the receiver operating characteristic curve for
@@ -656,7 +653,7 @@ NMSE is calculated as
 \begin{figure*}[t]
 	\input{figures/blocks.pgf}
 	\caption{Normalized Mean Square Error (NMSE) (left), and difference in area
-		under the receiver operating cure (ROC-AUC) for the training and validation
+		under the receiver operating curve (ROC-AUC) for the training and validation
 		of the greedy model selection procedure (right), as a function of the number of BTTDA blocks $b$.
 		While NMSE monotonically decreases for the evaluated datasets, better class
 		separation will be achieved, but eventually overfitting occurs and validation
@@ -667,6 +664,9 @@ NMSE is calculated as
 
 
 \section{Discussion}
+\todo{bad results for MI dataset, might be due to tensorization, also explain
+in function of validation curves why something works or not works over HODA and
+over general}
 The results in Table~\ref{tab:erp-score} and Table~\ref{tab:mi-score} show
 that BTTDA and PARAFACDA consistently scores higher than HODA.
 Results for BTTDA+LDA where also slightly higher than results for PARAFACDA+LDA
@@ -690,7 +690,7 @@ Kronecker product $S_{-1,\text{w}}\otimes S_{-2,\text{w}}\otimes\cdots\otimes S_
 drawn from a multilinear normal distribution~\cite{Ohlson2013}.
 However, it is known that the EEG covariance cannot fully be expressed as a
 single Kronecker product, but rather is more accurately modeled by a sum of
-multiple Kronecker products~\cite{Bijma2005}.
+multiple Kronecker products~\cite{Bijma2005, Sosulski2022}.
 Since BTTDA iteratively fits HODA models to the residual error, it will be able
 to express the full covariance structure given sufficient blocks.
 
@@ -732,7 +732,7 @@ that ERP components can be recognized and separated into different
 		condition contrasts (right column) obtained after forward projection of the latent
 		features for 2 blocks (row 1 and row 2) of rank $(2,2)$ of \textsc{BTTDA}
 		fit on the full dataset BNCI2014-008.
-		The separate blocks model different ERP
+		The separate blocks approximately model different ERP
 		components.}
 	\label{fig:forward}
 \end{figure*}
@@ -772,16 +772,16 @@ dimensional original tensors, introducing
 error in the input data for the next block, which can stack up over blocks.
 Since the forward multilinear least squares problem is underdetermined, it is prone to
 numerical instability, which calls for regularization of the forward modeling
-procedure, but this would introduce another hypreparameter.\todo{check if this
-is still true, also descrive Tikhonov regularization in forward model if kept}
+procedure, but this would introduce another hypreparameter.
+%\todo{check if this is still true, also descrive Tikhonov regularization in forward model if kept}
 It should also thoroughly be investigated what the impact is of going beyond
 second- and third-order case to higher-order tensors, since this could have a large impact
 on the model.
 Other tensorization methods of the EEG data, like time-lagged Hankel
 tensors~\cite{Papy2005}, or tensors across subjects or sliding windows etc., could also be
 of interest if they are appropriately chosen based on prior knowledge of the dataset.
-While \textsc{BTTDA} naturally extends to the multi-class setting, it has not yet been
-evaluated on datasets containing more than two classes.
+%While \textsc{BTTDA} naturally extends to the multi-class setting, it has not yet been
+%evaluated on datasets containing more than two classes.
 
 \section{Conclusion}
 We have introduced Block-term Tensor Discriminant Anlysis (BTTDA) a novel,
