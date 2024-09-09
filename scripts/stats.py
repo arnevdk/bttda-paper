@@ -21,10 +21,12 @@ for dataset in datasets:
     print()
 
 results = pd.read_csv("data/results_lr.csv")
+results = pd.concat([pd.read_csv("data/results_mi.csv"), results])
 results = results.groupby(["dataset", "session", "subject", "pipeline"])
 results = results["score"].aggregate("mean")
 print("=======================================================================")
-datasets = ["BNCI2014-004"]
+print()
+datasets = ["BNCI2014-001", "BNCI2014-004"]
 pairs = [("BTTDA_10", "HODA"), ("PARAFACDA_10", "HODA"), ("BTTDA_10", "PARAFACDA_10")]
 
 for dataset in datasets:
