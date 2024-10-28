@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from setup import set_size, textwidth
+from setup import set_size
 
 df_select = pd.read_csv("data/block_erp_select.csv")
 df_select = pd.concat(
@@ -84,7 +84,7 @@ for ax in axs.flatten():
     ax.set_xlabel("$b$")
     ax.set_xlim([1, 10])
 
-fig.set_size_inches(set_size(width_pt=textwidth, subplots=(2, 2)))
+fig.set_size_inches(set_size(subplots=(2, 2)))
 fig.tight_layout()
 fig.savefig("figures/blocks.pgf", bbox_inches="tight", pad_inches=0)
 fig.savefig("figures/blocks.svg", bbox_inches="tight", pad_inches=0)

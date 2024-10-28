@@ -85,7 +85,7 @@
 	\coordinate (C) at (0,0,0);
   \coordinate (F) at (\fpeval{-#4/1.414},\fpeval{-#4/1.414},\Depth);
 	\coordinate (G) at (\fpeval{-#4/1.414},\fpeval{-#4/1.414},0);
-	\node at (\fpeval{-0.5*#4/1.414},\fpeval{-0.5*#4/1.414},\fpeval{-0.5*#5}) {#1};
+  \node[rotate=-45] at (\fpeval{-0.5*#4/1.414},\fpeval{-0.5*#4/1.414},\fpeval{-0.5*#5}) {#1};
 	\draw (B) -- (C);
 	\draw (F) -- (B) node[midway,xshift=.5em, yshift=.5em] {#3};
 	\draw (F) -- (G) node[midway,xshift=-.5em, yshift=.5em] {#2};

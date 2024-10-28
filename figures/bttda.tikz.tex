@@ -1,7 +1,9 @@
+\footnotesize
 \begin{tikzpicture}[y=-1cm]
+  \useasboundingbox (0,-2) rectangle (16.5,3.5);
 	\TensorThree{$\ten{X}$}{$D_1$}{$D_2$}{$D_3$}{2}{2}{2}
 
-  \node at (3.15,0.5,0) {$\approx$};
+  \node at (3.15,0.5,0) {$=$};
 
 	\begin{scope}[shift={(6.2,0)}]
 	  \begin{scope}[shift={(-0.0707, -0.0707)}]
@@ -29,6 +31,12 @@
       \MatrixBelow{$\mat{A}_3^{(B)}$}{$r_3^{(B)}$}{$D_3$}{1}{2}
     \end{scope}
       \TensorThree{$\ten{G}^{(B)}$}{}{}{}{1}{1}{1}
+  \end{scope}
+
+  \node at (13.6,0.5,0) {$+$};
+
+  \begin{scope}[shift={(14,0)}]
+      \TensorThree{$\ten{E}^{(B)}$}{}{}{}{2}{2}{2}
   \end{scope}
 
 \end{tikzpicture}

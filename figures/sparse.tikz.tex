@@ -1,0 +1,66 @@
+\bigskip
+\footnotesize
+\begin{tikzpicture}[x=\textwidth/14.2, y=-\textwidth/14.2]
+  \TensorThree{data}{}{}{}{2}{2}{2}
+  \begin{scope}[shift={((5.5,0)}]
+    \TensorThree{core}{}{}{}{1}{1}{1}
+	  \begin{scope}[shift={(-0.0707, -0.0707)}]
+      \MatrixSkewed{fac. 1}{}{}{1}{1}
+    \end{scope}
+	  \begin{scope}[shift={(-0.1,0)}]
+      \MatrixLeft{fac. 2}{}{}{1}{1}
+    \end{scope}
+	  \begin{scope}[shift={(0,1.1)}]
+      \MatrixBelow{fac. 3}{}{}{1}{1}
+    \end{scope}
+  \end{scope}
+  \begin{scope}[shift={(0,4)}]
+      %\useasboundingbox (0,-1) rectangle (13,3.5);
+      \TensorThree{$\ten{G}$}{}{}{}{2}{2}{2}
+      \node[anchor=north, align=center] at (1,2) {Tucker structure};
+
+      {\footnotesize
+      \begin{scope}[shift={(5,0)}]
+        \TensorThree{}{}{}{}{2}{2}{2}
+        \node at (.33,.33,-.33) {$g^{(1)}$};
+        \node at (.66,.66,-.66) {$g^{(2)}$};
+        \node at (1,1,-1) {$\ddots$};
+        \node at (1.5, 1.5, -1.5) {$g^{(b-1)}$};
+        \node at (1.8, 1.9, -1.8) {$g^{(B)}$};
+        %\node at (.25,.3,-.25) {$g^{(1)}$};
+        %\node at (.75,.8,-.75) {$g^{(2)}$};
+        %\node at (1.5,1.5,-1.5) {$\ddots$};
+        %\node at (2.25,2.3,-2.25) {$g^{(B-1)}$};
+        %\node at (2.75,2.8, -2.75) {$g^{(B)}$};
+
+        %\TensorThree{$g^{(1)}$}{}{}{}{.5}{.5}{.5}
+        %\node at (1.5,1.5,-1.5) {$\ddots$};
+        %\begin{scope}[shift={(.5,.5,-.5)}]
+        %  \TensorThree{$g^{(2)}$}{}{}{}{.5}{.5}{.5}
+        %\end{scope}
+        %\begin{scope}[shift={(2,2,-2)}]
+        %  \TensorThree{$g^{(B-1)}$}{}{}{}{.5}{.5}{.5}
+        %\end{scope}
+        %\begin{scope}[shift={(2.5,2.5,-2.5)}]
+        %  \TensorThree{$g^{(B)}$}{}{}{}{.5}{.5}{.5}
+        %\end{scope}
+      \end{scope}
+      }
+      \node[anchor=north, align=center] at (6,2) {PARAFAC structure};
+
+      \begin{scope}[shift={(10,0)}]
+        \TensorThree{}{}{}{}{2}{2}{2}
+        \TensorThree{$\ten{G}^{(1)}$}{}{}{}{.5}{.5}{.5}
+        \node at (.75,.75,-.75) {$\ddots$};
+        \begin{scope}[shift={(1,1,-1)}]
+        \TensorThree{$\ten{G}^{(B)}$}{}{}{}{1}{1}{1}
+        \end{scope}
+      \end{scope}
+      \node[anchor=north, align=center] at (11,2) {block-term structure};
+  \end{scope}
+  \draw[->] (2,1, -1) -- (3.9,1,-1);
+  \draw (6,2.5,-1) -| (6,3,-1);
+  \draw[->] (6, 3,-1) -| (1,4,-1);
+  \draw[->] (6, 3,-1) -| (6,4,-1);
+  \draw[->] (6, 3,-1) -| (11,4,-1);
+\end{tikzpicture}
