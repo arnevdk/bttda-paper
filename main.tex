@@ -1,96 +1,51 @@
-\documentclass[10pt]{iopart}
-
+\documentclass[10pt, twocolumn]{article}
 \usepackage{bttda-paper}
 
 \addbibresource{references.bib}
 
-\begin{document}
-
 \title{Block-Term Tensor Discriminant Analysis for Brain-Computer Interfacing}
+
 \author{%
-  A. Van Den Kerchove$^{1,2}$,
+  A. Van Den Kerchove$^{1,2,*}$,
   H. Si-Mohammed$^{2}$,
   F. Cabestaing$^{2}$,
-  M.M. Van Hulle$^{1,3,4}$
-}
-
-\address{$^1$
-  KU Leuven,
+  M.M. Van Hulle$^{1}$
+  \bigskip\\
+  $^1$ KU Leuven,
+  Leuven Brain Institute,
+  Leuven.AI,\\
   Department of Neurosciences,
   Laboratory for Neuro- and Psychophysiology,
+  \\
   Campus Gasthuisberg O\&N2,
   Herestraat 49 bus 1021,
   BE-3000 Leuven,
   Belgium
-}
-\address{$^2$
-  Univ.Lille, CNRS, Centrale Lille,
+  \smallskip\\
+  $^2$ Univ. Lille, CNRS, Centrale Lille,
   UMR 9189 CRIStAL,
   F-59000 Lille,
   France
+  \smallskip\\
+  $^*$ \texttt{arne.vandenkerchove@kuleuven.be}
 }
-\address{$^3$ Leuven.AI}
-\address{$^4$ Leuven Brain Institute}
 
-\ead{arne.vandenkerchove@kuleuven.be}
+
+\begin{document}
+
+\maketitle
 
 \begin{abstract}
-
-  \noindent\emph{Background:}
-  Brain-computer interfaces (BCIs) enable direct communication between the
-  brain and external devices, often utilizing electroencephalography (EEG) to
-  measure neural activity.
-  Dimensionality reduction and structured regularization are essential for
-  accurate classification of task-related brain signals, such as event-related
-  potentials (ERP) and rhythms modulated by motor imagery (MI).
-  Existing tensor-based methods like Tucker and PARAFAC decompositions can be
-  improved by adopting the more flexible block-term tensor structure.
-
-  \noindent\emph{Objectives:}
-  This study aims to develop and evaluate a novel tensor-based supervised
-  feature extraction method, Block-Term Tensor Discriminant Analysis (BTTDA),
-  to enhance classification performance in BCIs by improving flexibility in
-  multilinear dimensionality reduction.
-
-  \noindent\emph{Methods:}
-  We introduce BTTDA by extending Higher Order Discriminant Analysis (HODA).
-  A forward model corresponding to HODA is proposed to extract subsequent block terms using a
-  deflation scheme.
-  BTTDA is evaluated on publicly available EEG BCI datasets with ERPs
-  ($2^\text{nd}$ order tensors) ERP and MI ($3^\text{d}$ order tensors) datasets.
-  Classification performance was compared against standard methods, including HODA
-  and other state-of-the-art approaches.
-
-  \noindent\emph{Results:}
-  BTTDA achieved superior classification performance in ERP tasks, significantly
-  improving upon existing methods, including HODA, by extracting more relevant features from EEG data.
-  For MI tasks, BTTDA delivered comparable results to current state-of-the-art
-  techniques for one dataset, and improved upon HODA while failing to reach
-  state-of-the-art performance for the other.
-
-  \emph{Conclusion}:
-  Block-Term Tensor Discriminant Analysis (BTTDA) and its rank-1 sum special case
-  PARAFACDA offer a flexible and powerful approach for dimensionality reduction
-  in BCI applications.
-  The block-term structure allowed for more efficient dimensionality reduction
-  without sacrificing discriminability.
-  By optimizing discriminant feature extraction, BTTDA improves classification
-  accuracy, particularly in ERP tasks, and holds potential for broader
-  neuroimaging applications.
+  \input{abstract.txt}
 \end{abstract}
 
-\noindent{\it Keywords\/}
+\paragraph{Keywords}
 tensor discriminant analysis,
 brain-computer interface,
 block-term decomposition,
 multilinear decoding,
 event-related potentials,
 motor imagery
-
-\submitto{\JNE}
-\maketitle
-
-\ioptwocol
 
 \section{Introduction}
 
@@ -180,10 +135,10 @@ Extracted features can subsequently be further classified, most commonly
 using \ac{lda} or a \ac{svm} to predict class labels.
 
 
-\begin{figure*}
+\begin{figure*}[t]
   \centering
   \makebox[\linewidth][c]{
-  \input{figures/sparse.tikz.tex}
+  \input{figure1.tikz.tex}
   }
   \caption[Core tensor(s) of different tensor decomposition structures.]{
     A tensor decomposition finds core tensor and factor matrices
@@ -271,7 +226,8 @@ optimized for discriminability, since they rely on a low-rank common subspace
 between the input and classification labels.
 \textcite{Huang2020} propose a supervised approach for finding multiple discriminant
 multilinear spectral filter terms and apply it to motor imagery BCI, but their
-decomposition is also restricted in flexibility.
+decomposition is also restricted in flexibility, since the solution is
+restricted to rank $(r_1,r_2,1)$ with mode 3 corresponding to the frequency domain.
 
 \subsection{Contribution: A block-term structured model for classification}
 
@@ -341,7 +297,7 @@ tensor-matrix mode products:
 as visualized in \cref{fig:HODA-backward}.
 \begin{figure}[t]
   \centering
-	\input{figures/hoda_backward.tikz.tex}
+	\input{figure2.tikz.tex}
   \caption[A \acs{hoda} backward projection.]{%
     A visualization of the multilinear projection obtained by \acf{hoda} applied to a third-order tensor
     sample $\ten{X}$ with shape $(D_1,D_2, D_3)$.
@@ -402,7 +358,7 @@ and solving for the $r_k$ leading eigenvectors in the eigenvalue problem:
 	\mat{S}_{-k,\text{b}}-\varphi_k\mat{S}_{-k,\text{w}} =
 	\mat{V}_k\mat{\Lambda}\mat{V}_k^\intercal
 \end{equation}
-with $\varphi_k=\Tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{b}}\mat{U}_k\right)/\Tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{w}}\mat{U}_k\right)$
+with $\varphi_k=\tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{b}}\mat{U}_k\right)/\tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{w}}\mat{U}_k\right)$
 using the $\mat{U}_k$ obtained in the previous iteration.
 Finally, the orthogonal transformation invariant projections $\mat{U}_k$
 are obtained by calculating the
@@ -422,7 +378,7 @@ The full \ac{hoda} procedure is summarized in \cref{alg:HODA}.
 \begin{algorithm}
   \caption[A \acs{hoda} backward solution.]{The \acs{hoda} backward solution.}
 	\label{alg:HODA}
-	\input{include/alg_HODA.tex}
+  \input{alg_hoda.tex}
 \end{algorithm}
 
 To apply \ac{hoda} in a classification setting, the projections
@@ -473,7 +429,7 @@ with \emph{activation patterns} $\mat{A}_k \in \mathbb{R}^{D_k\times r_k}$,
 reconstructed tensor $\hat{\ten{X}}$, and error term $\ten{E}$.
 \begin{figure*}[t]
   \centering
-	\input{figures/HODA_forward.tikz.tex}
+	\input{figure3.tikz.tex}
   \caption[A forward projection for \ac{hoda}.]{The forward projection for HODA.
     By calculating activation patterns $\mat{A}_k$, the original tensor $\ten{X}$ can approximately be
     reconstructed from projected latent tensor $\ten{G}$.
@@ -521,7 +477,7 @@ in \cref{alg:HODA-fw}.
 \begin{algorithm}
   \caption[A \acs{hoda} forward solution.]{The \acs{hoda} forward solution.}
 	\label{alg:HODA-fw}
-	\input{include/alg_HODA_fw.tex}
+	\input{alg_hoda_fw.tex}
 \end{algorithm}
 
 The forward model could alternatively be specified in the classical manner by linear
@@ -564,7 +520,7 @@ $\ten{E}$.
 The BTTDA model is further illustrated by~\cref{fig:BTTDA}.
 \begin{figure*}[t]
   \centering
-	\input{figures/BTTDA.tikz.tex}
+	\input{figure4.tikz.tex}
   \caption[A forward model for \acs{bttda}.]{A forward model for \acf{bttda}.
     \Ac{bttda} can extract more features
     than \ac{hoda} by iteratively finding a latent tensor $\ten{G}^{(b)}$ in a
@@ -591,7 +547,7 @@ computed through a deflation scheme summarized in \cref{alg:BTTDA}.
 \begin{algorithm}
   \caption[A \acs{bttda} feature extraction.]{\Ac{bttda}.}
 	\label{alg:BTTDA}
-	\input{include/alg_bttda.tex}
+	\input{alg_bttda.tex}
 \end{algorithm}
 For each block $b$, the latent tensor is extracted using the HODA backward
 projection in \cref{eq:HODA-backward} from the residual error term of the previous
@@ -668,7 +624,7 @@ a cross-validation score.
 \begin{algorithm}
   \caption[Greedy model selection procedure.]{Greedy model selection.}
 	\label{alg:model-selection}
-	\input{include/alg_model_selection.tex}
+	\input{alg_model_selection.tex}
 \end{algorithm}
 Finally, the series of blocks can be truncated to the point with
 the highest validation score to determine $B$.
@@ -695,7 +651,7 @@ characteristic curve (ROC-AUC).
 \begin{table*}[t]
 	\footnotesize
   \makebox[\textwidth][c]{
-	  \input{include/moabb.tex}
+	  \input{moabb.tex}
   }
   \caption[MOABB datasets used for evaluation.]{MOABB datasets used for evaluation, with the number of
 		subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of
@@ -719,14 +675,15 @@ threshold as only hyperparameters.
 Hyperparameters were determined separately for each fold using nested
 stratified 5-fold cross-validation, and, for BTTDA+LDA, in conjunction with the
 greedy model selection algorithm in \cref{alg:model-selection}.
-For HODA+LDA and the HODA blocks in BTTDA+LDA, we chose
+For HODA+LDA, as wel as for the HODA blocks in BTTDA+LDA, we chose
 $r=r_1=r_2=\ldots=r_K$ with possible values
 $\textstyle{1,2,4,8,\ldots,\max_kD_k}$
 to reduce computational cost.
 Other HODA and BTTDA hyperparameters were set to
 $B_\text{max}=10$, $\varepsilon=\num{1e-8}$ and $I_\text{max}=128$.
 
-Furthermore, as additional comparison methods, we used the methods evaluated in~\cite{Chevallier2024}.
+Furthermore, as additional comparison methods, we used the methods evaluated by
+\textcite{Chevallier2024}.
 For the ERP datasets, these were the Riemannian Geometry-based methods
 using augmented ERP covariance matrices with and without SVD dimensionality
 reduction features for a Minimum Riemannian Distance to Mean classifier
@@ -746,7 +703,7 @@ projected onto the Riemannian tangent space with a support vector machine
 Additionally, we report the performance of the Common Spatial Patterns filter
 and a frequency filterbank combined with a support vector machine (CSP+SVM and
 FilterBank+SVM, respectively).
-We refer to~\cite{Chevallier2024} for implementation details of these comparison
+We refer to \textcite{Chevallier2024} for implementation details of these comparison
 methods.
 
 \subsection{Event-Related Potentials}
@@ -754,11 +711,11 @@ ERPs are spatiotemporal features, with each sample forming a $2^\text{nd}$
 order tensor with $K=2$ modes (a matrix), representing EEG channels and time samples
 per epoch.
 EEG signals for the evaluated datasets were recorded at the sample rate given
-by \cref{tab:moabb} and band-pass filtered between 1Hz
-and 24Hz.
+by \cref{tab:moabb} and band-pass filtered between 1 Hz
+and 24 Hz.
 The signals were cut into epochs starting from stimulus onset with a
 dataset-specific length given by \cref{tab:moabb}.
-For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were downsampled to 48Hz.
+For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were downsampled to 48 Hz.
 For the BNCI2014-008 and BNCI2015-003 datasets, this resulted in matrices of
 dimensionality $(8,48)$ and $(8,38)$, respectively.
 
@@ -766,12 +723,12 @@ dimensionality $(8,48)$ and $(8,38)$, respectively.
 decoders.
 \begin{table}[t]
 	\footnotesize
-	\input{include/score_erp.tex}
+	\input{score_erp.tex}
   \caption[Within-session classification score for 2 event-related potential
   datasets.]{Area under the receiver operating characteristic curve for
 		cross-validated within-session evaluation for HODA and our proposed decoders
 		PARAFACDA and BTTDA evaluated on 2 event-related potential datasets.
-    Scores for other decoders were taken from \cite{Chevallier2024}.
+    Scores for other decoders were taken from \textcite{Chevallier2024}.
 		BTTDA reaches the highest performance for both evaluated datasets, closely
 		followed by PARAFACDA.
 	}
@@ -796,11 +753,11 @@ time-frequency domain, forming $3^\text{rd}$ order tensors, with $K=3$ modes
 representing the channels, frequencies, and time bins.
 
 The MI datasets listed in \cref{tab:moabb} were first band-pass filtered
-between 8 and 30Hz and cut into
+between 8 and 30 Hz and cut into
 epochs with time windows as specified by \cref{tab:moabb}.
 Next, time-frequency transformation was performed using a complex Morlet wavelet
 convolution, with 16 wavelet frequencies logarithmically spaced between 8 and
-32Hz.
+32 Hz.
 The number of wavelet cycles $c$ varied with wavelet frequency $f$ as
 $c=0.7*f$.
 Features were extracted by taking the log-transformed envelope of the complex
@@ -811,12 +768,12 @@ $(22, 4, 16)$ and $(3, 4, 18)$, respectively.
 
 \cref{tab:mi-score} lists the cross-validated classification scores for
 the evaluated motor imagery datasets.
-Note that, in line with~\cite{Chevallier2024}, accuracy is reported for the
+Note that, in line with~\textcite{Chevallier2024}, accuracy is reported for the
 multi-class classification problem in BNCI2014-001, while ROC-AUC was reported for the
 binary classification problem in BNCI2014-004.
 \begin{table}[t]
 	\footnotesize
-	\input{include/score_mi.tex}
+	\input{score_mi.tex}
   \caption[Within-session classification score for 2 motor imagery datasets.]{Classification score for
 		cross-validated within-session evaluation for HODA+LDA and our proposed decoders
 		PARAFACDA+LDA and BTTDA+LDA evaluated on 2 motor imagery datasets.
@@ -841,7 +798,7 @@ To analyze the contribution of extra feature blocks extracted by BTTDA over
 the first one found by HODA, we pick an ERP ($K=2$) dataset
 (BNCI2014-008) and an MI ($K=3$) dataset (BNCI2014-001).
 We report within-session ROC-AUC scores for training, validation, and test data as a function
-of the number of blocks increases, shown in \cref{fig:blocks}.
+of the number of blocks, shown in \cref{fig:blocks}.
 Training and validation folds were taken from the model selection procedure.
 Additionally, the Normalized Mean Squared Error (NMSE) is reported for the
 reconstructed from the truncated BTTDA decomposition
@@ -856,7 +813,7 @@ NMSE is calculated as:
   %\makebox[\linewidth][c]{
 	%  \input{figures/blocks.pgf}
   %}
-  \includegraphics[width=\linewidth]{figures/blocks.eps}
+  \includegraphics[width=\linewidth]{figure5.eps}
   \caption[Analysis of NMSE and classification score per block.]{%
     Normalized Mean Square Error (NMSE) (left), and difference in
     classification score for the training and validation for the ERP datasets
@@ -871,7 +828,7 @@ NMSE is calculated as:
 
 \section{Discussion}
 \subsection{Contribution}
-The results in \cref{tab:erp-score} and \autoref{tab:mi-score} show that
+The results listed in \cref{tab:erp-score} and \cref{tab:mi-score} show that
 in the ERP datasets, BTTDA+LDA and PARAFACDA+LDA reach state-of-the-art decoding performance by
 exceeding all comparison methods for the two evaluated datasets, but
 for MI datasets, results fall short of those of comparison methods.
@@ -880,11 +837,16 @@ by the exact tensorization method used, i.e., the time-frequency transform in
 this case, which is not the main focus of this work.
 
 Nevertheless, when considering the relative improvement over the original
-HODA model, our results show that BTTDA+LDA performs consistently on par or higher than HODA+LDA.
-The classification score for BTTDA+LDA was also slightly higher than that of
-restricted PARAFACDA+LDA for the ERP datasets and one of the MI datasets, but these
-results were not significant, and further studies with more datasets and
-subjects should show whether this holds.
+HODA model, our results show that BTTDA+LDA performs consistently on par or
+higher than HODA+LDA, with performances of respectively $86.43>83.25$ and
+$85.08>82.57$ for \ac{erp} datasets and $55.13>53.51$ and $80.60<80.88$ for
+\ac{mi} datasets.
+The classification score obtained by BTTDA+LDA was also slightly
+higher than that of the
+restricted PA\-RA\-FAC\-DA+LDA for the ERP datasets ($86.43>86.19$ and $85.06>84.85$
+respectively) and one of the MI datasets ($55.13>54.34$ and $80.60<80.88$
+respectively), but these results were not significant, and further studies with
+more datasets and subjects should show whether this holds.
 \Cref{fig:blocks} shows that there is added value in finding extra blocks
 over the first HODA block.
 While no proof is given, we notice that NMSE monotonically decreases, indicating that
@@ -919,7 +881,7 @@ or on the true underlying structure of the data.
 Alternatively, the enhanced performance could also stem from the modeled data
 covariance.
 Since HODA estimates one within-class scatter matrix
-$S_{-k,\text{w}}\in\mathbb{R}^{D_k\times D_k}$ per mode, its overall
+$\mat{S}_{-k,\text{w}}\in\mathbb{R}^{D_k\times D_k}$ per mode, its overall
 model of the data scatter is determined by these per-mode scatter matrices as a
 Kronecker product $S_{-1,\text{w}}\otimes S_{-2,\text{w}}\otimes\cdots\otimes S_{-K,\text{w}}$, which corresponds to the assumption that the EEG data is
 drawn from a multilinear normal distribution~\cite{Ohlson2013}.
@@ -943,12 +905,12 @@ the activation patterns and contrasts after forward projection clearly show
 that ERP components can be recognized and separated into different
 BTTDA blocks.
 \begin{figure*}[t]
-	\includegraphics[width=\linewidth]{figures/forward_block-0.png}
-	\includegraphics[width=\linewidth]{figures/forward_block-1.png}
+	\includegraphics[width=\linewidth]{figure6a.png}
+	\includegraphics[width=\linewidth]{figure6b.png}
   \caption[Extracted \acs{bttda} activation patterns.]{%
     Spatial (left two columns) and temporal (middle column) activation patterns and
 		condition contrasts (right column) obtained after forward projection of the latent
-    features for 2 blocks (row 1 and row 2) of rank $(2,2)$ of \ac{bttda}
+    features for 2 blocks of rank $(2,2)$ of \ac{bttda}
     fit on the full dataset BNCI2014-008.
     The separate blocks approximately model different \ac{erp}
 		components.}

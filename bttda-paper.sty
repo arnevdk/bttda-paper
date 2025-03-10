@@ -3,14 +3,14 @@
 \ProvidesPackage{bttda-paper}[2024/10/23 v1.0 Basic paper setup for BT-TDA]
 
 % Packages
-\RequirePackage[backend=biber]{biblatex}
+\RequirePackage[backend=biber,style=numeric, sorting=none]{biblatex}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{hyperref}
 \RequirePackage{booktabs}
 \RequirePackage{subcaption}
 \RequirePackage{tikz}
 \RequirePackage{expl3}
-%\RequirePackage{amsmath}
+\RequirePackage{amsmath}
 \RequirePackage{amssymb}
 \RequirePackage{todonotes}
 \RequirePackage{tabularx}
@@ -19,7 +19,6 @@
 \RequirePackage{makecell}
 \RequirePackage{algorithm}
 \RequirePackage{algpseudocode}
-%\RequirePackage[font=small]{caption}
 \RequirePackage{siunitx}
 \RequirePackage{acro}
 \RequirePackage{cleveref}
@@ -33,7 +32,7 @@
 
 % Math declarations
 \newcommand{\ten}[1]{\underline{\mathbf{#1}}} % tensor
-\renewcommand{\mat}[1]{\mathbf{#1}} % matrix
+\newcommand{\mat}[1]{\mathbf{#1}} % matrix
 \renewcommand{\vec}[1]{\mathbf{#1}} % matrix
 \newcommand{\mpr}[2]{\times_{#2} {#1}_{#2}} % mode product
 \newcommand{\mmpr}[1]{\times\left\{#1\right\}} % multi-mode product
@@ -41,12 +40,14 @@
 \newcommand{\mmprs}[2]{\times_{-#2}\left\{#1\right\}} % multi-mode product skip
 \newcommand{\mmprsi}[2]{\times_{-#2}\{#1\}} % inline multi-mode product skip
 \newcommand{\ev}[2]{\text{E}\left[#1\right]_{#2}}
+
 \newcommand{\argmax}{\mathop{\mathrm{argmax}}}
 \newcommand{\argmin}{\mathop{\mathrm{argmin}}}
 \newcommand{\vect}{\mathop{\mathrm{vec}}}
 \newcommand{\nmse}{\mathop{\mathrm{NMSE}}}
+\newcommand{\tr}{\mathop{\mathrm{Tr}}}
 
 % Acronym declarations
-\input{include/acro.tex}
+\input{acro.tex}
 % Tensor drawing
-\input{include/tensorviz.tex}
+\input{tensorviz.tex}
