@@ -1,0 +1,30 @@
+\noindent\begin{tikzpicture}[trim axis group left]
+  \begin{groupplot}[
+      group style={
+        group size=2 by 1,
+        x descriptions at=edge bottom,
+        horizontal sep=30pt
+      },
+      width=.5\linewidth-15pt,
+    scale only axis
+  ]
+
+	\newcommand{\addPlotTheta}[1]{%
+		\addplot+ table [
+      color=red,
+			x=n_blocks,
+			y=test_mse,
+			col sep=comma,
+			restrict expr to domain={\thisrow{theta}}{#1:#1},
+      unbounded coords=discard, % <-- important
+		]{data/gridsearch_erp_processed.csv};
+	}
+
+  \nextgroupplot
+	\addPlotTheta{0}
+	\addPlotTheta{0.1}
+  \addPlotTheta{1}
+
+  \nextgroupplot
+\end{groupplot}
+\end{tikzpicture}

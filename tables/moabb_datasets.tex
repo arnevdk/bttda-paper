@@ -1,0 +1,59 @@
+\begin{tabularx}{\linewidth}{@{}Xrrrrrrrr@{}}
+	\toprule
+	Dataset                    & \# Sub.         & \# Chan. & \# Class. & \# Trials/class
+	                           & \makecell{Epoch                                                                                                       \\ len. (s)} & \makecell{S. freq.\\ (Hz)}
+	                           & \# Sess.        & Ref.                                                                                                \\
+	\midrule
+	\textbf{\Ac{erp} datasets} &                 &          &           &                 &      &      &                   &                          \\
+	BrainInvaders2012          & 25              & 16       & 2         & 640/128         & 1.0  & 128  & 2                 & \cite{VanVeen2019}       \\
+	BrainInvaders2013a         & 24              & 16       & 2         & 3200/640        & 1.0  & 512  & 8 (sub. 1-7) or 1 & \cite{Vaineau2019}       \\
+	BrainInvaders2014a         & 64              & 16       & 2         & 990/198         & 1.0  & 512  & up to 3           & \cite{Korczowski2019}    \\
+	BrainInvaders2014b         & 38              & 32       & 2         & 200/40          & 1.0  & 512  & 3                 & \cite{Korczowski2019a}   \\
+	BrainInvaders2015a         & 43              & 32       & 2         & 4131/825        & 1.0  & 512  & 3                 & \cite{Korczowski2019b}   \\
+	BrainInvaders2015b         & 44              & 32       & 2         & 2160/480        & 1.0  & 512  & 1                 & \cite{Korczowski2019c}   \\
+	BNCI2014-008               & 8               & 8        & 2         & 3500/700        & 1.0  & 256  & 1                 & \cite{Riccio2013}        \\
+	BNCI2014-009               & 10              & 16       & 2         & 1440/288        & 0.8  & 256  & 3                 & \cite{Arico2014}         \\
+	BNCI2015-003               & 10              & 8        & 2         & 1500/300        & 0.8  & 256  & 1                 & \cite{Guger2009}         \\
+	Cattan2019-VR              & 21              & 16       & 2         & 600/120         & 1.0  & 512  & 2                 & \cite{Cattan2019}        \\
+	DemonsP300                 & 60              & 8        & 2         & 935/50          & 1.0  & 500  & 1                 & \cite{Goncharenko2020}   \\
+	EPFLP300                   & 8               & 32       & 2         & 2753/551        & 1.0  & 2048 & 4                 & \cite{Hoffmann2008}      \\
+	ErpCore2021-ERN            & 40              & 30       & 2         & 400/400         & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-LRP            & 40              & 30       & 2         & 400/400         & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-MMN            & 40              & 30       & 2         & 800/200         & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-N170           & 40              & 30       & 2         & 240/80          & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-N2pc           & 40              & 30       & 2         & 160/160         & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-N400           & 40              & 30       & 2         & 60/60           & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	ErpCore2021-P3             & 40              & 30       & 2         & 160/40          & 1.0  & 1024 & 1                 & \cite{Kappenman2021}     \\
+	Huebner2017                & 13              & 31       & 2         & 364/112         & 0.9  & 1000 & 3                 & \cite{Huebner2017}       \\
+	Huebner2018                & 12              & 31       & 2         & 364/112         & 0.9  & 1000 & 3                 & \cite{Huebner2018}       \\
+	Lee2019-ERP                & 54              & 62       & 2         & 6900/1380       & 1.0  & 1000 & 2                 & \cite{Lee2019}           \\
+	Sosulski2019               & 13              & 31       & 2         & 7500/1500       & 1.2  & 1000 & 1                 & \cite{Sosulski2019}      \\
+	\midrule
+	\textbf{\Ac{mi} datasets}  &                 &          &           &                 &      &      &                   &                          \\
+	AlexandreMotorImagery      & 8               & 16       & 3         & 20.0            & 3.0  & 512  & 1                 & \cite{Barachant2012}     \\
+	Beetl2021-A                & 4               & 63       & 4         &                 & 4.0  & 500  & 1                 & \cite{Wei2022}           \\
+	Beetl2021-B                & 2               & 32       & 4         &                 & 4.0  & 200  & 1                 & \cite{Wei2022}           \\
+	BNCI2014-001               & 9               & 22       & 4         & 144.0           & 4.0  & 250  & 2                 & \cite{Tangermann2012}    \\
+	BNCI2014-002               & 14              & 15       & 2         & 80.0            & 5.0  & 512  & 1                 & \cite{Steyrl2016}        \\
+	BNCI2014-004               & 9               & 3        & 2         & 360.0           & 4.5  & 250  & 5                 & \cite{Leeb2007}          \\
+	BNCI2015-001               & 12              & 13       & 2         & 200.0           & 5.0  & 512  & 3                 & \cite{Faller2012}        \\
+	BNCI2015-004               & 9               & 30       & 5         & 80.0            & 7.0  & 256  & 2                 & \cite{Scherer2015}       \\
+	Cho2017                    & 52              & 64       & 2         & 100.0           & 3.0  & 512  & 1                 & \cite{Cho2017}           \\
+	Dreyer2023                 & 87              & 27       & 2         & 20.0            & 5.0  & 512  & 1                 & \cite{Pillette2021}      \\
+	Dreyer2023A                & 60              & 27       & 2         & 20.0            & 5.0  & 512  & 1                 & \cite{Pillette2021}      \\
+	Dreyer2023B                & 21              & 27       & 2         & 20.0            & 5.0  & 512  & 1                 & \cite{Pillette2021}      \\
+	Dreyer2023C                & 6               & 27       & 2         & 20.0            & 5.0  & 512  & 1                 & \cite{Pillette2021}      \\
+	GrosseWentrup2009          & 10              & 128      & 2         & 150.0           & 7.0  & 500  & 1                 & \cite{GrosseWentrup2009} \\
+	Lee2019-MI                 & 54              & 62       & 2         & 100.0           & 4.0  & 1000 & 2                 & \cite{Lee2019}           \\
+	Liu2024                    & 50              & 29       & 2         & 20.0            & 4.0  & 500  & 1                 & \cite{Liu2024}           \\
+	Ofner2017                  & 15              & 61       & 7         & 60.0            & 3.0  & 512  & 1                 & \cite{Ofner2017}         \\
+	PhysionetMotorImagery      & 109             & 64       & 4         & 23.0            & 3.0  & 160  & 1                 & \cite{Goldberger2000}    \\
+	Schirrmeister2017          & 14              & 128      & 4         & 120.0           & 4.0  & 500  & 1                 & \cite{Schirrmeister2017} \\
+	Shin2017A                  & 29              & 30       & 2         & 30.0            & 10.0 & 200  & 3                 & \cite{Shin2016}          \\
+	Shin2017B                  & 29              & 30       & 2         & 30.0            & 10.0 & 200  & 3                 & \cite{Shin2016}          \\
+	Stieger2021                & 62              & 64       & 4         & 450.0           & 3.0  & 1000 & 7 or 11           & \cite{Stieger2021}       \\
+	Weibo2014                  & 10              & 60       & 7         & 80.0            & 4.0  & 200  & 1                 & \cite{Yi2014}            \\
+	Zhou2016                   & 4               & 14       & 3         & 160.0           & 5.0  & 250  & 3                 & \cite{Zhou2016}          \\
+
+	\bottomrule
+\end{tabularx}
