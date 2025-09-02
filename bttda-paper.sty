@@ -22,7 +22,7 @@
 \RequirePackage{siunitx}
 \RequirePackage{acro}
 \RequirePackage{cleveref}
-
+\RequirePackage{rotating}
 
 % Setup matplotlib pgf plots
 %\RequirePackage{pgf}
@@ -33,9 +33,17 @@
 % Setup PGF plots
 \RequirePackage{pgfplots}
 \usepgfplotslibrary{groupplots}
-
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=1.18}
+\pgfplotsset{
+	group/xticklabels at=edge bottom,
+	group/yticklabels at=edge left,
+	group/xlabels at=edge bottom,
+	group/ylabels at=edge left,
+}
 % Setup fonts
 \RequirePackage[font=footnotesize]{caption}
+\renewcommand*{\bibfont}{\footnotesize}
 
 % Math declarations
 \newcommand{\ten}[1]{\underline{\mathbf{#1}}} % tensor

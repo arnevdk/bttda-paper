@@ -1,0 +1,50 @@
+\scriptsize\noindent\begin{tikzpicture}%[trim axis group left]
+	\pgfplotstableread[col sep=comma]{data/pairwise_stats/erp_BTTDA_HODA.csv}\datatable
+	\begin{groupplot}[
+			group style={%
+					group size=3 by 1,
+					horizontal sep=1em
+				},
+			%xlabel={standardized mean difference},
+			error bars/x dir=both,
+			error bars/x explicit,
+			error bars/error mark=none,
+			xmin=-0.25, xmax=2.75,
+			yticklabels from table={\datatable}{dataset},
+			ytick=data,
+			enlarge y limits=0.05,
+			width=\textwidth/3-11em/3,
+			height=0.25\textwidth,
+			scale only axis,
+			point meta=explicit symbolic,
+			nodes near coords,
+			every node near coord/.append style={
+					anchor=west,
+					yshift=2,
+					font=\scriptsize,
+				},
+		]
+
+
+		\newcommand{\addPlotComparison}[2]{
+			\nextgroupplot[title={$\leftarrow$ #2 / #1 $\rightarrow$}]
+			\pgfplotstableread[col sep=comma]{data/pairwise_stats/erp_#1_#2.csv}\datatable
+			\addplot+ table[
+					only marks,
+					x=smd,
+					y=dataset_idx,
+					meta=p_star,
+					x error=ci,
+					nodes near coords style={
+							font=\tiny,
+						}
+				] {\datatable};
+			\draw (axis cs:0, \pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:0, \pgfkeysvalueof{/pgfplots/ymax});
+		}
+
+		\addPlotComparison{BTTDA}{HODA}
+		\addPlotComparison{PARAFACDA}{HODA}
+		\addPlotComparison{BTTDA}{PARAFACDA}
+
+	\end{groupplot}
+\end{tikzpicture}

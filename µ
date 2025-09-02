@@ -1,0 +1,33 @@
+\footnotesize
+\noindent\begin{tikzpicture}[trim axis group left]
+	\begin{groupplot}[
+			group style={%
+					group size=3 by 1,
+					horizontal sep=1em
+				},
+			xlabel={standardized mean difference},
+			ylabel={Dataset},
+			error bars/x dir=both,
+			error bars/x explicit,
+      yticklabel from table={data/pairwise_stats/erp_#1_#2.csv}{dataset},
+      yticks=data,
+			enlargelimits=0.1,
+			width=\linewidth/3-1em/2,
+			height=\linewidth/3-1em/2,
+			scale only axis,
+		]
+
+
+		\newcommand{\addPlotComparison}[2]{
+			\nextgroupplot[title={$\leftarrow$ #2 - #1 $\rightarrow$}]
+			\pgfplotstableread[col sep=comma]{data/pairwise_stats/erp_#1_#2.csv}\datatable
+			\addplot+ table[only marks, x=smd,y=dataset, x error=ci] {\datatable};
+			\draw (axis cs:0, \pgfkeysvalueof{/pgfplots/ymin}) -- (axis cs:0, \pgfkeysvalueof{/pgfplots/ymax});
+		}
+
+		\addPlotComparison{BTTDA}{HODA}
+		\addPlotComparison{PARAFACDA}{HODA}
+		\addPlotComparison{BTTDA}{PARAFACDA}
+
+	\end{groupplot}
+\end{tikzpicture}
