@@ -1,11 +1,12 @@
+\scriptsize
 \noindent\begin{tikzpicture}[trim axis group left]
 	\begin{groupplot}[
 			group style={%
-					group size=4 by 1,
+					group size=2 by 1,
 					x descriptions at=edge bottom,
-					horizontal sep=1em
+					horizontal sep=4.5em
 				},
-			width=\linewidth/2-1em/2,
+			width=\linewidth/2-4.5em/2,
 			scale only axis,
 			xlabel=$b$,
 		]
@@ -23,18 +24,22 @@
 
 		\nextgroupplot[
 			legend style={at={(0.98,0.02)},anchor=south east},
+			ylabel=ROC-AUC,
 		]
 		\addPlotTheta{test_score}{0}
 		\addlegendentry{$\theta=0.0$}
 		\addPlotTheta{test_score}{0.1}
 		\addlegendentry{$\theta=0.1$}
 		\addPlotTheta{test_score}{1}
-		\addlegendentry{$\theta=1.0$}
 
+		\addlegendentry{$\theta=1.0$}
 
 
 		\nextgroupplot[
 			ymin=0.9475, ymax=1,
+			ylabel=NMSE,
+			ytick={0.95, 0.97, 0.99},
+			yticklabels={0.95, 0.97, 0.99}
 		]
 		\addPlotTheta{test_mse}{0}
 		\addPlotTheta{test_mse}{0.1}

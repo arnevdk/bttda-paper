@@ -1,0 +1,42 @@
+# Reviewer 1
+
+This work proposed an incremental method toward the use of the tensor
+decomposition methods on feature extraction of EEG signals. The innovation of
+this new method is clear, i.e., reducing the error in the HODA method. The
+manuscript is well writing and structured. The results well represent the
+performance of the proposed method. Although the classification accuracy is not
+of state-of-the-art performance, the manuscript points out an important factor
+that influences the performance of tensor decomposition on the feature extraction
+of EEG signal. I recommend acceptance after minor modifications.
+
+(1) In the method part, two figures are used to explain the process of tensor
+composition. However, these figures are the part of the proposed method. A
+structured figure is necessary to show the process of proposed method from end
+to end. The structured figure includes EEG signals, preprocessing, tensor
+composition, feature extraction and classifier.
+
+# Reviewer 2
+
+The Results and discussion part is perfectly written but there are specific points which must be rectified
+
+1. Block-Term Tensor Discriminant Analysis for the Brain-Computer Interfacing?
+The title does not justify the type of paper seems like review article? Elaborate with proper
+justification
+2. Check the text there are some miss spellings
+3. Concise Introduction and conclusion
+4. At the end of each paragraph of reviewing you should write what you
+concluded and concise the Review by clearly focusing on your objectives
+5. Remove old references and add new references of 2023 and 2024
+
+# Editor
+
+We received comments from two exceedingly well qualified reviewers, as well as
+a member of our Editorial Board. While they recognize the importance of the area
+of work, the modest performance gains on relative small open source data sets
+and lack of real time implementation are substantial limitations. These factors
+will limit the impact of the present contribution and prevent us from
+considering this work further for publication in the Journal of Neural
+Engineering.
+
+Thank you for submitting your work to JNE, and we encourage you to consider JNE
+for your other manuscripts in the future.

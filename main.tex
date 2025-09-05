@@ -57,10 +57,10 @@
 \Acp{bci} have the potential to bypass
 defective neural pathways by providing an alternative communication channel
 between the brain and an external device.
-These interfaces find applications in, among others, the development of neuroprosthetics and assistive
-technologies~\cite{Wolpaw2020}.
+These interfaces find applications in -- among others -- the development of
+neuroprosthetics and assistive technologies~\cite{Wolpaw2020}.
 To achieve their functionality, \acp{bci} record and process neural data obtained through
-a neuroimaging technique, with \ac{eeg} being the most popular.
+a neuroimaging technique,  with \ac{eeg} the most popular in the field.
 
 A \ac{bci} usually operates by identifying specific, task-related activity in
 the recorded \ac{eeg} data, which can then be coupled to output or actions.
@@ -110,15 +110,16 @@ This then results in high-dimensional datasets which are usually flattened into 
 set of sample vectors, stripping the original data from its structure.
 Yet, the intrinsic multiway structure of neural data~\cite{Erol2022} is
 well-suited for representation as \emph{tensors}, or multiway arrays, where
-each domain is represented as a tensor \emph{mode}.
+each domain is corresponds to a tensor \emph{mode}.
 Tensors provide a structured data representation for this highly dimensional
 multiway data.
 This in turn paves the way to the development of tensor methods which can
 counteract some of the drawbacks of the dimensionality problem.
-Tensor methods are machine learning techniques that consider each tensor mode
-separately, reducing a given problem into partial, per-mode problems.
+Tensor methods are machine learning or dimensionality reduction techniques that
+consider each tensor mode separately, reducing a given problem into partial,
+per-mode problems.
 
-These tensor methods decompose a tensor into a lower dimensional structure of a
+Tensor methods often decompose a tensor into a lower dimensional structure of a
 core tensor and factor tensors.
 The most common approaches adhere to either the Tucker structure or the PARAFAC
 structure.
@@ -136,8 +137,8 @@ One way of obtaining an unsupervised PARAFAC decomposition is through the Canoni
 Decomposition~\cite{Hitchcock1927,Nazarpour2006}.
 These decomposition methods can be regarded as feature extraction methods for a
 \ac{bci} classification problem, with the flattened core tensors as feature vectors.
-Extracted features can subsequently be further classified, most commonly
-using \ac{lda} or a \ac{svm} to predict class labels.
+Extracted features can subsequently be classified to predict class labels, most
+commonly using \ac{lda} or a \ac{svm}.
 
 
 \begin{figure*}[t]
@@ -226,8 +227,8 @@ Promising results have been achieved for regression tasks using
 \ac{bttr} has also been adapted into the classification variant \ac{bttc}~\cite{Camarrone2021}
 but this methodology leaves room for improvement:
 instead of optimizing features directly for class separability, \ac{bttc} regresses
-dummy 2-valued independent variable, thus and the method
-cannot be extended to a multi-class setting.
+to dummy 2-valued independent variable.
+Thus, the method cannot be extended to a multi-class setting.
 Furthermore, structures employed in these regression approaches are still more constrained
 than what could be achieved with a full block-term tensor structured decomposition of the input data optimized for discriminability, since they rely on a low-rank common subspace
 between the input and classification labels.
@@ -245,8 +246,8 @@ achieve better regularization through increased sparsity.
 An alternative view on the same approach goes as follows:
 If HODA with a well-chosen multilinear rank extracts some discriminant features
 from the input tensor, it is likely that it does not retrieve all useful
-information due to the restrictions imposed by its Tucker structure, or the rank
-might be too high if it does.
+information due to the restrictions imposed by its Tucker structure, or there
+could be too many irrelevant features if it does.
 Could \ac{hoda} therefore not sequentially be applied to extract discriminant
 Tucker structured terms -- potentially of lower rank -- as long as decoding
 performance increases?
@@ -254,7 +255,7 @@ From an alternative viewpoint: could multiple parsimonious discriminant block te
 multilinear rank yield better performance than a single \ac{hoda} block, which
 might need a higher rank to capture discriminant information?
 
-We propose to implement this idea as a new supervised feature
+We to implement this idea as a novel supervised feature
 extraction method titled \ac{bttda}, a generalization of the aforementioned
 \ac{hoda} algorithm.
 \Ac{bttda} extracts discriminant features while adhering to a
@@ -723,7 +724,7 @@ BTTDA+LDA > PARAFAC+LDA ($p=\num{7.63e-16}$, SMD=$0.50$).
 	\label{fig:results/meta}
 \end{figure*}
 Both BTTDA+LDA and PARAFACDA+LDA always significantly outperform HODA+LDA.
-BTTDA+LDA significantly outperformed PARAFACDA+LDA in 9 out of 14 datasets.
+BTTDA+LDA significantly outperforms PARAFACDA+LDA in 9 out of 14 datasets.
 Significance and effect size for all evaluated \ac{erp} datasets are reported in~\cref{tab:results/erp/stats}.
 
 \Cref{tab:results/erp/score} lists the cross-validated \ac{rocauc} for all evaluated
@@ -818,7 +819,7 @@ modeling fails.
 	\footnotesize
 	\input{figures/gridsearch.tikz.tex}
 	\caption{%
-		Cross-validated \Ac{rocauc} (left) and \ac{nmse} for dataset BNCI2014-008
+		Cross-validated \Ac{rocauc} (left) and \ac{nmse} (right) for dataset BNCI2014-008
 		as a function of the number of blocks $b$ and the hyperparameter $\theta$
 		controlling the block ranks.
 		More effective class separation occurs as $b$ increases while \ac{nmse}
@@ -877,7 +878,13 @@ $\smash{\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}
 	relatively high binary classification performance, which does not always leave
 	room for improvement.
 
-	We believe poor \ac{mi} performance could stem from the following issues.
+	As mentioned above, results for \ac{mi} were substantially lower than expected.
+	Not only \ac{bttda} performs poorly, but also the baseline \ac{hoda} model.
+	This is unexpected since ita conflicts with literature which uses \ac{hoda} to
+	effectively classify \ac{mi} from time-frequency transforms~\cite{Phan2010,Lotte2018,Liu2015,Cai2021}.
+	If the issues hampering \ac{hoda} performance can be identified, \ac{bttda}
+	could gain ground on state of the art.
+	We believe poor \ac{mi} performance in our case could stem from the following issues.
 	The time-frequency decomposition and data transformations or their parameters
 	used in this study might not be suited to capture the relevant \ac{ersd}
 	information necessary for performant classification.
@@ -918,8 +925,6 @@ $\smash{\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}
 
 
 
-
-
 	\subsection{Modeling assumptions}
 
 	We assume the main benefit of \ac{bttda} stems from the following two aspects.
@@ -941,6 +946,10 @@ $\smash{\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}
 	blocks  eventually overpasses the \ac{hoda} solution as indicated by
 
 	\todo[inline]{Drop this paragraph?}
+	\todo[inline]{The inspiration for writing this paper mostly comes from this concept,
+		as it was identified as a limitation in my 2022 paper on Kronecker LCMV and subsequently Kronecker LDA. Should this be included in the introduction and brought forward in the problem statement?
+		Shifting the focus to this issue and not simply keeping it on tensor methods
+		could require substantial extra analysis relating the data covariance structure to the model structure and perfomance.}
 	Alternatively, part of the enhanced performance could also stem from \ac{bttda}'s
 	data covariance model.
 	Since HODA estimates one within-class scatter matrix
@@ -959,7 +968,7 @@ $\mat{S}_{-k,\text{w}}\in\mathbb{R}^{D_k\times D_k}$ per mode, its overall
 
 	\todo[inline]{Drop this paragraph?}
 	The forward \ac{hoda} model could also be specified in the
-	classical manner by linear regression or with the solution of \textcite{Haufe2014}, but this would require
+	classical manner by direct linear regression or with the solution of \textcite{Haufe2014}, but this would require
 	vectorizing the tensor representation.
 	While the reconstruction error might be reduced, this would come at the loss of computational
 	efficiency and the regularizing constraints of the tensor form.
