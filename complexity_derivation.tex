@@ -1,0 +1,89 @@
+\section{Time complexity of HODA and BTTDA}
+
+\subsection{Backward \Ac{hoda} algorithm}
+To obtain time complexity of the \ac{hoda} backward model algorithm, we start
+by determining the number of operations within a single inner loop
+for given $i$ and $k$.
+Since we are interested in worst-case complexity, assume all input dimensions $D_k$
+are equal to $\max_k(D_k) = D$ and all reduced dimensions $R_k$ take their maximum
+value $R_k=D_k = D$.
+
+First, for the multi-mode product $\ten{X}\mmprsi{U}{k}$ this results in
+\begin{equation}
+	\begin{split}
+		\left(K-1\right)\left[DD\left(ND^{k-1}\right)\right] = N\left(K-1\right)D^{K+1}
+	\end{split}
+\end{equation}
+Calculating class means and centering the data requires
+\begin{equation}
+	\begin{split}
+		& C\left(DD^{K-1} + D + DD^{K-1}\right) \\
+		& = ND^K + D + ND^K \\
+		& = 2ND^K + D
+	\end{split}
+\end{equation}
+From this, the number of operations for the within-subject scatter matrix $\mat{S}_{-k, \text{w}}$
+\begin{equation}
+	\begin{split}
+		ND^{K-1}DND^{K-1} = N^2D^{2K-1}
+	\end{split}
+\end{equation}
+and the between-class scatter matrix $\mat{S}_{-k, \text{b}}$
+\begin{equation}
+	\begin{split}
+		C\left(D1D\right) + CD^2 = 2CD^2
+	\end{split}
+\end{equation}
+can be obtained.
+After calculating $\varphi_k$ in
+\begin{equation}
+	\begin{split}
+		& 2\left(DD^2+ DD^2+D_k\right) +1
+		= 4D^3+2D + 1
+	\end{split}
+\end{equation}
+operations and applying it as input to the first eigendecomposition
+\begin{equation}
+	2D^2 + 	D^3
+\end{equation}
+operations.
+Finally, the eigendecomposition of the projection for orthogonalization
+$\mat{V}_k\mat{V}_k^\intercal\mat{S}_k{\text{t}}\mat{V}_k\mat{V}_k$
+adds
+\begin{equation}
+	\begin{split}
+		2DD^2+ 2D^3 +D^3 = 5D^3
+	\end{split}
+\end{equation}
+Together, this forms
+\begin{equation}
+	\begin{split}
+		& N\left(K-1\right)D^{K+1}
+		+ 2ND^K
+		+ N^2D^{2K-1} \\
+		& \quad + CD^2+4D^3+2D +1
+		+ 2D^2+D^3 + 5D^3 \\
+		& = N^2D^{2K-1} + N(K-1)D^{K+1} + 2ND^K\\
+		& \quad  + 12D^3 + (C+2)D^2 + 2D+1
+	\end{split}
+\end{equation}
+
+From the number of operations, the time complexity can be derived as
+\begin{equation}
+	\begin{split}
+		& \mathcal{O}\left(N^2D^{2K-1} + N(K-1)D^{K+1} + 2ND^K \right.\\
+		& \quad \left. + 12D^3 + (C+2)D^2 + 2D+1\right) \\
+		& = \mathcal{O}\left(N^2D^{2K-1}\right)
+	\end{split}
+\end{equation}
+The procedure in the inner loop over $k$ and the outer loop over $i$ is
+executed $I_\text{max}K$ times, yielding
+\begin{equation}
+	\mathcal{O}\left(I_\text{max}KN^2D^{2K-1}\right)
+\end{equation}
+
+\subsection{Forward \ac{hoda} algorithm}
+
+\subsection{Backward \ac{bttda} algorithm}
+
+\subsection{Hyperparameter tuning}

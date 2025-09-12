@@ -13,6 +13,7 @@
 		\textstyle{\sum_n^N}\tilde{\mat{G}}_{-k,k}(n)\cdot\tilde{\mat{G}}_{-k,k}^\intercal(n)$
 	\State $\mat{S}_{-k,\text{b}} \gets
 		\textstyle{\sum_c^C}N_c\tilde{\bar{\mat{G}}}_{-k,k}(c)\cdot\tilde{\bar{\mat{G}}}_{-k,k}^\intercal(c)$
+	\State $\varphi_k\gets\tr\left(\mat{U}_k^\intercal \mat{S}_{-k,\text{b}}\mat{U}_k\right)/\tr\left(\mat{U}_k^\intercal\mat{S}_{-k\text{w}}\mat{U}_k\right)$
 	\State $\mat{V}_k\gets$ \parbox[t]{5cm}{largest magnitude $R_k$ \\ eigenvectors of
 	$\mat{S}_{-k,\text{b}} - \varphi_k\mat{S}_{-k,\text{w}}$}
 	\State $\mat{U}_k \gets$ \parbox[t]{5cm}{largest magnitude $R_k$ \\
