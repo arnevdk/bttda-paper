@@ -8,12 +8,13 @@ Since we are interested in worst-case complexity, assume all input dimensions $D
 are equal to $\max_k(D_k) = D$ and all reduced dimensions $R_k$ take their maximum
 value $R_k=D_k = D$.
 
-First, for the multi-mode product $\ten{X}\mmprsi{U}{k}$ this results in
+The multi-mode products $\smash{\ten{X}(n)\mmprsi{U}{k}}$ require
 \begin{equation}
 	\begin{split}
-		\left(K-1\right)\left[DD\left(ND^{k-1}\right)\right] = N\left(K-1\right)D^{K+1}
+		\left(K-1\right)\left[DD\left(ND^{K-1}\right)\right] = N\left(K-1\right)D^{K+1}
 	\end{split}
 \end{equation}
+operations.
 Calculating class means and centering the data requires
 \begin{equation}
 	\begin{split}
@@ -25,7 +26,7 @@ Calculating class means and centering the data requires
 From this, the number of operations for the within-subject scatter matrix $\mat{S}_{-k, \text{w}}$
 \begin{equation}
 	\begin{split}
-		ND^{K-1}DND^{K-1} = N^2D^{2K-1}
+		D(ND^{K-1})D = ND^{K+1}
 	\end{split}
 \end{equation}
 and the between-class scatter matrix $\mat{S}_{-k, \text{b}}$
@@ -35,55 +36,161 @@ and the between-class scatter matrix $\mat{S}_{-k, \text{b}}$
 	\end{split}
 \end{equation}
 can be obtained.
-After calculating $\varphi_k$ in
+$\varphi_k$ can be calculated as $\tr\left(\mat{U}_k^\intercal \mat{S}_{-k,\text{b}}\mat{U}_k\right)/\tr\left(\mat{U}_k^\intercal\mat{S}_{-k\text{w}}\mat{U}_k\right)$ in
 \begin{equation}
 	\begin{split}
-		& 2\left(DD^2+ DD^2+D_k\right) +1
+		& \left(DDD + DDD + D\right) + \left(DDD + DDD + D\right)+1 \\
+		& =  2\left(2D^3 D\right) + 1
 		= 4D^3+2D + 1
 	\end{split}
 \end{equation}
-operations and applying it as input to the first eigendecomposition
-\begin{equation}
-	2D^2 + 	D^3
-\end{equation}
 operations.
-Finally, the eigendecomposition of the projection for orthogonalization
-$\mat{V}_k\mat{V}_k^\intercal\mat{S}_k{\text{t}}\mat{V}_k\mat{V}_k$
+The difference of the scatter matrices
+$\mat{S}_{-k, \text{w}} - \varphi - \mat{S}_{-k,\text{b}}$
+then yields
+\begin{equation}
+	D^2 + D^2 + D^2 = 3D^2
+\end{equation}
+operations,
+and its eigendecomposition
+\begin{equation}
+	D^3
+\end{equation}
+Finally,  the projection for orthogonalization
+$\mat{V}_k\mat{V}_k^\intercal\mat{S}_{k,\text{t}}\mat{V}_k\mat{V}_k^\intercal$
 adds
 \begin{equation}
-	\begin{split}
-		2DD^2+ 2D^3 +D^3 = 5D^3
-	\end{split}
+	DDD + DDD + DDD +DDD = 4D^3
 \end{equation}
+and its eigendecomposition
+\begin{equation}
+	D^3
+\end{equation}
+
 Together, this forms
 \begin{equation}
 	\begin{split}
-		& N\left(K-1\right)D^{K+1}
-		+ 2ND^K
-		+ N^2D^{2K-1} \\
-		& \quad + CD^2+4D^3+2D +1
-		+ 2D^2+D^3 + 5D^3 \\
-		& = N^2D^{2K-1} + N(K-1)D^{K+1} + 2ND^K\\
-		& \quad  + 12D^3 + (C+2)D^2 + 2D+1
+		& N(K-1)D^{K+1} + 2ND^K + D + 2CD^2 + 4D^3 \\
+		& \quad + 2D +1 +3D^2 + D^3 + 4D^3 + D^3 \\
+		& = NKD^{K+1} -ND^{K+1} + 2ND^K + 10D^3 \\
+		& \quad +(3+2C)D^2 + 3D+1
 	\end{split}
 \end{equation}
-
 From the number of operations, the time complexity can be derived as
 \begin{equation}
 	\begin{split}
-		& \mathcal{O}\left(N^2D^{2K-1} + N(K-1)D^{K+1} + 2ND^K \right.\\
-		& \quad \left. + 12D^3 + (C+2)D^2 + 2D+1\right) \\
-		& = \mathcal{O}\left(N^2D^{2K-1}\right)
+		& \mathcal{O}\left[ NKD^{K+1} -ND^{K+1} + 2ND^K + 10D^3\right. \\
+		& \left. \quad +(3+2C)D^2 + 3D+1 \right] \\
+		& = \mathcal{O}\left(NKD^{K+1} \right)
 	\end{split}
 \end{equation}
+assuming $C < N$.
 The procedure in the inner loop over $k$ and the outer loop over $i$ is
 executed $I_\text{max}K$ times, yielding
 \begin{equation}
-	\mathcal{O}\left(I_\text{max}KN^2D^{2K-1}\right)
+	\begin{split}
+		\mathcal{O}\left(I_\text{max}KNKD^{K+1}\right)
+		= \mathcal{O}\left(I_\text{max}K^2ND^{K+1}\right)
+	\end{split}
+	\label{eq:complexity/backward}
 \end{equation}
 
 \subsection{Forward \ac{hoda} algorithm}
+Similar to the previous derivation, we start by determining the operations
+within a single iteration of a nested over the $i$ and $k$.
+
+The first step is again a multi-mode product, $\smash{\ten{G}(n)\mmprsi{\mat{A}}{k}}$:
+\begin{equation}
+	\begin{split}
+		\left(K-1\right)\left[DD\left(ND^{K-1}\right)\right] = N\left(K-1\right)D^{K+1}
+	\end{split}
+\end{equation}
+The second step requires least squares regression which can be solved in
+\begin{equation}
+	\begin{split}
+		& D\left(ND^{K-1}\right)D + D\left(ND^{K-1}\right)D + D^3 \\
+		& = 2ND^{K+1} +D^3
+	\end{split}
+\end{equation}
+operations.
+
+Together, this forms
+\begin{equation}
+	\begin{split}
+		& N(K-1)D^{K+1} + 2ND^{K+1} +D^3 \\
+		& = NKD^{K+1} - ND^{K+1} + 2ND^{K+1} + D^3
+	\end{split}
+\end{equation}
+The time complexity to fit one iteration of the algorithm for the forward model
+is then
+\begin{equation}
+	\begin{split}
+		& \mathcal{O}\left(NKD^{K+1} - ND^{K+1} + 2ND^{K+1} + D^3\right) \\
+		& = \mathcal{O}\left(NKD^{K+1}\right)
+	\end{split}
+\end{equation}
+and, when integrating it in the inner and outer loops over $i$ and $k$,
+\begin{equation}
+	\mathcal{O}\left(I_\text{max}KNKD^{K+1}\right)
+	= \mathcal{O}\left(I_\text{max}NK^2D^{K+1}\right)
+	\label{eq:complexity/forward}
+\end{equation}
+
+
+This is the same asymptotic time complexity as the backwards modeling algorithm,
+since they are both dominated by the multi-mode product.
 
 \subsection{Backward \ac{bttda} algorithm}
 
+Fitting the \ac{bttda} model involves a loop over blocks $b$.
+At each iteration, a backward model is fit with complexity as in
+\cref{eq:complexity/backward}
+The core tensors $\smash{\ten{G}^\text{(b)}(n)}$
+are extracted with the multi-mode product using
+\begin{equation}
+	K\left[DD\left(ND^{K-1}\right)\right] = KND^{K+1}
+	\label{eq:complexity/mmpr}
+\end{equation}
+operations
+
+Next, the forward model is fit on these core tensors, with complexity as in
+\cref{eq:complexity/forward}.
+The number of steps for the reconstructed tensors can similarly be obtained using
+\cref{eq:complexity/mmpr},
+and calculating the residual requires
+\begin{equation}
+	ND^K
+\end{equation}
+operations.
+
+
+A single block $b$ can thus be fit with complexity
+\begin{equation}
+	\begin{split}
+		& \mathcal{O}\left(
+		I_\text{max}NK^2D^{K+1}
+		+ KND^{K+1} \right. \\
+		& \left. \quad + I_\text{max}NK^2D^{K+1}
+		+ KND^{K+1}
+		+ ND^K
+		\right) \\
+		& = \mathcal{O}\left(I_\text{max}NK^2D^{K+1}\right)
+	\end{split}
+\end{equation}
+The complexity when calculating all blocks is
+\begin{equation}
+	\mathcal{O}\left(BI_\text{max}NK^2D^{K+1}\right)
+\end{equation}
+
 \subsection{Hyperparameter tuning}
+Finally, proper decoding training relies heavily on tuning the hyperparameters
+$\theta$ and $B$ through cross-validation.
+Let $F$ be the number of cross-validation folds and $\Theta$ a set of $\theta$
+candidates.
+We can take advantage of the fact that the \ac{bttda} model can be fit on a fixed
+amount of blocks $B$, but intermediary blocks $1, 2, \cdots B$ can easily be extracted.
+This way, no second iteration over candidates for $B$ is necessary and complexity
+can be kept to
+\begin{equation}
+	\mathcal{O}\left(\left|\Theta\right|FBI_\text{max}NK^2D^{K+1}\right)
+\end{equation}
