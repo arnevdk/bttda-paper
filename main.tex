@@ -61,10 +61,6 @@
 	"interpretability" appears only deep in the paper while it should be in
 	the abstract as an advantage of using a forward model. Dimensionality
 	reduction is also mentioned in that regard.
-
-	Efficiency is mentioned several times (dimensionality reduction, block
-	structure, computation) but not really shown. As to computational
-	efficiency, no training times, time-complexities are reported...
 }
 \section{Introduction}
 
@@ -479,8 +475,9 @@ or, equivalently~\cite{Parra2005,Haufe2014},
 	\hat{\ten{X}}(n)\right]^2                                                              \\
 	 & = \argmin_{\{\mat{A}\}}\sum_n^N\left[\ten{X}(n) - \ten{G}(n)\mmpr{\mat{A}}\right]^2
 \end{align}
-This least-squares tensor approximation problem can be solved efficiently using the
-Alternating Least Squares algorithm~\cite{Bentbib2022}, iteratively fixing all but one of the activation patterns such that:
+This least-squares tensor approximation problem can be solved using the
+Alternating Least Squares algorithm~\cite{Bentbib2022}, iteratively fixing all
+but one of the activation patterns such that:
 \begin{equation}
 	\mat{A}_k = \argmin_{\mat{A}_k}
 	\sum_n^N\left[\mat{X}_k(n) -
@@ -772,7 +769,7 @@ the magnitude of the complex Morlet-wavelet transform with 17 logarithmicaly spa
 Finally, the magnitude envelope was downsampled to 32 Hz using an anti-aliasing
 filter and decimation.
 
-In line with the \cite{moabb} method, only the first three classes per dataset were
+In line with the \ac{moabb} method, only the first three classes per dataset were
 used.
 When considering grand average classification accuracies over all evaluated
 \ac{mi} datasets as reported in \cref{tan:scores-mi},
@@ -861,14 +858,18 @@ $\smash{\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}
 with \ac{nmse} is calculated as:
 \begin{equation}
 	\nmse\left(\ten{X}, \hat{\ten{X}}^{(B)}\right) =
-	\frac{\sum_n^N\left\|\ten{X}(n)-\ten{\hat{X}}^{(B)}(n)\right\|_F^2}
-	{\sum_n^N\left\|\ten{X}(n)\right\|_F^2}
+	\frac{\sum_n^N\left\|\ten{X}(n)-\ten{\hat{X}}^{(B)}(n)\right\|_\text{F}^2}
+	{\sum_n^N\left\|\ten{X}(n)\right\|_\text{F}^2}
 \end{equation}
 
 \Ac{nmse} decreases monotonically with $b$ for both $\theta=0.0$ and $\theta=0.1$,
 In general, \ac{nmse} decreases faster as $\theta$ increases.
 For $\theta=1$, reconstruction \ac{nmse} at $b=0$ is near zero ($1.32e-30$)
 since no information is lost in the full-rank decomposition.
+
+\section{Interpretability}
+
+
 
 \section{Discussion}
 \subsection{Contribution}
@@ -998,8 +999,8 @@ can be extracted.
 %to backward modeling
 
 \todo[inline]{Drop this paragraph?}
-Additionally, the forward modeling step inherent to BTTDA results
-in an interpretable model.
+Additionally, the forward modeling step designed for \ac{hoda} inherent to
+\ac{bttda} results in an interpretable model.
 Activation patterns allow the inspection of the
 neural patterns relevant to the problem at hand~\cite{Haufe2014}.
 %\Cref{fig:forward}
@@ -1008,10 +1009,11 @@ of two blocks obtained from the BNCI2014-008 dataset, as well as the forward
 projection of the difference between the averages of the mean latent tensor per
 class (\emph{contrasts}).
 While the weights of the backward projection are
-uninterpretable~\cite{Haufe2014},
-the activation patterns and contrasts after forward projection clearly show
-that ERP components can be recognized and separated into different
-BTTDA blocks.
+hard to interpret~\cite{Haufe2014},
+the activation patterns and contrasts after forward projection can clearly reveal
+patterns in neural data.
+For instance, ERP components can be recognized and separated into different
+\ac{hoda} activation pattern vectors or in different \ac{bttda} blocs.
 %\begin{figure*}[t]
 %	\includegraphics[width=\linewidth]{figure6a.png}
 %	\includegraphics[width=\linewidth]{figure6b.png}
@@ -1041,38 +1043,54 @@ brain-computer interfacing.
 \subsection{Model selection}
 
 \Ac{bttda} trades the rigid \ac{hoda} model for increased model complexity with more
-hyperparameters to tune, which expands the solution space to settings where performance can be
-improved.
-This shifts the focus of tensor discriminant analysis from projection
-optimization to model selection.
-Despite favorable results in \ac{bci} decoding, the applications of the proposed
-\ac{bttda} model are mainly limited by the model selection approach used
-to determine the individual block dimensions.
-While our proposed selection procedure controlled by $\theta$
-is a step in the direction of decreasing the computational demand, it
-also limits the chosen dimensions of each block to lie within a subset of all possible configurations.
-In a sense, this goes against the earlier proposition of increased model flexibility.
+hyperparameters to tune, which expands the solution space to settings where
+performance can be improved.
+Extracting more blocks and tuning the hyperparameters increases the time
+complexity of fitting \ac{bttda}-based models compared to \ac{hoda}-based models.
+\Ac{hoda} feature extraction can be solved with time complexity
+\begin{equation}
+	\mathcal{O}\left(\left|\Theta\right|FI_\text{max}NK^2D^{K+1}\right)
+\end{equation}
+whereas \ac{bttda} increases this
+\begin{equation}
+	\mathcal{O}\left(\left|\Theta\right|FBI_\text{max}NK^2D^{K+1}\right)
+\end{equation}
+with $\Theta$ the set of $\theta$ candidates and $F$ the number of
+cross-validation folds for hyperparameter tuning.
+\Cref{app:complexity-derivation} shows complexity derivation.
+Overall the \ac{bttda} approach shifts the focus of tensor discriminant analysis
+from finding optimal projections to model selection driven by computation.
+
+The proposed selection procedure controlled by $\theta$ efficiently
+reduces the computational demand compared to tuning all hyperparameters
+$\textstyle{\left\{ R_1^{(b)},R_2^{(b)},\ldots,R_K^{(b)}\right\}_b^B}$.
+On the other hand, it also limits the chosen dimensions of each block to lie
+within a subset of all possible configurations.
+In a sense, this goes against the earlier proposition of increased model
+flexibility.
 Instances could occur where \ac{bttda} offers little to no added value over the
-Tucker-structured \ac{hoda} when both are given totally free choice of dimensions, but cases where \ac{bttda} could achieve greater performance could equally be found.
-Finding these optimal-dimension configurations, however, can currently only be achieved
-through a costly, cross-validated hyperparameter search jointly over the dimensions
-of each block.
+Tucker-structured \ac{hoda} when both are given totally free choice of
+dimensions, but cases where \ac{bttda} could achieve greater performance could
+equally be found.
+Finding these optimal-dimension configurations, can currently only be achieved
+through a costly, cross-validated hyperparameter search jointly over the
+dimensions of each block.
 Future efforts should focus on more advanced automated hyperparameter selection
 methods relying on sparsity criteria, eigenvalue truncation or information
 criteria such as the ones used in \ac{bttr}~\cite{Faes2022}, or other
 statistical measures based on the application of the model.
 
 Finally, it is clear that our proposed model selection procedure does not
-necessarily result in an optimal set of blocks that group coherent projections
-within the same block according to some desirable metric.
+necessarily result in an optimal set of blocks that groups coherent
+projections within the same block according to some desirable metric.
 Currently, features across blocks are heavily correlated, leading to a high
-degree of multicollinearity in the extracted features which we correct for post-hoc
-by applying whitening and PCA.
-Solutions imposing some sense of subspace orthogonality between the extracted blocks
-could lead to a more effective feature extraction solution.
-Other examples of useful within block grouping criteria are sparsity,
-pattern interpretability, minimal or maximal within-block feature correlation,
-ordering of blocks by decreasing discriminability, etc.
+degree of multicolinearity in the extracted features.
+Currently, this is corrected  post-hoc by applying whitening and PCA.
+Solutions imposing some sense of subspace orthogonality between the extracted
+blocks could lead to a more effective feature extraction solution.
+Sparsity, pattern interpretability, minimal or maximal within-block feature
+correlation and ordering of blocks by decreasing discriminability are
+examples of useful, within-block grouping criteria.
 
 %\todo[inline]{This hypothesis seems reasonable, but is not substantiated with
 %	evidence or analysis, which could feasible be done with some extra work by analyzing the number of features. Is it relevant?}
@@ -1082,6 +1100,7 @@ ordering of blocks by decreasing discriminability, etc.
 %This is reflected in our \ac{erp} results (low dimensionality vs.\ high number of
 %trials) compared to the \ac{mi} results (higher dimensionality due to third-order
 %tensorization vs.\ lower number of trials).
+
 As future work, The impact of higher-order tensors with $K>3$ should be thoroughly
 investigated, since this could have a large impact on model behavior.
 We expect a dimensionality limit beyond which the forward modeling step cannot
@@ -1098,7 +1117,7 @@ conditions or sliding windows, if these are appropriately chosen based on prior
 knowledge of the dataset.
 
 \section{Conclusion}
-\todo[inline]{limitations subpar performance for bttda possibly attributed to preprocessing  but improved rel to hoda, optimization traded for model selection but with computational expense}
+%\todo[inline]{limitations subpar performance for bttda possibly attributed to preprocessing  but improved rel to hoda}
 
 We have introduced \acf{bttda}, a novel,
 tensor-based, supervised dimensionality reduction technique optimized for class
@@ -1111,7 +1130,8 @@ leveraging a novel forward modeling step.
 Via accompanying model selection hyperparameters, \ac{bci} decoders using
 \ac{bttda} feature extraction can significantly outperform decoders based on
 \ac{hoda} exceed state-of-the-art decoding performance on \acl{erp} problems
-(second-order tensors) and outperform \ac{hoda} in motor imagery problems (third-order tensors).
+(second-order tensors) and outperform \ac{hoda} in motor imagery problems
+(third-order tensors).
 
 Moving from the rigid Tucker tensor structure of \ac{hoda} to the more flexible
 and sparse block-term structure shifts the focus from finding the best constrained
@@ -1171,11 +1191,15 @@ and the Hauts-de-France Region Council.
 
 \appendix
 \setcounter{table}{0}
-\renewcommand{\thetable}{A\arabic{table}}
+\renewcommand{\thetable}{\thesection\arabic{table}}
 
 \include{complexity_derivation.tex}
 
-\begin{table*}[ht]
+\onecolumn
+
+\section{Datasets}
+
+\begin{table*}[!htbp]
 	\footnotesize
 	\input{tables/moabb_datasets.tex}
 	\caption{MOABB datasets used for evaluation, with the number of
@@ -1186,11 +1210,14 @@ and the Hauts-de-France Region Council.
 		\Ac{mi} dataset PhysionetMI was omitted due to its high computational and
 		storage demands.
 		Adapted from~\cite{Aristimunha2023}
-		and~\cite{Chevallier2024}.}
+		and~\cite{Chevallier2024}.}%
 	\label{tab:moabb}
 \end{table*}
 
-\begin{table*}[ht]
+\newpage
+
+\section{Pairwise statistics}
+\begin{table*}[!htbp]
 	\footnotesize
 	\input{tables/stats_erp.tex}
 	\caption{Results of one-sided Wilcoxon rank-sum tests comparing the
@@ -1201,7 +1228,7 @@ and the Hauts-de-France Region Council.
 	\label{tab:results/erp/stats}
 \end{table*}
 
-\begin{table*}[ht]
+\begin{table*}[!htbp]
 	\footnotesize
 	\input{tables/stats_mi.tex}
 	\caption{Results of one-sided Wilcoxon rank-sum tests comparing the
@@ -1211,7 +1238,5 @@ and the Hauts-de-France Region Council.
 		difference (SMD).}
 	\label{tab:results/mi/stats}
 \end{table*}
-
-\pagebreak
 
 \end{document}

@@ -1,4 +1,5 @@
 \section{Time complexity of HODA and BTTDA}
+\label{app:complexity-derivation}
 
 \subsection{Backward \Ac{hoda} algorithm}
 To obtain time complexity of the \ac{hoda} backward model algorithm, we start
@@ -190,7 +191,7 @@ candidates.
 We can take advantage of the fact that the \ac{bttda} model can be fit on a fixed
 amount of blocks $B$, but intermediary blocks $1, 2, \cdots B$ can easily be extracted.
 This way, no second iteration over candidates for $B$ is necessary and complexity
-can be kept to
+can be kept at
 \begin{equation}
 	\mathcal{O}\left(\left|\Theta\right|FBI_\text{max}NK^2D^{K+1}\right)
 \end{equation}
