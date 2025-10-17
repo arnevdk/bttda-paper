@@ -1,7 +1,7 @@
 \documentclass[twocolumn]{article}
+
 \usepackage{bttda-paper}
 \usepackage{todonotes}
-
 
 \addbibresource{references.bib}
 \addbibresource{moabb_datasets.bib}
@@ -18,8 +18,7 @@
 	Leuven Brain Institute,
 	Leuven.AI,\\
 	Department of Neurosciences,
-	Laboratory for Neuro- and Psychophysiology,
-	\\
+	Laboratory for Neuro- and Psychophysiology,	\\
 	Campus Gasthuisberg O\&N2,
 	Herestraat 49 bus 1021,
 	BE-3000 Leuven,
@@ -697,15 +696,15 @@ For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were further
 downsampled to 48 Hz.
 
 When considering grand average \ac{rocauc} over all evaluated \ac{erp} datasets
-as reported in \cref{tab:erp-score},
-the full BTTDA+LDA model (avg. \ac{rocauc}: 91.23$\pm$6.47\%) outperforms PARAFAC+LDA
-(90.89$\pm$6.87\%),
-and both in turn outperform HODA+LDA (88.93$\pm$7.03\%).
+as reported in \cref{tab:results/erp/score},
+the full BTTDA+LDA model (avg. \ac{rocauc}: 91.25$\pm$6.77\%) outperforms PARAFAC+LDA
+(90.94$\pm$6.90\%),
+and both in turn outperform HODA+LDA (88.89$\pm$7.04\%).
 The meta-analysis shown in \cref{fig:results/meta} revealed the following
 significant effects:
-BTTDA+LDA > HODA+LDA ($p=\num{1.83e-36}$, SMD=$1.14$),
-PARAFACDA+LDA > HODA+LDA ($p=\num{3.09e-54}$, SMD=$1.01$), and
-BTTDA+LDA > PARAFAC+LDA ($p=\num{7.63e-16}$, SMD=$0.50$).
+BTTDA+LDA > HODA+LDA ($p=\num{5.65e-65}$, SMD=$1.17$),
+PARAFACDA+LDA > HODA+LDA ($p=\num{2.47e-58}$, SMD=$1.06$), and
+BTTDA+LDA > PARAFAC+LDA ($p=\num{4.90e-15}$, SMD=$0.50$).
 \begin{figure*}[t]
 	\input{figures/pairwise_erp.tikz.tex}
 	\vskip-1em
@@ -742,8 +741,8 @@ Significance and effect sizes for all evaluated \ac{erp} datasets are reported i
 	\label{tab:results/erp/score}
 \end{sidewaystable*}
 Compared to the state-of-the-art XDAWNCov+TS+SVM decoder, BTTDA+LDA scores
-better in 7 out of 14 datasets, with a greater grand average \ac{rocauc}
-($91.32 > 90.82$).
+better in 7 out of 14 datasets, combined with a moderate increase in grand average \ac{rocauc}
+($91.25 > 90.82$).
 
 Full cross-validation results can be retrieved from additional file \cref{item:add/mi-results}.
 
@@ -869,6 +868,16 @@ since no information is lost in the full-rank decomposition.
 
 \section{Interpretability}
 
+This experiment reveals the model interpretability provided by the forward
+modeling step.
+To evaluate this, all three proposed models were trained on the combined
+subjects in BNCI2014-008.
+Hyperparameters were tuned using 5-fold stratified cross-validation with entire-
+subject holdouts to determine the best hyperparameter instances for general
+cross-subject decoding.
+With these hyperparameters, each model was retrained on the full data combined
+over all subjects.
+
 
 
 \section{Discussion}
@@ -881,14 +890,14 @@ block-term tensor structure.
 BTTDA pushes the state-of-the-art decoding performance up for \ac{erp}
 datasets in the \ac{moabb} benchmark, but fails to do so for \ac{mi} datasets.
 While this effect is not consistent over all \ac{erp} datasets, and the
-increase often rather low (<2 \% points), it averages out over all datasets
-as an increase of 0.95 \% points.
+increase is often rather low (<2 \% points), it averages out over all datasets
+as a moderate increase of 0.43 \% points.
 We note that performances of other decoders for these problems already achieve
 relatively high binary classification performance, which does not always leave
 room for improvement.
 
 As mentioned above, results for \ac{mi} were substantially lower than expected.
-Not only \ac{bttda} performs poorly, but also the baseline \ac{hoda} model.
+Not only does \ac{bttda} performs poorly, but the baseline \ac{hoda} model as well.
 This is unexpected since it conflicts with literature which uses \ac{hoda} to
 effectively classify \ac{mi} from time-frequency transforms~\cite{Phan2010,Lotte2018,Liu2015,Cai2021}.
 If the issues hampering \ac{hoda} performance can be identified, \ac{bttda}
@@ -908,12 +917,12 @@ Solutions for this problem can be computationally expensive.
 
 Nevertheless, when considering our main research question regarding the
 relative improvement over \ac{hoda}, our results show that
-\ac{bttda} scores consistently on par or significantly higher than \ac{hoda}.
-\Ac{bttda} managed to outperform \ac{hoda} with 2.30 \% points on average for
-\ac{erp} datasets, and 3.52 \% points for \ac{mi} datasets.
+\ac{bttda} consistently scores significantly higher than \ac{hoda}.
+\Ac{bttda} managed to outperform \ac{hoda} with 2.36 \% points on average for
+\ac{erp} datasets, and 2.75 \% points for \ac{mi} datasets.
 PARAFACDA, the proposed rank-1  special case of \ac{bttda},
-also scored better than  \ac{hoda} in \ac{erp} datasets but was
-outperformed by \ac{bttda} in general.
+also scored 0.31 \% points higher than  \ac{hoda} in \ac{erp} datasets but was
+outperformed by \ac{bttda} overall.
 
 For \ac{mi} datasets, \ac{parafacda} scored lower than both \ac{hoda} and \ac{bttda}.
 Our hypothesis is that this stems from the multiclass nature of the problem.

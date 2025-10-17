@@ -1,4 +1,0 @@
-Make introduction more readable
-structured approach to introducing decomp methods
-standalone intro, more BCI?
-what does this method bring that others don't

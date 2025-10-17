@@ -1,7 +1,7 @@
 import pandas as pd
 from moabb.analysis.meta_analysis import compute_dataset_statistics
 
-df = pd.read_csv("data/results_mi.csv")
+df = pd.read_csv("data/results_erp.csv")
 df_stats = compute_dataset_statistics(df)
 
 df = []

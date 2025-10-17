@@ -7,7 +7,7 @@ from moabb.analysis.meta_analysis import (combine_effects, combine_pvalues,
                                           find_significant_differences)
 from moabb.analysis.plotting import meta_analysis_plot, summary_plot
 
-df = pd.read_csv("data/results_mi.csv")
+df = pd.read_csv("data/results_erp.csv")
 df_stats = compute_dataset_statistics(df)
 df_sig, df_effect = find_significant_differences(df_stats)
 
@@ -43,7 +43,7 @@ for pair in [("BTTDA", "HODA"), ("BTTDA", "PARAFACDA"), ("PARAFACDA", "HODA")]:
     )
     df_stats_pair["dataset_idx"] = np.arange(len(df_stats_pair))
 
-    df_stats_pair.to_csv(f"data/pairwise_stats/mi_{pair[0]}_{pair[1]}.csv")
+    df_stats_pair.to_csv(f"data/pairwise_stats/erp_{pair[0]}_{pair[1]}.csv")
 print(df_sig)
 print(df_effect)
 
