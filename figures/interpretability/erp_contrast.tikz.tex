@@ -1,0 +1,60 @@
+\scriptsize
+\begin{tikzpicture}[trim axis group left]
+
+	\begin{groupplot}[
+			group style={
+					group size=6 by 1,
+					horizontal sep=0.2cm,
+				},
+			width=\linewidth/4,
+			%xlabel={Time (s)},
+			ylabel={Amplitude ($\mu V$)},
+			legend pos=north east,
+			no markers,
+			enlarge x limits=false,
+			xmin=-0.2,
+			xmax=1.0,
+			ymin=-2.5,
+			ymax=2.5
+		]
+
+		\newcommand{\drawEvokedTime}[1]{
+			\pgfplotstableread[col sep=comma]{data/interpretability/erp_contrast_#1.csv}\datatable
+			\pgfplotstablegetcolsof{\datatable}
+			\pgfmathtruncatemacro{\numcols}{\pgfplotsretval-1}
+			\pgfplotsinvokeforeach {1,...,\numcols} {
+				\addplot+[
+					color=blue!80!black,
+					no markers,
+					thin,
+					solid
+				] table [
+						x=time,
+						y index=##1,
+						col sep=comma,
+					] {data/interpretability/erp_contrast_#1.csv};
+			}
+			\addplot+[color=black, dashed] coordinates {(-0.2,0) (1.0,0)};
+			\addplot+[color=black, dashed] coordinates {(0, -2.5) (0,2.5)};
+		}
+
+		\nextgroupplot[title=Grand average]
+		\addplot+[color=red] coordinates {(0.45, -2.5) (0.45, 2.5)};
+		\drawEvokedTime{grand-avg}
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_grand-avg_topo.png};
+
+		\nextgroupplot[title=Block 1 pattern]
+		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
+		\drawEvokedTime{block-1}
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_block-1_topo.png};
+
+		\nextgroupplot[title=Block 1 pattern]
+		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
+		\drawEvokedTime{block-2}
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_block-2_topo.png};
+
+	\end{groupplot}
+\end{tikzpicture}

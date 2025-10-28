@@ -741,7 +741,7 @@ Significance and effect sizes for all evaluated \ac{erp} datasets are reported i
 	\label{tab:results/erp/score}
 \end{sidewaystable*}
 Compared to the state-of-the-art XDAWNCov+TS+SVM decoder, BTTDA+LDA scores
-better in 7 out of 14 datasets, combined with a moderate increase in grand average \ac{rocauc}
+better in 8 out of 14 datasets, combined with a moderate increase in grand average \ac{rocauc}
 ($91.25 > 90.82$).
 
 Full cross-validation results can be retrieved from additional file \cref{item:add/mi-results}.
@@ -866,18 +866,39 @@ In general, \ac{nmse} decreases faster as $\theta$ increases.
 For $\theta=1$, reconstruction \ac{nmse} at $b=0$ is near zero ($1.32e-30$)
 since no information is lost in the full-rank decomposition.
 
-\section{Interpretability}
+\section{Interpretable decomposition}
 
-This experiment reveals the model interpretability provided by the forward
-modeling step.
-To evaluate this, all three proposed models were trained on the combined
-subjects in BNCI2014-008.
-Hyperparameters were tuned using 5-fold stratified cross-validation with entire-
-subject holdouts to determine the best hyperparameter instances for general
-cross-subject decoding.
-With these hyperparameters, each model was retrained on the full data combined
+The following qualitative analysis reveals the model interpretability provided
+by the forward modeling step.
+All three proposed models were trained on the combined
+subjects in BNCI2014-008 for \ac{erp} classification and AlexMI for \ac{mi}.
+To allow a clear qualitative interpretation, the \ac{erp} epochs were extended with
+a pre-stimulus interval of 0.2 s and the original sample rate of 256 Hz was kept.
+The \ac{mi} epochs were sampled at 250 Hz.
+The number of blocks in this example was set to $B=2$ and hyperparameters $\theta$ were tuned
+using 5-fold stratified cross-validation with entire-subject holdouts to
+determine the best hyperparameter for cross-subject decoding
+(\ac{erp}: $\theta=0.3$, \ac{mi}: $\theta=0.7$)
+Each model was retrained with these hyperparameters on the full data combined
 over all subjects.
 
+\todo[inline]{Regenerate ERP with normalization}
+\todo[inline]{Indicate channel}
+
+\todo[inline]{calculation to obtain block reconstructions}
+
+\begin{figure*}
+	\input{figures/interpretability/erp_contrast.tikz.tex}
+
+	\input{figures/interpretability/mi_contrast.tikz.tex}
+
+	\caption{Reconstructed contrasts obtained using the \ac{bttda} forward model compared to the grand-average contrast for \ac{erp} dataset BNCI2014-008 (top) and \ac{mi} dataset AlexMI (bottom).}
+\end{figure*}
+
+\todo[inline]{Results: point out qualititive components}
+
+\todo[inline]{Discussion: Effective unmixing in multi-rank components (compared to PCA/ICA/XDAWN/CSP with rank-one components)}
+\todo[inline]{interpretability in abstract and conclusions}
 
 
 \section{Discussion}

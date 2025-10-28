@@ -5,3 +5,4 @@ jinja2
 moabb
 setuptools
 scipy
+h5io

@@ -1,0 +1,53 @@
+\scriptsize
+\begin{tikzpicture}[trim axis group left]
+
+	\begin{groupplot}[
+			group style={
+					group size=6 by 1,
+					horizontal sep=0.2cm,
+				},
+			width=\linewidth/4,
+			xlabel={Time (s)},
+			ylabel={Frequency (Hz)},
+			%enlarge x limits=false,
+			ymin=8,
+			ymax=32,
+			xmin=0,
+			xmax=3,
+			ymode=log,
+			ytick={8,16,32},
+			log ticks with fixed point,
+			axis on top,
+			no markers,
+		]
+
+		\nextgroupplot
+		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_grand-avg_spec.png};
+		\addplot+[color=red] coordinates {(0, 11) (3, 11)};
+		\addplot+[color=red] coordinates {(1, 8) (1, 32)};
+
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_grand-avg_topo.png};
+
+
+		\nextgroupplot
+		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-1_spec.png};
+		\addplot+[color=red] coordinates {(0, 11) (3, 11)};
+		\addplot+[color=red] coordinates {(1, 8) (1, 32)};
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-1_topo.png};
+
+
+		\nextgroupplot
+		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-2_spec.png};
+		\addplot+[color=red] coordinates {(0, 10) (3, 10)};
+		\addplot+[color=red] coordinates {(1.6, 8) (1.6, 32)};
+
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-2_topo.png};
+
+
+
+
+	\end{groupplot}
+\end{tikzpicture}
