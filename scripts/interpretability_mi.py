@@ -47,7 +47,9 @@ def viz_tfr(evoked, name, chan="C3", t=1, f=10):
     s = int((t - evoked.tmin) * sfreq)
     fs = np.where(evoked.freqs > f)[0][0]
     topo = evoked.data[:, fs, s]
-    plot_topomap(topo, evoked.info, show=False)
+    mask = np.array([c == chan for c in evoked.ch_names])
+    plot_topomap(topo, evoked.info, show=False, mask=mask)
+
     plt.savefig(
         f"figures/interpretability/mi_contrast_{name}_topo.png",
         bbox_inches="tight",
@@ -59,4 +61,4 @@ def viz_tfr(evoked, name, chan="C3", t=1, f=10):
 
 viz_tfr(contrast_grand_avg, "grand-avg", chan="C3", t=1, f=11)
 viz_tfr(contrast_b1, "block-1", chan="C3", t=1, f=11)
-viz_tfr(contrast_b2, "block-2", chan="C3", t=1.6, f=10)
+viz_tfr(contrast_b2, "block-2", chan="P4", t=1.6, f=10)

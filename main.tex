@@ -51,16 +51,7 @@
 	}
 \end{abstract}
 
-\todo[inline]{
-	The interpretability (before we showed scalp plots) should be reported
-	in the results section not in the discussion (where it could be picked
-	up again). This makes the paper also a bit more digestible as it is
-	otherwise tables with numbers only ;-) Can you make the link e.g. to
-	contributing electrodes, time instances, frequencies? The
-	"interpretability" appears only deep in the paper while it should be in
-	the abstract as an advantage of using a forward model. Dimensionality
-	reduction is also mentioned in that regard.
-}
+
 \section{Introduction}
 
 \Acp{bci} have the potential to bypass
@@ -771,7 +762,7 @@ filter and decimation.
 In line with the \ac{moabb} method, only the first three classes per dataset were
 used.
 When considering grand average classification accuracies over all evaluated
-\ac{mi} datasets as reported in \cref{tan:scores-mi},
+\ac{mi} datasets as reported in \cref{tan:mi-score},
 the full BTTDA+LDA model (avg. accuracy: $64.52\pm12.23$\%)
 outperforms PARAFACDA+LDA ($58.89\pm11.27$\%) and HODA+LDA
 ($61.00\pm11.11$\%).
@@ -883,7 +874,6 @@ Each model was retrained with these hyperparameters on the full data combined
 over all subjects.
 
 \todo[inline]{Regenerate ERP with normalization}
-\todo[inline]{Indicate channel}
 
 \todo[inline]{calculation to obtain block reconstructions}
 
@@ -892,12 +882,60 @@ over all subjects.
 
 	\input{figures/interpretability/mi_contrast.tikz.tex}
 
-	\caption{Reconstructed contrasts obtained using the \ac{bttda} forward model compared to the grand-average contrast for \ac{erp} dataset BNCI2014-008 (top) and \ac{mi} dataset AlexMI (bottom).}
+	\caption{%
+		Per-block forward \ac{bttda} model activation pattern contrasts and
+		overall grand-average contrast for \ac{erp} dataset BNCI2014-008 (top) and
+		\ac{mi} dataset AlexMI (bottom).
+		Red lines indicate the slices generating the scalp plot.
+		In the bottom row, the white dot indicates for which channel the time-frequency
+		spectrum was plotted.
+		The \ac{erp} is decomposed in parieto-occipital components (P1, N1, N2)
+		corresponding to visual processing and fronto-central components (P3a,P3b)
+		related to task processing.
+		The right-hand \acf{mi} \ac{ersd} is decomposed in mostly contralateral high-$\mu$ band
+		desynchronization, and parietal $\alpha$-band	synchronization.
+	}
+	\label{fig:results/interpret}
 \end{figure*}
 
-\todo[inline]{Results: point out qualititive components}
+The top row of \cref{fig:results/interpret} shows the grand-average contrast
+between target and non-target trials and the activation patterns contrasts of
+block 1 and 2.
+The grand-average \ac{erp} contrast exhibits noise and an entangled superposition
+of several different \ac{erp} components~\cite{Luck2011}.
+The activation patterns of the first two blocks disentangle this contrast
+in effects that can be related to \ac{erp} literature in the context of the
+classic visual P300 matrix speller task in BNCI2014-008~\cite{Riccio2013}.
 
-\todo[inline]{Discussion: Effective unmixing in multi-rank components (compared to PCA/ICA/XDAWN/CSP with rank-one components)}
+Block 1 exhibits positive and negative peaks in the lateral parieto-occipital
+regions corresponding to the visual cortex.
+The first positive peak and 2 negative peaks (P1, N1, N2)
+correspond to early components reflecting the task-related visual processing
+modulated by a mix of visual fixation and visual attention~\cite{Treder2010}.
+Block 2 has a more central scalp expression, and shows 2 positive peaks (P3a, P3b).
+Together with the residual positive activation between 0.4 s and 0.6 s, these
+constitute the processing of the attention-modulated detection of rare stimuli
+present in the P300 matrix speller task~\cite{Kamp2013}.
+
+For motor imagery, the contrasts between right-hand movement trials and rest trials
+are shown in the bottom row of \cref{fig:results/interpret}
+Positive values indicate event-related synchronization, negative values
+desynchronization.
+Upon visual inspection, the grand-average contrast shows no dominant pattern of
+synchronization or desynchronization, possibly due to the limited dataset size.
+
+\Ac{bttda} decomposition extracts two distinct effects.
+Block 1 shows a persistent desynchronization between 9Hz and 13Hz most prominent
+in the left central area.
+For right-hand motor imagery, this corresponds to expected task-specific and
+localized high-$\mu$ band desynchronization in the contralateral motor
+cortex~\cite{Pfurtscheller2000,Wolpaw2012}.
+Block 2 exhibits a synchronization between 8 and 12 Hz over the
+parieto-occipital region, from 1.2 to 2.2 s.
+This may be interpreted as the $\alpha$ band surround-ERS observed during hand
+movement~\cite{Suffczynski1999, Gerloff1998,Wolpaw2012}.
+
+
 \todo[inline]{interpretability in abstract and conclusions}
 
 
@@ -908,7 +946,16 @@ The \ac{hoda} model used for \ac{bci} decoding can be constrained by its
 Tucker structure.
 We introduced a more flexible generalization termed \ac{bttda} with a
 block-term tensor structure.
-BTTDA pushes the state-of-the-art decoding performance up for \ac{erp}
+We also introduce \ac{PARAFACDA}, a special case of \ac{bttda} expressed as a
+sum of multilinear rank-1 terms.
+Our results show that \ac{bttda} consistently scores on par or significantly higher than
+\ac{hoda}.
+\Ac{bttda} managed to outperform \ac{hoda} with 2.36 \% points on average for
+\ac{erp} datasets, and 2.75 \% points for \ac{mi} datasets.
+PARAFACDA also scored 0.31 \% points higher than  \ac{hoda} in \ac{erp} datasets
+but was outperformed by \ac{bttda} overall.
+
+BTTDA yields state-of-the-art decoding performance for \ac{erp}
 datasets in the \ac{moabb} benchmark, but fails to do so for \ac{mi} datasets.
 While this effect is not consistent over all \ac{erp} datasets, and the
 increase is often rather low (<2 \% points), it averages out over all datasets
@@ -918,7 +965,7 @@ relatively high binary classification performance, which does not always leave
 room for improvement.
 
 As mentioned above, results for \ac{mi} were substantially lower than expected.
-Not only does \ac{bttda} performs poorly, but the baseline \ac{hoda} model as well.
+Not only does \ac{bttda} perform poorly, but the baseline \ac{hoda} model as well.
 This is unexpected since it conflicts with literature which uses \ac{hoda} to
 effectively classify \ac{mi} from time-frequency transforms~\cite{Phan2010,Lotte2018,Liu2015,Cai2021}.
 If the issues hampering \ac{hoda} performance can be identified, \ac{bttda}
@@ -936,24 +983,35 @@ cross-validation folds due to the combination of $K=3$ and larger data size foll
 time-frequency transformation.
 Solutions for this problem can be computationally expensive.
 
-Nevertheless, when considering our main research question regarding the
-relative improvement over \ac{hoda}, our results show that
-\ac{bttda} consistently scores significantly higher than \ac{hoda}.
-\Ac{bttda} managed to outperform \ac{hoda} with 2.36 \% points on average for
-\ac{erp} datasets, and 2.75 \% points for \ac{mi} datasets.
-PARAFACDA, the proposed rank-1  special case of \ac{bttda},
-also scored 0.31 \% points higher than  \ac{hoda} in \ac{erp} datasets but was
-outperformed by \ac{bttda} overall.
 
-For \ac{mi} datasets, \ac{parafacda} scored lower than both \ac{hoda} and \ac{bttda}.
-Our hypothesis is that this stems from the multiclass nature of the problem.
-\Ac{parafacda} only extracts a single feature per block which cannot properly
-separate more than 2 classes.
-Further blocks are not properly adapted to take into account which classes
-have been separated by earlier blocks, hence extracting more \ac{parafac}
-blocks might not be helpful.
+Finally, due its the inherent the tensor decomposition and the forward modeling
+steps, \ac{bttda} is intrinsically an explainable model which allows for interpretation
+of the signal components modeled by the tensor blocks.
+While the weights of the backward projections are
+hard to interpret~\cite{Haufe2014}, the activation patterns and contrasts after
+forward projection can reveal patterns in neural data.
+Qualitative analysis showed that for both \ac{erp} and \ac{mi} classification
+problems, the block activation patterns correspond to task-related
+physiological processes.
+Given informed or correctly tuned hyperparameters, this method could be used to,
+e.g., separate and identify neural processes based on the task-related
+information in the class labels.
+More generally, \ac{bttda} can achieve an effective unmixing of signal generators
+relevant to the classification problem at hand, which might otherwise not be
+properly separated within the constraints of the \ac{hoda} model.
+A point of care, however, arises from the deflation scheme: some processes
+might already be partially explained by previous blocks.
+In this case, information from a single physiologic process might not be modeled
+using only a single block.
+Hence, previous blocks might need to be taken into account to properly interpret
+a block activation pattern.
 
-While no proof is given here, we notice that NMSE monotonically decreases.
+\subsection{Modeling assumptions}
+
+We assume the main benefit of \ac{bttda} stems from the following two aspects.
+Given fixed block dimensions, extra \ac{bttda} blocks with proper feature selection
+can discover more discriminant information over \ac{hoda}.
+While no proof is given here, we show that NMSE monotonically decreases.
 This suggests that all the variation in the signal will eventually be explained
 by the model while still extracting features that are maximally discriminant.
 Eventually, the number of blocks will reach a point of diminishing validation
@@ -961,15 +1019,7 @@ score returns.
 At this point, adding extra features to the decision classifier increases
 the risk of overfitting instead of adding extra useful discriminatory
 information.
-
-
-
-\subsection{Modeling assumptions}
-
-We assume the main benefit of \ac{bttda} stems from the following two aspects.
-Given fixed block dimensions, extra \ac{bttda} blocks with proper feature selection
-can discover more discriminant information over \ac{hoda}.
-Performance increases with the number of blocks until overfitting occurs.
+Hence, performance increases with the number of blocks until overfitting occurs.
 
 On the other hand, a \ac{bttda} solution is more parsimonous than a \ac{hoda}
 solution can achieve due to its block-term structure compared to HODA's full Tucker
@@ -1013,61 +1063,22 @@ covariance structure given sufficient blocks.
 This way modeling multiple effects with corresponding multilinear distributions
 can be extracted.
 
-%\todo[inline]{Drop this paragraph?}
-%The forward \ac{hoda} model could also be specified in the
-%classical manner by direct linear regression or with the solution of \textcite{Haufe2014}, but this would require
-%vectorizing the tensor representation.
-%While the reconstruction error might be reduced, this would come at the loss of computational
-%efficiency and the regularizing constraints of the tensor form.
-%Alternatively, the forward model could be obtained efficiently through other tensor
-%regression methods, like \ac{hopls}. This method still requires fitting more parameters than our
-%proposed model, on top of additional hyperparameters defining the
-%dimensionality of the common subspace.
-%An attractive property of our multilinear forward model for HODA is that it
-%estimates exactly as many parameters as the backward model, with the intuition that
-%forward modeling should not disproportionally contribute to overfitting compared
-%to backward modeling
+Finally, the drop in performance for \ac{parafacda} in \ac{mi} datasets can also be
+explained by the \ac{parafac} model structure.
+Our hypothesis is that this stems from the multi-class nature of the problem.
+\Ac{parafacda} only extracts a single feature per block which cannot properly
+separate more than 2 classes.
+Further blocks are not properly adapted to take into account which classes
+have been separated by earlier blocks, hence extracting more \ac{parafac}
+blocks might not be helpful.
 
-\todo[inline]{Drop this paragraph?}
-Additionally, the forward modeling step designed for \ac{hoda} inherent to
-\ac{bttda} results in an interpretable model.
-Activation patterns allow the inspection of the
-neural patterns relevant to the problem at hand~\cite{Haufe2014}.
-%\Cref{fig:forward}
-\todo[inline]{figure}shows the activation patterns
-of two blocks obtained from the BNCI2014-008 dataset, as well as the forward
-projection of the difference between the averages of the mean latent tensor per
-class (\emph{contrasts}).
-While the weights of the backward projection are
-hard to interpret~\cite{Haufe2014},
-the activation patterns and contrasts after forward projection can clearly reveal
-patterns in neural data.
-For instance, ERP components can be recognized and separated into different
-\ac{hoda} activation pattern vectors or in different \ac{bttda} blocs.
-%\begin{figure*}[t]
-%	\includegraphics[width=\linewidth]{figure6a.png}
-%	\includegraphics[width=\linewidth]{figure6b.png}
-%  \caption[Extracted \acs{bttda} activation patterns.]{%
-%    Spatial (left two columns) and temporal (middle column) activation patterns and
-%		condition contrasts (right column) obtained after forward projection of the latent
-%    features for 2 blocks of rank $(2,2)$ of \ac{bttda}
-%    fit on the full dataset BNCI2014-008.
-%    The separate blocks approximately model different \ac{erp}
-%		components.}
-%	\label{fig:forward}
-%\end{figure*}
-Given informed or correctly tuned hyperparameters, this method could be used to,
-e.g., separate and identify \ac{erp} components or neural processes based on the task-related
-information in the class labels.
-
-In summary, \ac{bttda} with a proper choice of reduced dimensions is a useful generalization
-of \ac{hoda}.
-We conclude there is an effective	added value in iteratively finding multiple blocks.
+In summary, we conclude there is an effective	added value in iteratively finding
+multiple blocks.
 The flexibility of the \ac{bttda} model is both expressed in its ability
 to capture more discriminant information with more parsimony,
 and in its ability to capture effects which cannot be expressed by the \ac{hoda}
 model, such as the \ac{eeg} covariance structure.
-This makes it suited to tackle classification problems encountered in
+This makes it specifically suited to tackle classification problems encountered in
 brain-computer interfacing.
 
 \subsection{Model selection}
@@ -1110,17 +1121,17 @@ methods relying on sparsity criteria, eigenvalue truncation or information
 criteria such as the ones used in \ac{bttr}~\cite{Faes2022}, or other
 statistical measures based on the application of the model.
 
-Finally, it is clear that our proposed model selection procedure does not
-necessarily result in an optimal set of blocks that groups coherent
-projections within the same block according to some desirable metric.
+Finally, we note that our proposed model selection procedure does not
+guarantee grouping coherent projections within the same block according to some
+desirable metrics.
 Currently, features across blocks are heavily correlated, leading to a high
-degree of multicolinearity in the extracted features.
+degree of multicolinearity.
 Currently, this is corrected  post-hoc by applying whitening and PCA.
 Solutions imposing some sense of subspace orthogonality between the extracted
 blocks could lead to a more effective feature extraction solution.
 Sparsity, pattern interpretability, minimal or maximal within-block feature
 correlation and ordering of blocks by decreasing discriminability are
-examples of useful, within-block grouping criteria.
+examples of useful within-block grouping criteria.
 
 %\todo[inline]{This hypothesis seems reasonable, but is not substantiated with
 %	evidence or analysis, which could feasible be done with some extra work by analyzing the number of features. Is it relevant?}
@@ -1147,7 +1158,6 @@ conditions or sliding windows, if these are appropriately chosen based on prior
 knowledge of the dataset.
 
 \section{Conclusion}
-%\todo[inline]{limitations subpar performance for bttda possibly attributed to preprocessing  but improved rel to hoda}
 
 We have introduced \acf{bttda}, a novel,
 tensor-based, supervised dimensionality reduction technique optimized for class
@@ -1162,6 +1172,8 @@ Via accompanying model selection hyperparameters, \ac{bci} decoders using
 \ac{hoda} exceed state-of-the-art decoding performance on \acl{erp} problems
 (second-order tensors) and outperform \ac{hoda} in motor imagery problems
 (third-order tensors).
+The inherent forward model of \ac{bttda} also allows interpreting the
+discriminative processes considered by the classifier.
 
 Moving from the rigid Tucker tensor structure of \ac{hoda} to the more flexible
 and sparse block-term structure shifts the focus from finding the best constrained
@@ -1201,9 +1213,9 @@ computational experiments on their systems.
 We also wish to acknowledge Dr.\ Axel Faes for his inspiration in
 conceptualizing this work.
 
-AVDK is funded by the special research fund of the KU Leuven (GPUDL/20/031).
-\todo[inline]{Should past funds used when the work was in preperation also be
-	mentioned here, or only those active at the time of submission?}
+AVDK has been is funded by the Belgian Fund for Scientific Research Flanders
+(G0A4321N) and received support of the special research fund of the KU Leuven
+(GPUDL/20/031) and the University of Lille under the Global PhD Scholarship Program.
 MMVH is supported by research grants received from the European Union’s
 Horizon Europe Marie Sklodowska-Curie Action program
 (grant agreement No. 101118964), the European Union’s Horizon 2020 research and
