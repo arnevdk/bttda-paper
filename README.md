@@ -1,5 +1,7 @@
 # BTTDA: Block-Term Tensor Discriminant Analysis for Brain-Computer Interfacing
 
+Download latest PDF version: https://nightly.link/arnevdk/bttda-paper/workflows/build-pdf/main/bttda_manuscript.pdf.zip
+
 Check out the code at https://github.com/arnevdk/bttda
 
 ## Abstract
