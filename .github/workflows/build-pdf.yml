@@ -15,7 +15,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Build PDF
-        run: latexmk
+        run: latexmk main.tex
       - name: Upload paper
         uses: actions/upload-artifact@v4
         with:
