@@ -803,7 +803,7 @@ $b$ was varied from 1 to 16, while $\theta$ was chosen from
 $\smash{\left\{0.0, 0.1, 0.2,\ldots, 1.0\right\}}$.
 Full results are presented in additional file \cref{item:add/blocks}.
 Below, we report on selected of $\theta$ choices.
-When $\theta=0$, the \ac{bttda} model corresponds to the PARAFACDA decoder.
+When $\theta=0$, the \ac{bttda} model corresponds to the \ac{parafacda} decoder.
 $\theta=0.1$ yielded the highest BTTDA+LDA \ac{rocauc}.
 $\theta=1$ resulted in the highest overall HODA+LDA ($b=1$) performance.
 At $\theta=1$, no blocks other than the initial block can be modeled, since
@@ -946,13 +946,13 @@ The \ac{hoda} model used for \ac{bci} decoding can be constrained by its
 Tucker structure.
 We introduced a more flexible generalization termed \ac{bttda} with a
 block-term tensor structure.
-We also introduce \ac{PARAFACDA}, a special case of \ac{bttda} expressed as a
+We also introduce \ac{parafacda}, a special case of \ac{bttda} expressed as a
 sum of multilinear rank-1 terms.
 Our results show that \ac{bttda} consistently scores on par or significantly higher than
 \ac{hoda}.
 \Ac{bttda} managed to outperform \ac{hoda} with 2.36 \% points on average for
 \ac{erp} datasets, and 2.75 \% points for \ac{mi} datasets.
-PARAFACDA also scored 0.31 \% points higher than  \ac{hoda} in \ac{erp} datasets
+\Ac{parafacda} also scored 0.31 \% points higher than  \ac{hoda} in \ac{erp} datasets
 but was outperformed by \ac{bttda} overall.
 
 BTTDA yields state-of-the-art decoding performance for \ac{erp}
@@ -1027,7 +1027,7 @@ structure, as illustrated	by \cref{fig:bttda/sparse}.
 In other words, the same discriminative information captured by a relatively large
 Tucker-structured core tensor could be expressed more sparsely with a small
 number of block-terms, while avoiding redundant features.
-The PARAFAC structure employed in PARAFACDA is even more sparse, which could be
+The \ac{parafac} structure employed in \ac{parafacda} is even more sparse, which could be
 a benefit or a drawback depending on the amount of regularization required,
 or on the true underlying structure of the data.
 \Ac{bttda} with a few, sparse blocks might perform worse then a dense \ac{hoda}
