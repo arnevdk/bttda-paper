@@ -762,7 +762,7 @@ filter and decimation.
 In line with the \ac{moabb} method, only the first three classes per dataset were
 used.
 When considering grand average classification accuracies over all evaluated
-\ac{mi} datasets as reported in \cref{tan:mi-score},
+\ac{mi} datasets as reported in \cref{tab:mi-score},
 the full BTTDA+LDA model (avg. accuracy: $64.52\pm12.23$\%)
 outperforms PARAFACDA+LDA ($58.89\pm11.27$\%) and HODA+LDA
 ($61.00\pm11.11$\%).
@@ -872,8 +872,6 @@ determine the best hyperparameter for cross-subject decoding
 (\ac{erp}: $\theta=0.3$, \ac{mi}: $\theta=0.7$)
 Each model was retrained with these hyperparameters on the full data combined
 over all subjects.
-
-\todo[inline]{Regenerate ERP with normalization}
 
 \todo[inline]{calculation to obtain block reconstructions in appendix}
 
@@ -1033,33 +1031,36 @@ or on the true underlying structure of the data.
 solution, adding extra \ac{bttda} blocks eventually overpasses the \ac{hoda}
 solution as indicated by~\cref{fig:blocks}.
 
-\todo[inline]{What are your opinions about this paragraph and its relevance?
-	The inspiration for writing this paper mostly comes from this concept,
-	as it was identified as a limitation in our 2022 Kronecker LCMV and later
-	Kronecker LDA work.
-	Should this be included in the introduction and/or brought forward in the problem statement?
-	I think it's interesting to not only be constrained to tensor modeling concepts,
-	but also loop back to contextualize the particular relevance for and our focus
-	on BCI decoding.
-	On the other hand, fully substantianting this might require extra analysis
-	relating the decomposed data covariance structure to the model structure and
-	its perfomance.
-}
+%\todo[inline]{What are your opinions about this paragraph and its relevance?
+%	The inspiration for writing this paper mostly comes from this concept,
+%	as it was identified as a limitation in our 2022 Kronecker LCMV and later
+%	Kronecker LDA work.
+%	Should this be included in the introduction and/or brought forward in the problem statement?
+%	I think it's interesting to not only be constrained to tensor modeling concepts,
+%	but also loop back to contextualize the particular relevance for and our focus
+%	on BCI decoding.
+%	On the other hand, fully substantianting this might require extra analysis
+%	relating the decomposed data covariance structure to the model structure and
+%	its perfomance.
+%}
 The enhanced performance could also partially stem from \ac{bttda}'s internal
 model of the data covariance.
 Since HODA estimates one within-class scatter matrix
 $\mat{S}_{-k,\text{w}}\in\mathbb{R}^{D_k\times D_k}$ per mode during training,
 its overall model of the data scatter is determined by these per-mode scatter matrices as a
 Kronecker product $\mat{S}_{-1,\text{w}}\otimes \mat{S}_{-2,\text{w}}\otimes\cdots\otimes \mat{S}_{-K,\text{w}}$.
-This corresponds to the assumption that the EEG data is
+This corresponds to the assumption that the \ac{eeg} data is
 drawn from a multilinear normal distribution~\cite{Ohlson2013}.
-However, it is known that EEG covariance cannot fully be expressed as a
+Similar assumptions are made in \ac{erp} decoding algorithms such as
+Spatial-Temporal Discriminant-Analysis~\cite{Zhang2013} and LCMV-beamforming
+with Kronecker covariance structure~\cite{Kerchove2022}.
+However, it is known that \ac{eeg} covariance cannot fully be expressed as a
 single Kronecker product, but rather is more accurately modeled by a sum of
 multiple Kronecker products~\cite{Bijma2005, Sosulski2022}.
-Since BTTDA iteratively fits HODA models to the residual error, each with its own
+Since \ac{bttda} iteratively fits \ac{hoda} models to the residual error, each with its own
 multilinear covariance model, it should eventually be able to express the full
 covariance structure given sufficient blocks.
-This way modeling multiple effects with corresponding multilinear distributions
+This way, multiple effects with corresponding multilinear distributions
 can be extracted.
 
 Finally, the drop in performance for \ac{parafacda} in \ac{mi} datasets can also be
