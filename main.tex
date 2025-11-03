@@ -65,7 +65,7 @@ A \ac{bci} usually operates by identifying specific, task-related activity in
 the recorded \ac{eeg} data, which can then be coupled to output or actions.
 This methodology often gives rise to classification problems~\cite{Lotte2018}.
 Some well-known examples include the P300 speller~\cite{Krusienski2006}, where
-momentary visual stimuli evoke characteristic \acp{erp} modulated by attenation,
+momentary visual stimuli evoke characteristic \acp{erp} modulated by attention,
 and \ac{mi}~\cite{Aggarwal2019}, where different (imagined) limb movements evoke
 \acp{ersd} with different spatial patterns.
 As a consequence \ac{bci} decoding (\ac{erp} vs.\ non-attended \ac{erp}, left
@@ -85,7 +85,7 @@ problem at hand.
 \subsection{Tensors \& tensor methods}
 
 Because of the multichannel time series format of \ac{eeg} and other \ac{bci} functional
-neuromaging methods, recorded data naturally exist as multiway data, capturing
+neuroimaging methods, recorded data naturally exist as multiway data, capturing
 information in both the spatial and the temporal domain.
 Preprocessing transformations can further expand the data into additional
 analytic domains.
@@ -337,7 +337,7 @@ to find the optimal projection matrices:
 \end{equation}
 which is solved through the backward HODA algorithm.
 To start, $\mat{U}_k$ are initialized to orthogonal matrices, e.g.,\ as random
-orthonormal matrices, by a per-mode Singular Value Decomposition (SVD),
+orthonormal matrices, by a per-mode \ac{svd},
 or as the partial \ac{hosvd} of all stacked tensors in the dataset.
 At each iteration, the algorithm loops through the modes and fixes all
 projections but $\mat{U}_k$ corresponding to mode $k$.
@@ -725,11 +725,11 @@ Significance and effect sizes for all evaluated \ac{erp} datasets are reported i
 	\input{tables/score_erp.tex}
 	\caption{Area under the receiver operating characteristic curve for
 		cross-validated within-session evaluation of HODA+LDA and our proposed decoders
-		PARAFACDA+DLA and BTTDA+LDA evaluated on \ac{erp} datasets.
+		PARAFACDA+LDA and BTTDA+LDA evaluated on \ac{erp} datasets.
 		Scores for other decoders were taken from \textcite{Chevallier2024}.
 		BTTDA+LDA always outperforms HODA+LDA and PARAFACDA+LDA, except for datasets,
 		and consistently is nearly on par with or outperforms
-		the state-of-the-art XDAwnCov+TS+SVM decoder.
+		the state-of-the-art XDAWNCov+TS+SVM decoder.
 	}
 	\label{tab:results/erp/score}
 \end{sidewaystable*}
@@ -757,7 +757,7 @@ and 32 Hz.
 The signals were then cut into epochs starting from stimulus onset with a
 dataset-specific length given by \cref{tab:moabb}.
 Custom postprocessing to convert epochs to third-order tensors extracted
-the magnitude of the complex Morlet-wavelet transform with 17 logarithmicaly spaced frequencies from 8 Hz to 32 Hz and a varying number of cycles logarithmically spaced from 4 to 16.
+the magnitude of the complex Morlet-wavelet transform with 17 logarithmically spaced frequencies from 8 Hz to 32 Hz and a varying number of cycles logarithmically spaced from 4 to 16.
 Finally, the magnitude envelope was downsampled to 32 Hz using an anti-aliasing
 filter and decimation.
 
@@ -843,7 +843,7 @@ Eventually, \ac{bttda} its reaches the highest overall \ac{rocauc} at $b=8$
 (avg. \ac{rocauc} 86.23\%).
 In general, when only a single block is used, a high $\theta$ is needed.
 When more blocks are used, higher $\theta$ deteriorates performance.
-higher performance can be reached by choosing a low $\theta$ and $b>1$, resulting
+Higher performance can be reached by choosing a low $\theta$ and $b>1$, resulting
 in multiple blocks with low dimensions.
 
 Additionally, \cref{fig:blocks} (right) shows the effectiveness of the forward
@@ -957,7 +957,7 @@ block-term tensor structure.
 We also introduce \ac{parafacda}, a special case of \ac{bttda} expressed as a
 sum of multilinear rank-1 terms.
 Our results show that \ac{bttda} consistently scores on par or significantly higher than
-\ac{hoda} as a supervized dimensionality reduction technique for \ac{bci} decoding.
+\ac{hoda} as a supervised dimensionality reduction technique for \ac{bci} decoding.
 \Ac{bttda} managed to outperform \ac{hoda} with 2.36\%pt. on average for
 \ac{erp} datasets, and 2.75\%pt. for \ac{mi} datasets.
 \Ac{parafacda} also scored 0.31\%pt. higher than  \ac{hoda} in \ac{erp} datasets
@@ -1029,8 +1029,8 @@ the risk of overfitting instead of adding extra useful discriminatory
 information.
 Hence, performance increases with the number of blocks until overfitting occurs.
 
-On the other hand, a \ac{bttda} solution is more parsimonous than a \ac{hoda}
-solution can achieve due to its block-term structure compared to HODA's full Tucker
+On the other hand, a \ac{bttda} solution is more parsimonious than a \ac{hoda}
+solution can achieve due to its block-term structure compared to \ac{hoda}'s full Tucker
 structure, as illustrated	by \cref{fig:bttda/sparse}.
 In other words, the same discriminative information captured by a relatively large
 Tucker-structured core tensor could be expressed more sparsely with a small
@@ -1050,9 +1050,9 @@ solution as indicated by~\cref{fig:blocks}.
 %	I think it's interesting to not only be constrained to tensor modeling concepts,
 %	but also loop back to contextualize the particular relevance for and our focus
 %	on BCI decoding.
-%	On the other hand, fully substantianting this might require extra analysis
+%	On the other hand, fully substantiating this might require extra analysis
 %	relating the decomposed data covariance structure to the model structure and
-%	its perfomance.
+%	its performance.
 The enhanced performance could also partially stem from \ac{bttda}'s internal
 model of the data covariance.
 Since HODA estimates one within-class scatter matrix
@@ -1138,7 +1138,7 @@ Finally, we note that our proposed model selection procedure does not
 guarantee grouping coherent projections within the same block according to some
 desirable metrics.
 Features across blocks are heavily correlated, leading to a high
-degree of multicolinearity.
+degree of multicollinearity.
 Currently, this is corrected  post-hoc by applying whitening and PCA.
 Solutions imposing some sense of subspace orthogonality between the extracted
 blocks could lead to a more effective feature extraction solution.
@@ -1217,7 +1217,7 @@ this work are available at \url{https://github.com/arnevdk/bttda}.
 	\label{item:add/blocks}
 \end{enumerate}
 
-\section*{Acknowledgements}
+\section*{Acknowledgments}
 We thank the Flemish Supercomputer Center (VSC) and the High-Performance
 Computing (HPC) center of KU Leuven for allowing us to execute our
 computational experiments on their systems.
