@@ -38,13 +38,13 @@
 			\addplot+[color=black, dashed] coordinates {(0, -2.5) (0,2.5)};
 		}
 
-		\nextgroupplot[title=Grand average]
+		\nextgroupplot[title=Grand-average contrast]
 		\addplot+[color=red] coordinates {(0.45, -2.5) (0.45, 2.5)};
 		\drawEvokedTime{grand-avg}
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_grand-avg_topo.png};
 
-		\nextgroupplot[title=Block 1 pattern, extra x ticks={0.3}]
+		\nextgroupplot[title={Reconstructed contrast ($b=1$)}, extra x ticks={0.3}]
 
 		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
 
@@ -64,7 +64,7 @@
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_block-1_topo.png};
 
-		\nextgroupplot[title=Block 2 pattern, extra x ticks={0.3}]
+		\nextgroupplot[title={Reconstructed contrast ($b=2$)}, extra x ticks={0.3}]
 		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
 
 		\node[coordinate, pin={%
