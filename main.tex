@@ -613,7 +613,7 @@ Furthermore, discriminant features across blocks can be heavily correlated since
 all blocks are independently optimizing the same discriminability criterion.
 
 To tackle these issues, extracted features are first decorrelated and scaled using
-a whitening \ac{pca} transformation, retaining all principle components.
+a whitening \ac{pca} transformation, retaining all principal components.
 Relevant \ac{pca} components can be identified by calculating the
 univariate Fisher score $\phi(i)$ for each component $i$ after \ac{pca},
 calculated as
@@ -625,7 +625,7 @@ calculated as
 Only features where $\phi(i) > 1$, i.e., between-class variance is greater
 than within-class variance, are retained.
 If there  are no extracted features with $\phi(i) > 1$, only the feature with the highest
-$\phi(i)$ was retained.
+$\phi(i)$ is retained.
 
 \section{Experiments}
 \subsection{Datasets and decoders}
@@ -847,7 +847,7 @@ Higher performance can be reached by choosing a low $\theta$ and $b>1$, resultin
 in multiple blocks with low dimensions.
 
 Additionally, \cref{fig:blocks} (right) shows the effectiveness of the forward
-modeling step is assessed as the cross-validated \ac{nmse} when reconstructing
+modeling step measured as the cross-validated \ac{nmse} when reconstructing
 the original data  from the truncated \ac{bttda} decomposition
 $\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}}$,
 with \ac{nmse} is calculated as:
@@ -1115,7 +1115,7 @@ from finding optimal projections to model selection driven by computation.
 
 The proposed $\theta$-controlled selection procedure efficiently
 reduces the computational demand compared to tuning all hyperparameters
-$\textstyle{\left\{ R_1^{(b)},R_2^{(b)},\ldots,R_K^{(b)}\right\}_b^B}$.
+$\textstyle{\left\{  \left(R_1^{(b)},R_2^{(b)},\ldots,R_K^{(b)}\right)\right\}_b^B}$.
 On the other hand, it also limits the chosen dimensions of each block to lie
 within a subset of all possible configurations.
 In a sense, this goes against the earlier proposition of increased model
