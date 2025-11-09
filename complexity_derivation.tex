@@ -1,7 +1,3 @@
-\section{Time complexity of HODA and BTTDA}
-\label{app:complexity-derivation}
-
-\subsection{Backward \Ac{hoda} algorithm}
 To obtain time complexity of the \ac{hoda} backward model algorithm, we start
 by determining the number of operations within a single inner loop
 for given $i$ and $k$.
@@ -96,8 +92,7 @@ executed $I_\text{max}K$ times, yielding
 	\label{eq:complexity/backward}
 \end{equation}
 
-\subsection{Forward \ac{hoda} algorithm}
-Similar to the previous derivation, we start by determining the operations
+Similar to the previous derivation, the derivation of the time complexity of \ac{hoda} forward model training  starts by determining the operations
 within a single iteration of a nested over the $i$ and $k$.
 
 The first step is again a multi-mode product, $\smash{\ten{G}(n)\mmprsi{\mat{A}}{k}}$:
@@ -141,8 +136,6 @@ and, when integrating it in the inner and outer loops over $i$ and $k$,
 This is the same asymptotic time complexity as the backwards modeling algorithm,
 since they are both dominated by the multi-mode product.
 
-\subsection{Backward \ac{bttda} algorithm}
-
 Fitting the \ac{bttda} model involves a loop over blocks $b$.
 At each iteration, a backward model is fit with complexity as in
 \cref{eq:complexity/backward}
@@ -183,7 +176,6 @@ The complexity when calculating all blocks is
 	\mathcal{O}\left(BI_\text{max}NK^2D^{K+1}\right)
 \end{equation}
 
-\subsection{Hyperparameter tuning}
 Finally, proper decoding training relies heavily on tuning the hyperparameters
 $\theta$ and $B$ through cross-validation.
 Let $F$ be the number of cross-validation folds and $\Theta$ a set of $\theta$

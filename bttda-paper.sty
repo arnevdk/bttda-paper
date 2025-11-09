@@ -3,7 +3,14 @@
 \ProvidesPackage{bttda-paper}[2024/10/23 v1.0 Basic paper setup for BT-TDA]
 
 % Packages
-\RequirePackage[backend=biber,style=numeric, sorting=none]{biblatex}
+\RequirePackage[
+	backend=biber,
+	style=numeric,
+	sorting=none,
+	doi=false,
+	url=false,
+	%issn=false
+]{biblatex}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{hyperref}
 \RequirePackage{booktabs}
@@ -12,9 +19,7 @@
 \RequirePackage{expl3}
 \RequirePackage{amsmath}
 \RequirePackage{amssymb}
-\RequirePackage{todonotes}
 \RequirePackage{tabularx}
-\RequirePackage[inline]{enumitem}
 \RequirePackage{float}
 \RequirePackage{makecell}
 \RequirePackage{algorithm}
@@ -22,13 +27,10 @@
 \RequirePackage{siunitx}
 \RequirePackage{acro}
 \RequirePackage{cleveref}
-\RequirePackage{rotating}
+\RequirePackage{microtype}
 
-% Setup matplotlib pgf plots
-%\RequirePackage{pgf}
-%\def\mathdefault#1{#1}
-%\everymath=\expandafter{\the\everymath\displaystyle}
-%\makeatletter\@ifpackageloaded{underscore}{}{\RequirePackage[strings]{underscore}}\makeatother
+% Layout
+\renewcommand*{\bibfont}{\footnotesize}
 
 % Setup PGF plots
 \RequirePackage{pgfplots}
@@ -41,10 +43,6 @@
 	group/xlabels at=edge bottom,
 	group/ylabels at=edge left,
 }
-% Setup fonts
-\RequirePackage[font=footnotesize]{caption}
-\renewcommand*{\bibfont}{\footnotesize}
-\hyphenpenalty=750
 
 % Math declarations
 \newcommand{\ten}[1]{\underline{\mathbf{#1}}} % tensor
@@ -84,14 +82,6 @@
 	\coordinate (F) at (\Width,\Height,\Depth);
 	\coordinate (G) at (\Width,0,\Depth);
 
-	%\node at (O) {O};
-	%\node at (A) {A};
-	%\node at (B) {B};
-	%\node at (C) {C};
-	%\node at (D) {D};
-	%\node at (E) {E};
-	%\node at (F) {F};
-	%\node at (G) {G};
 
 	\node at (\fpeval{0.5*#5},\fpeval{0.5*#6},0) {#1};
 
