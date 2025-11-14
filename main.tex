@@ -1,4 +1,3 @@
-%\documentclass[twocolumn]{article}
 \documentclass[journal,twoside,web]{ieeecolor}
 \usepackage{generic}
 
@@ -26,7 +25,7 @@
 	Fran\c{c}ois Cabestaing,
 	Marc M. Van Hulle, \IEEEmembership{Fellow, IEEE}
 	\thanks{%
-		Submitted for review on <\$DATE>.
+		Submitted for review on \today.
 		This work was supported in part by the special research fund of the KU Leuven
 		(GPUDL/20/031) and the University of Lille under the Global PhD Scholarship Program,
 		the European Union’s Horizon Europe Marie Sklodowska-Curie Action program
@@ -153,10 +152,12 @@ commonly using \ac{lda} or a \ac{svm}.
 
 
 \begin{figure*}[t]
-	\centering
-	\makebox[\linewidth][c]{%
-		\input{figures/tensor_core_structures.tikz.tex}
-	}
+	\centering%
+	\hfill%
+	\input{figures/tensor_core_structures_1.tikz.tex}%
+	\hfill\vrule\hfill%
+	\input{figures/tensor_core_structures_2.tikz.tex}%
+	\hfill%
 	\caption[Core tensor(s) of different tensor decomposition structures.]{%
 		A tensor decomposition finds core tensor and factor matrices
 		from input tensor.
@@ -169,12 +170,6 @@ commonly using \ac{lda} or a \ac{svm}.
 		Both the \ac{parafac} and block-term structures are more sparse than the full
 		Tucker structure, yet the block-term structure is more flexible as it
 		allows blocks of variable tensor dimensionality instead of fixed rank-1 terms.
-
-		%Core tensor(s) of different tensor decomposition structures.
-		%The block-term and PARAFAC tensor decomposition
-		%BTTDA and PARAFACDA can find a
-		%sparser expression of the discriminant information captured by the dense,
-		%Tucker-structured HODA algorithm.
 	}\label{fig:bttda/sparse}%
 \end{figure*}
 
@@ -277,7 +272,7 @@ This work features the following contributions:
 1) We develop a forward model for \ac{hoda} to reconstruct a given input tensor
 from the extracted features.
 2) This allows us to introduce \ac{bttda}\footnote{The source code of the
-	methods introduced in this work are available at
+	methods introduced in this work is available at
 	\url{https://github.com/arnevdk/bttda}.} as a state-of-the-art \ac{bci}
 feature extraction method based on the block-term tensor structure.
 3) We evaluate a \ac{bci} decoder based on \ac{bttda} and its special
@@ -320,18 +315,31 @@ tensor-matrix mode products:
 	\ten{G}  = \ten{X}\mmpr{\mat{U}}
 	\label{eq:HODA-backward}
 \end{equation}
-as visualized in \cref{fig:hoda-backward}.
-\begin{figure}[t]
-	\centering
-	\input{figures/hoda_bw.tikz.tex}
+as visualized in \cref{fig:hoda} (left).
+\begin{figure*}[t]
+	\centering%
+	\hfill%
+	\input{figures/hoda_bw.tikz.tex}%
+	\hfill\vrule\hfill%
+	\input{figures/hoda_fw.tikz.tex}%
+	\hfill%
 	\caption[A \acs{hoda} backward projection.]{%
-		A visualization of the multilinear projection obtained by \acf{hoda} applied to a third-order tensor
+		Left: The multilinear projection obtained by \acf{hoda} applied to a third-order tensor
 		sample $\ten{X}$ with dimensions $(D_1,D_2, D_3)$.
 		\Ac{hoda} finds projection matrices $\mat{U}_k$ such that maximal
 		discriminability between classes is achieved in the projected latent tensors
-		$\ten{G}$ with reduced dimension $(R_1,R_2,R_3)$.}
-	\label{fig:hoda-backward}%
-\end{figure}
+		$\ten{G}$ with reduced dimension $(R_1,R_2,R_3)$.
+		Right: The forward projection for HODA.
+		By calculating activation patterns $\mat{A}_k$, the original tensor $\ten{X}$ can approximately be
+		reconstructed from projected latent tensor $\ten{G}$.
+		The reconstruction is accurate up to an error term $\ten{E}$.
+		$\mat{A}_k$ are chosen such that the variability captured in the latent tensor is
+		maximally explained by the reconstructed tensor $\hat{\ten{X}}$ and not by
+		the error term $\ten{E}$.
+	}
+	\label{fig:hoda}%
+\end{figure*}
+
 Since \ac{hoda} extracts latent features or properties $\ten{G}$ from the observed data
 $\ten{X}$, relying on a task-related criterion, it can be referred to as a
 \emph{backward model}.
@@ -450,7 +458,7 @@ Forward models are useful for, e.g., interpretability and data compression,
 but here reconstruction with minimized reconstruction error is of interest.
 
 A straightforward and computationally efficient candidate for the \ac{hoda}
-forward model, visualized in \cref{fig:hoda-forward}, is given as:
+forward model, visualized in \cref{fig:hoda} (right), is given as:
 \begin{equation}
 	\ten{X} = \ten{G}\mmpr{\mat{A}^\intercal} + \ten{E} =
 	\hat{\ten{X}} + \ten{E}
@@ -458,18 +466,6 @@ forward model, visualized in \cref{fig:hoda-forward}, is given as:
 \end{equation}
 with \emph{activation patterns} $\mat{A}_k \in \mathbb{R}^{D_k\times R_k}$,
 reconstructed tensor $\hat{\ten{X}}$, and error term $\ten{E}$.
-\begin{figure*}[t]
-	\centering
-	\input{figures/hoda_fw.tikz.tex}
-	\caption[A forward projection for \ac{hoda}.]{The forward projection for HODA.
-		By calculating activation patterns $\mat{A}_k$, the original tensor $\ten{X}$ can approximately be
-		reconstructed from projected latent tensor $\ten{G}$.
-		The reconstruction is accurate up to an error term $\ten{E}$.
-		$\mat{A}_k$ are chosen such that the variability captured in the latent tensor is
-		maximally explained by the reconstructed tensor $\hat{\ten{X}}$ and not by
-		the error term $\ten{E}$.}
-	\label{fig:hoda-forward}
-\end{figure*}
 
 A good forward model should ensure that the norm of the reconstruction error
 $\left\|\ten{E}\right\|_F$ is minimized.
@@ -760,7 +756,6 @@ Compared to the state-of-the-art XDAWNCov+TS+SVM decoder, BTTDA+LDA scores
 better in 8 out of 14 datasets, combined with a moderate increase in grand average \ac{rocauc}
 ($91.25 > 90.82$).
 
-%Full cross-validation results can be retrieved from additional file \cref{item:add/mi-results}.
 
 \subsection{Motor Imagery}
 
@@ -797,7 +792,6 @@ BTTDA+LDA > PARAFAC+LDA ($p=\num{4.00e-6}$, SMD=$1.48$).
 BTTDA+LDA outperforms HODA+LDA except for datasets Zhou2016 and AlexandreMotorImagery.
 PARAFACDA+LDA outperforms HODA+LDA for dataset Schirrmeister2017.
 BTTDA+LDA outperforms PARAFACDA+LDA except for datasets Zhou2016 and AlexandreMotorImagery.
-%Significance and effect sizes for all evaluated \ac{mi} datasets are reported in~\cref{tab:results/mi/stats}.
 
 \begin{table*}
 	\input{tables/score_mi.tex}
@@ -814,9 +808,6 @@ BTTDA+LDA outperforms PARAFACDA+LDA except for datasets Zhou2016 and AlexandreMo
 All of HODA+LDA (avg. accuracy $61.00\pm11.11$) and our proposed decoders PARAFACDA+LDA
 ($58.89\pm11.27$) and BTTDA+LDA ($64.52\pm12.23$) score
 substantially lower than state-of-the-art decoder ACM+TS+SVM ($75.77\pm11.12$).
-
-
-%Full cross-validation results can be retrieved from additional file \cref{item:add/mi-results}.
 
 \subsection{Impact of block dimension and number of blocks}
 
@@ -836,14 +827,14 @@ $\theta=1$ resulted in the highest overall HODA+LDA ($b=1$) performance.
 At $\theta=1$, no blocks other than the initial block can be modeled, since
 $\theta=1$ by definition explains all data in the dataset and further forward
 modeling fails.
-\begin{figure}[ht]
+\begin{figure}[t]
 	\footnotesize
 	\input{figures/gridsearch.tikz.tex}
 	\caption{%
 		Cross-validated BTTDA+LDA \ac{rocauc} (left) and \ac{bttda} \ac{nmse}
 		(right) for dataset BNCI2014-008 as a function of the number of blocks $b$
 		and the hyperparameter $\theta$	which controls the block dimensions.
-		More effective class separation occurs as $b$ increases while \ac{nmse}
+		Class separation effectiveness increases as $b$ increases while \ac{nmse}
 		decreases. Eventually, overfitting occurs and class separation performance
 		drops or plateaus depending on the effectiveness of feature selection as
 		shown here.
@@ -871,13 +862,7 @@ in multiple blocks with low dimensions.
 Additionally, \cref{fig:blocks} (right) shows the effectiveness of the forward
 modeling step measured as the cross-validated \ac{nmse} when reconstructing
 the original data  from the truncated \ac{bttda} decomposition
-$\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}}$,
-with \ac{nmse} is calculated as:
-\begin{equation}
-	\nmse\left(\ten{X}, \hat{\ten{X}}^{(B)}\right) =
-	\frac{\sum_n^N\left\|\ten{X}(n)-\ten{\hat{X}}^{(B)}(n)\right\|_\text{F}^2}
-	{\sum_n^N\left\|\ten{X}(n)\right\|_\text{F}^2}
-\end{equation}
+$\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}}$.
 
 \Ac{nmse} decreases monotonically with $b$ for both $\theta=0.0$ and $\theta=0.1$.
 In general, \ac{nmse} decreases faster as $\theta$ increases.
@@ -1064,17 +1049,6 @@ or on the true underlying structure of the data.
 solution, adding extra \ac{bttda} blocks eventually overpasses the \ac{hoda}
 solution as indicated by~\cref{fig:blocks}.
 
-% What are your opinions about this paragraph and its relevance?
-%	The inspiration for writing this paper mostly comes from this concept,
-%	as it was identified as a limitation in our 2022 Kronecker LCMV and later
-%	Kronecker LDA work.
-%	Should this be included in the introduction and/or brought forward in the problem statement?
-%	I think it's interesting to not only be constrained to tensor modeling concepts,
-%	but also loop back to contextualize the particular relevance for and our focus
-%	on BCI decoding.
-%	On the other hand, fully substantiating this might require extra analysis
-%	relating the decomposed data covariance structure to the model structure and
-%	its performance.
 The enhanced performance could also partially stem from \ac{bttda}'s internal
 model of the data covariance.
 Since HODA estimates one within-class scatter matrix
@@ -1121,17 +1095,23 @@ hyperparameters to tune, which expands the solution space to settings where
 performance can be improved.
 Extracting more blocks and tuning the hyperparameters increases the time
 complexity of fitting \ac{bttda}-based models compared to \ac{hoda}-based models.
-\Ac{hoda} feature extraction can be solved with time complexity
+The most computationally expensive step in \ac{hoda} feature extraction is calculating
+the multi-mode products $\ten{G} = \ten{X}\mpr{\mat{U}}{-k}\ \forall n$ with time
+complexity $\mathcal{O}\left(NKD^{K+1}\right)$.
+HODA then has complexity $\mathcal{O}\left(I_\text{max}NK^2D^{K+1}\right)$
+when repeating this step over the outer loop with $I_\text{max}$ iterations and
+the inner loop with $K$ iterations
+In hyperparameter optimization, this gives complexity
 \begin{equation}
 	\mathcal{O}\left(\left|\Theta\right|FI_\text{max}NK^2D^{K+1}\right)
 \end{equation}
-whereas \ac{bttda} training and model selection increases this to
+with $\Theta$ the set of $\theta$ candidates and $F$ the number of
+cross-validation folds for hyperparameter tuning.
+\ac{bttda} training and model selection increases this to
 \begin{equation}
 	\mathcal{O}\left(\left|\Theta\right|FBI_\text{max}NK^2D^{K+1}\right)
 \end{equation}
-with $\Theta$ the set of $\theta$ candidates and $F$ the number of
-cross-validation folds for hyperparameter tuning.
-\Cref{app:complexity-derivation} shows complexity derivation.
+when using a grid search over $\theta$ combined with a line search over $b$.
 Overall, the \ac{bttda} approach shifts the focus of tensor discriminant analysis
 from finding optimal projections to model selection driven by computation.
 
@@ -1168,14 +1148,6 @@ Sparsity, pattern interpretability, minimal or maximal within-block feature
 correlation and ordering of blocks by decreasing discriminability are all
 examples of useful within-block grouping criteria.
 
-%This hypothesis seems reasonable, but is not substantiated with
-%	evidence or analysis, which could feasible be done with some extra work by analyzing the number of features. Is it relevant?
-%A final limitation is that \ac{bttda} might yield a disproportionate
-%improvement for datasets with a low number of features relative to sample size,
-%while being less effective for datasets with more features.
-%This is reflected in our \ac{erp} results (low dimensionality vs.\ high number of
-%trials) compared to the \ac{mi} results (higher dimensionality due to third-order
-%tensorization vs.\ lower number of trials).
 
 As future work, The impact of higher-order tensors ($K>3$) should be thoroughly
 investigated, since this could have a large impact on model behavior.
@@ -1218,26 +1190,6 @@ Because of its general implementation and minimal assumptions on data structure,
 (MEG, ECoG, fNIRS, fMRI, EMG, etc.), or to tensor classification problems in other
 domains.
 
-%\section*{Code availability}
-%
-%The source code of the proposed \ac{bttda} algorithm and the analyses performed in
-%this work are available at \url{https://github.com/arnevdk/bttda}.
-%
-%\section*{Additional data and materials}
-%\begin{enumerate}
-%	\item\textbf{Full ERP decoding cross-validation results} \\
-%	file: \texttt{erp\_results.csv}\\
-%	format: \textit{comma-separated values file}
-%	\label{item:add/erp-results}
-%	\item\textbf{Full MI decoding cross-validation results} \\
-%	file: \texttt{mi\_results.csv}\\
-%	format: \textit{comma-separated values file}
-%	\label{item:add/mi-results}
-%	\item\textbf{Full results of analysis in function of the number of blocks and block dimension}\\
-%	file: \texttt{block\_theta\_results.csv}\\
-%	format: \textit{comma-separated values file}
-%	\label{item:add/blocks}
-%\end{enumerate}
 
 \section*{Acknowledgment}
 We thank the Flemish Supercomputer Center (VSC) and the High-Performance
@@ -1246,28 +1198,11 @@ computational experiments on their systems.
 We also wish to acknowledge Dr.\ Axel Faes for his inspiration in
 conceptualizing this work.
 
-%AVDK has been is funded by the Belgian Fund for Scientific Research Flanders
-%(G0A4321N) and received support of the special research fund of the KU Leuven
-%(GPUDL/20/031) and the University of Lille under the Global PhD Scholarship Program.
-%MMVH is supported by research grants received from the European Union’s
-%Horizon Europe Marie Sklodowska-Curie Action program
-%(grant agreement No. 101118964), the European Union’s Horizon 2020 research and
-%innovation program (grant agreement No. 857375), the special research fund of
-%the KU Leuven (C24/18/098), the Belgian Fund for Scientific Research – Flanders
-%(G0A4118N, G0A4321N, G0C1522N), and the Hercules Foundation (AKUL 043).
-%
-%The authors acknowledge the support of the RITMEA project co-financed by the
-%European Union with the European Regional Development Fund, the French state,
-%and the Hauts-de-France Region Council.
 
 
 \printbibliography%
 
 \appendix
-
-\subsection{Time complexity of HODA and BTTDA}
-\label{app:complexity-derivation}
-\input{complexity_derivation.tex}
 
 \begin{table*}[h]
 	\footnotesize
@@ -1283,27 +1218,5 @@ conceptualizing this work.
 		and~\cite{Chevallier2024}.}%
 	\label{tab:moabb}
 \end{table*}
-
-%\subsection{Pairwise statistics}
-%\begin{table*}[!htbp]
-%	\footnotesize
-%	\input{tables/stats_erp.tex}
-%	\caption{Results of one-sided Wilcoxon rank-sum tests comparing the
-%		per-subject cross-validated classification scores of the evaluated \ac{erp}
-%		decoders.
-%		Significance is reported as $p$, the effect size as the standardized mean
-%		difference (SMD).}
-%	\label{tab:results/erp/stats}
-%\end{table*}
-%\begin{table*}[!htbp]
-%	\footnotesize
-%	\input{tables/stats_mi.tex}
-%	\caption{Results of one-sided Wilcoxon rank-sum tests comparing the
-%		per-subject cross-validated classification scores of the evaluated \ac{mi}
-%		decoders.
-%		Significance is reported as $p$, the effect size as the standardized mean
-%		difference (SMD).}
-%	\label{tab:results/mi/stats}
-%\end{table*}
 
 \end{document}
