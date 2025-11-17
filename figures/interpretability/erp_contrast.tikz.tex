@@ -3,10 +3,10 @@
 
 	\begin{groupplot}[
 			group style={
-					group size=6 by 1,
-					horizontal sep=0.2cm,
+					group size=8 by 1,
+					horizontal sep=0,
 				},
-			width=\linewidth/4,
+			width=0.215\linewidth,
 			%xlabel={Time (s)},
 			ylabel={Amplitude ($\mu V$)},
 			legend pos=north east,
@@ -44,15 +44,15 @@
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_grand-avg_topo.png};
 
-		\nextgroupplot[title={Reconstructed contrast ($b=1$)}, extra x ticks={0.3}]
+		\nextgroupplot[title={Block 1 contrast},]
 
 		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
 
 		\node[coordinate, pin={%
 		[pin distance=1mm, inner sep=0.5pt, text depth=0pt] above:{\footnotesize P1}
 		}] at (axis cs:0.135,0.95) {};
-		\node[coordinate, pin={%
-		[pin distance=1mm, inner sep=0.5pt, text depth=0pt] below left:{\footnotesize N1}
+		\node[coordinate,pin={%
+		[pin distance=1mm, inner sep=0.5pt, text depth=0pt, fill=white] below left:{\footnotesize N1}
 		}] at (axis cs:0.2175,-1.32) {};
 		\node[coordinate, pin={%
 		[pin distance=1mm, inner sep=0.5pt, text depth=0pt] right:{\footnotesize N2}
@@ -64,11 +64,11 @@
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_block-1_topo.png};
 
-		\nextgroupplot[title={Reconstructed contrast ($b=2$)}, extra x ticks={0.3}]
+		\nextgroupplot[title={Block 2 contrast}]
 		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
 
 		\node[coordinate, pin={%
-		[pin distance=1mm, inner sep=0.5pt, text depth=0pt] above left:{\footnotesize P3a}
+		[pin distance=1mm, inner sep=0.5pt, text depth=0pt, fill=white] above left:{\footnotesize P3a}
 		}] at (axis cs:0.2,0.75) {};
 		\node[coordinate, pin={%
 		[pin distance=1mm, inner sep=0.5pt, text depth=0pt] above right:{\footnotesize P3b}
@@ -80,5 +80,12 @@
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_block-2_topo.png};
 
+
+		\nextgroupplot[title={Reconstructed contrast}]
+		\addplot+[color=red] coordinates {(0.30, -2.5) (0.30, 2.5)};
+		\drawEvokedTime{rec}
+
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=-0.1, xmax=0.9, ymin=-2.5, ymax=2.5]{figures/interpretability/erp_contrast_rec_topo.png};
 	\end{groupplot}
 \end{tikzpicture}

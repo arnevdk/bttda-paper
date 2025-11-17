@@ -25,11 +25,7 @@ contrast_b2 = read_tfrs(
     "data/interpretability/mi_contrast_block-2_tfr.h5", verbose=False
 )
 
-
-roi = [
-    dict(chan="C3", tmin=0.3, tmax=3, fmin=9, fmax=14),
-    dict(chan="C3", tmin=1.3, tmax=2, fmin=8, fmax=12),
-]
+contrast_rec = mne.combine_evoked([contrast_b1, contrast_b2], weights=[1, 1])
 
 
 def viz_tfr(evoked, name, chan="C3", t=1, f=10):
@@ -62,3 +58,4 @@ def viz_tfr(evoked, name, chan="C3", t=1, f=10):
 viz_tfr(contrast_grand_avg, "grand-avg", chan="C3", t=1, f=11)
 viz_tfr(contrast_b1, "block-1", chan="C3", t=1, f=11)
 viz_tfr(contrast_b2, "block-2", chan="P4", t=1.6, f=10)
+viz_tfr(contrast_rec, "rec", chan="C3", t=1, f=11)

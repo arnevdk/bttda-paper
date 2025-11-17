@@ -3,10 +3,10 @@
 
 	\begin{groupplot}[
 			group style={
-					group size=6 by 1,
-					horizontal sep=0.2cm,
+					group size=8 by 1,
+					horizontal sep=0,
 				},
-			width=\linewidth/4,
+			width=0.215\linewidth,
 			xlabel={Time (s)},
 			ylabel={Frequency (Hz)},
 			%enlarge x limits=false,
@@ -21,7 +21,7 @@
 			no markers,
 		]
 
-		\nextgroupplot[extra y ticks={11}]
+		\nextgroupplot[]
 		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_grand-avg_spec.png};
 		\addplot+[color=red] coordinates {(0, 11) (3, 11)};
 		\addplot+[color=red] coordinates {(1, 8) (1, 32)};
@@ -30,7 +30,7 @@
 		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_grand-avg_topo.png};
 
 
-		\nextgroupplot[extra y ticks={11}]
+		\nextgroupplot[]
 		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-1_spec.png};
 		\addplot+[color=red] coordinates {(0, 11) (3, 11)};
 		\addplot+[color=red] coordinates {(1, 8) (1, 32)};
@@ -38,13 +38,22 @@
 		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-1_topo.png};
 
 
-		\nextgroupplot[extra x ticks = {1.6}, extra y ticks={10}]
+		\nextgroupplot[]
 		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-2_spec.png};
 		\addplot+[color=red] coordinates {(0, 10) (3, 10)};
 		\addplot+[color=red] coordinates {(1.6, 8) (1.6, 32)};
 
 		\nextgroupplot[group/empty plot]
 		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_block-2_topo.png};
+
+
+		\nextgroupplot[]
+		\addplot graphics[xmin=0, xmax=3, ymin=8, ymax=32]{figures/interpretability/mi_contrast_rec_spec.png};
+		\addplot+[color=red] coordinates {(0, 11) (3, 11)};
+		\addplot+[color=red] coordinates {(1, 8) (1, 32)};
+
+		\nextgroupplot[group/empty plot]
+		\addplot graphics[xmin=0.3, xmax=2.7, ymin=8, ymax=32]{figures/interpretability/mi_contrast_rec_topo.png};
 
 
 
