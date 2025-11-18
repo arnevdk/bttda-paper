@@ -9,8 +9,6 @@
 % TODO: only capitalize first word in references
 % TODO: replace latent by core if not talking about forward/backward model
 
-% TODO: find 'yield', 'result', 'achieve', 'obtain', 'get'
-
 
 \usepackage{bttda-paper}
 
@@ -89,9 +87,9 @@ Some well-known examples include the P300 speller~\cite{Krusienski2006}, where
 momentary visual stimuli evoke characteristic \acp{erp} modulated by attention,
 and \ac{mi}~\cite{Aggarwal2019}, where different (imagined) limb movements evoke
 \acp{ersd} with different spatial patterns.
-As a consequence, decoding (\ac{erp} vs.\ non-attended \ac{erp}, left
+As a consequence, \ac{bci} decoding (\ac{erp} vs.\ non-attended \ac{erp}, left
 vs.\ right limb \ac{mi}, \ldots) involves classifier training with labeled
-\ac{eeg} data (calibration) and applying it to unseen \ac{eeg} data
+\ac{eeg} data (calibration) and applying the classifier to unseen \ac{eeg} data
 (operation).
 
 %User experience is enhanced by minimizing calibration session duration session
@@ -103,7 +101,7 @@ vs.\ right limb \ac{mi}, \ldots) involves classifier training with labeled
 
 \subsection{Tensors \& tensor methods}
 
-Due to their multichannel time series nature, \ac{eeg} and other functional
+Due to their multichannel time series nature, \ac{eeg} or other functional
 neuroimaging data naturally exist as multiway data, capturing
 information in both the spatial and the temporal domain.
 Preprocessing transformations can further expand this data into additional
@@ -184,16 +182,19 @@ both the number of block terms and the dimensions of each term need to be specif
 
 \subsection{Supervised tensor decompositions for \ac{bci}}
 
-The Tucker, \ac{parafac} and block-term structures are generally not unique, hence
-other optimization criteria than the unsupervised methods above can be applied.
+The Tucker, \ac{parafac} and block-term structures are generally not unique hence
+can be obtained by optimizing criteria other than the supervised methods
+described above.
 Given the low signal-to-noise ratio and specific, task-related output of \ac{bci}
 decoding, supervised feature extraction and machine learning is
 favored~\cite{Lotte2018} over unsupervised techniques.
 A decomposition for classification should ideally optimize
-the class discriminability the in extracted core tensor features.
-In this philosophy, Tucker-structured decomposition can also be optimized for
-for Fisher-sense class separability using \ac{hoda}~\cite{Yan2005,Phan2010,Froelich2018},
-analogous to linear discriminant analysis.
+the class discriminability in the resulting core tensors containing the
+extracted features.
+In this philosophy, Tucker-structured decomposition can also be achieved
+using \ac{hoda}~\cite{Yan2005,Phan2010,Froelich2018}, by optimizing class
+separability in the Fisher sense analogous to linear discriminant analysis.
+
 Variants of \ac{hoda} have been applied to \ac{bci} problems such as \ac{erp}~\cite{Onishi2012,Higashi2016} and \ac{mi}~\cite{Liu2015,Cai2021} decoding, with positive
 results~\cite{Lotte2018}.
 Recent work proposes optimized objective functions or
@@ -225,20 +226,20 @@ directly optimized for discriminability.
 
 With a proper choice of reduced dimension and number of terms, a
 supervised block-term decomposition might be more suited to represent
-complex discriminant neural data in a sparse way and yielding a regularizing effect.
-Feature extraction with multiple, low-dimensional parsimonious discriminant block
-terms might improve performance over a single \ac{hoda} block requiring
-high dimensions to capture discriminant information, which in turn extracts many
-irrelevant features.
+complex discriminant neural data in a sparse way, additionally yielding a regularizing effect.
+Feature extraction with multiple parsimonious discriminant block terms with low dimension
+might increase classification performance over a single \ac{hoda} block which
+requires a high dimension to capture discriminant information, and by doing
+so extracts too many irrelevant features.
 From a complementary viewpoint:
-if \ac{hoda} with well-chosen reduced dimensions extracts some discriminant
-features, it is likely that not all useful information is extracted due to
-the Tucker structure constraints.
+if \ac{hoda} with a well-chosen reduced dimension extracts some discriminant
+features, it is likely that it does not retrieve extract all useful
+information due to the restrictions imposed by its Tucker structure.
 Could \ac{hoda} therefore not sequentially be applied to extract more discriminant
 Tucker structured terms -- potentially with lower dimension -- as long as decoding
-performance improves?
+performance increases?
 
-We implement this concept as a novel supervised feature
+We implement this idea as a novel supervised feature
 extraction method titled \ac{bttda}, a generalization of \ac{hoda}.
 \Ac{bttda} extracts discriminant features while adhering to a
 flexible and efficient block-term tensor structure.
@@ -299,7 +300,7 @@ as visualized in \cref{fig:hoda} (left).
 	\input{figures/hoda_fw.tikz.tex}%
 	\hfill%
 	\caption[A \acs{hoda} backward projection.]{%
-		Left: The multilinear \acf{hoda} projection applied to a third-order tensor
+		Left: The multilinear projection obtained by \acf{hoda} applied to a third-order tensor
 		sample $\ten{X}$ with dimensions $(D_1,D_2, D_3)$.
 		\Ac{hoda} finds projection matrices $\mat{U}_k$ such that maximal
 		discriminability between classes is achieved in the projected latent tensors
@@ -318,8 +319,8 @@ Since \ac{hoda} extracts latent features $\ten{G}$ from the observed data
 $\ten{X}$ based a task-related criterion, it can be referred to as a
 \emph{backward model}.
 
-Analogous to \ac{hosvd}, \ac{hoda} decomposes $\ten{X}$ in a dense latent
-tensor $\ten{G}$ and set of orthogonal projection matrices (weights) $\mat{U}_k$ to ensure uniqueness.
+Analogous to \ac{hosvd}, \ac{hoda} decomposition yields a dense latent
+tensor $\ten{G}$ and set of projection matrices (weights) $\mat{U}_k$ to ensure uniqueness.
 While \ac{hosvd} minimizes the reconstruction error,
 \ac{hoda} optimizes  class discriminability of the reduced tensors
 $\ten{G}(n)$ belonging to classes with labels $c_n$.
@@ -367,7 +368,7 @@ This leads to the eigenvalue problem:
 \end{equation}
 which is solved $R_k$ leading eigenvectors,
 with $\varphi_k=\tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{b}}\mat{U}_k\right)/\tr\left(\mat{U}_k^\intercal\mat{S}_{-k,\text{w}}\mat{U}_k\right)$
-and $\mat{U}_k$ from the previous iteration.
+and $\mat{U}_k$ obtained in the previous iteration.
 Finally, the orthogonal transformation invariant projections $\mat{U}_k$
 are obtained using per-mode total scatter matrices~\cite{Wang2007}:
 \begin{equation}
@@ -398,16 +399,16 @@ which are also vectorized and passed to the trained decision
 classifier.
 
 To avoid overfitting and improve performance in low sample size settings,
-\ac{hoda} was regularized at each iteration by shrinking the partial
+HODA was regularized at each iteration by shrinking the partial
 within-class scatter matrices~\cite{Phan2010} with a shrinkage factor
-$\alpha_k$, such that the eigenvalue problems become
+$\alpha_k$, such that the eigenvalue problem becomes
 \begin{equation}
 	\mat{S}_b^{(-k)} -
 	\varphi\left[\left(1-\alpha_k\right)\mat{S}_{-k,\text{w}}+\alpha_k\mat{I}\right] =
 	\mat{V}_k\mat{\Lambda}\mat{V}_k^\intercal
 \end{equation}
-As in linear discriminant analysis, $\alpha_k$~\cite{Jorajuria2022}
-estimates can be data-driven, e.g, using the Ledoit-Wolf procedure~\cite{Ledoit2003}.
+As in Linear Discriminant Analysis, data-driven estimates of
+$\alpha_k$~\cite{Jorajuria2022} can be estimated, e.g, by the Ledoit-Wolf procedure~\cite{Ledoit2003}.
 
 \subsection{A forward model for \acs{hoda}}
 
@@ -473,15 +474,16 @@ $\mat{A}_k$ drops below $\epsilon$.
 \subsection{\Acl{bttda}}
 The \ac{hoda} forward model allows constructing the proposed discriminant
 block-term tensor model.
-If core tensors $\ten{G}$ after \ac{hoda} backward projection do not
-perfectly separate classes, error term $\ten{E}$ in
-\cref{eq:HODA-forward} contains further discriminative information
-which can be exploited to improve classifier performance.
+If the latent tensors $\ten{G}$ after \ac{hoda} backward projection does not
+achieve perfect class separation, the error term $\ten{E}$ in
+\cref{eq:HODA-forward} contains further discriminative information.
+This can be exploited to improve classifier performance.
 Extra features are extracted from $\ten{E} = \ten{X} -
 	\hat{\ten{X}}$ by further projecting it onto another core tensor
 $\ten{G}^{(2)}$, assuming $\ten{G}$ as $\ten{G}^{(1)}$.
-Hence, we thus extend \ac{hoda} to \acf{bttda}, extracting multiple discriminative
-latent blocks such that its forward model adheres to block-term tensor
+
+We thus extend the \ac{hoda} to \acf{bttda}, extracting multiple discriminative
+latent blocks, such that its forward model adheres to the block-term tensor
 structure:
 \begin{equation}
 	\ten{X} = \sum_b^B\ten{G}^{(b)}\mmpr{\mat{A}^{(b)}} + \ten{E}
@@ -494,8 +496,8 @@ $\ten{E}$ as illustrated by~\cref{fig:BTTDA}.
 	\input{figures/bttda_fw.tikz.tex}
 	\caption[A forward model for \acs{bttda}.]{A forward model for \acf{bttda}.
 		\Ac{bttda} can extract more features
-		than \ac{hoda} by iteratively finding latent tensors $\ten{G}^{(b)}$ in using
-		deflation.
+		than \ac{hoda} by iteratively finding a latent tensor $\ten{G}^{(b)}$ in a
+		deflation scheme.
 		The \ac{hoda} backward projection is first applied. Next, the
 		input data is reconstructed via the HODA forward model and the
 		difference between the two is found.
@@ -508,8 +510,8 @@ the Tucker-structured \ac{hoda} and PARAFAC-structured discriminant feature
 extraction.
 If $B$ in \cref{eq:BTTDA-forward} is set to one, \ac{bttda} is equivalent to
 \ac{hoda}; if at each term $b$ the dimensions of the core tensor are
-$(R_1^{(b)}=R_2^{(b)}=\ldots=R_K^{(b)}=1)$, a \ac{parafac} structure is assumed
-resulting in \ac{parafacda}.
+$(R_1^{(b)}=R_2^{(b)}=\ldots=R_k^{(b)}=1)$, a \ac{parafac} structure is assumed and
+the resulting discriminant model is titled \ac{parafacda}.
 
 In addition to this forward specification of \ac{bttda}, a backward procedure
 is required to extract latent tensors $\ten{G}^{(b)}$ given $\ten{X}$ for
@@ -554,7 +556,7 @@ If these are not known a priori from data insights, model selection is required.
 Although computationally expensive, hyperparameters can be set through
 cross-validated tuning.
 To reduce the search space, we introduce hyperparameter $\smash{\theta \in [0,1]}$
-controlling the dimensions of all blocks.
+which replaces the block dimensions $\{(R_1^{(b)}, R_2^{(b)}, \ldots,	R_K^{(b)})\}_b^B$.
 $\theta$ controls the sparsity of the \ac{bttda} solution, with $\theta=0$
 corresponding to the \ac{parafacda} model with blocks with dimensions
 $(1,1,\ldots,1)$, and $\theta=1$ corresponding to blocks of full rank $(D_1, D_2,\ldots,D_K)$.
@@ -579,25 +581,25 @@ These should be dropped before proceeding to classification~\cite{Phan2010}.
 Particularly in \ac{bttda}, redundant features can accumulate over the number of
 blocks, hampering performance.
 Furthermore, discriminant features across blocks can be heavily correlated since
-each block independently optimizes the discriminability criterion.
+each block optimizes the discriminability criterion independently from the others.
 To mitigate this, extracted features are first decorrelated and scaled using
 whitening \ac{pca}.
-Relevant components are selected by univariate Fisher score
+Relevant \ac{pca} components are identified using their univariate Fisher score
 $\phi(i)$ calculated as
 \begin{equation}
 	\phi(i) = \frac
 	{\sum_c^C N_c \left[\bar{g}_i(c)-\bar{\bar{g}}_i\right]^2}
 	{\sum_n^N \left[g_i(n)-\bar{g}_i(c_n)\right]^2}
-\end{equation}
+\end{equation}.
 Only features where $\phi(i) > 1$, i.e., between-class variance is greater
 than within-class variance, are retained with a minimum of one feature with maximal $\phi(i)$.
 
 \section{Experiments}
 \subsection{Datasets and decoders}
-We evaluated our proposed model in offline \ac{eeg}-based \acf{erp} and \acf{mi}
-paradigm \ac{bci} decoding problems  using the openly available \ac{moabb}
-benchmark framework and datasets (version 1.2.0)~\cite{Aristimunha2023},
-allowing fair comparison across classifiers.
+We evaluated our proposed model in two offline \ac{eeg}-based \ac{bci} decoding problems:
+the \acf{erp} and \acf{mi} paradigms using the openly available \ac{moabb}
+benchmark datasets (version 1.2.0)~\cite{Aristimunha2023} allowing fair comparison
+across classifiers.
 We refer to \textcite{Chevallier2024} for dataset details
 (\# subjects, \# sessions, \# channels, \# trials, epoch length, sampling freq., etc.)
 \Ac{erp} decoding distinguishes target from non-target \acp{erp},
@@ -606,7 +608,7 @@ limb movements.
 Within-session evaluation with stratified 5-fold cross-validation assessed
 classification performance as \ac{rocauc} for binary
 classification problems and accuracy for multi-class problems, in line with
-\ac{moabb}.
+\ac{moabb} benchmarking framework.
 Average performance scores are balanced over dataset by taking the mean of
 the per-dataset average performance scores.
 
@@ -617,6 +619,7 @@ Hyperparameters candidates $\theta \in \left\{0, 0.1, 0.2, \ldots 1\right\}$
 for all three decoders and $b \in\left\{1,2\ldots,16\right\}$ in the case
 PARAFACDA+LDA and BTTDA+LDA were tuned by nested stratified 5-fold cross-validation.
 $\epsilon=\num{1e-6}$ and $I_\text{max}=128$.
+
 Difference in classification score between two decoders for a dataset
 was statistically verified with one-sided Wilcoxon rank-sum tests on the
 cross-validated scores per subject and session.
@@ -626,12 +629,11 @@ the \ac{smd}.
 
 To compare with generally accepted state-of-the art, we selected a subset of
 the decoders evaluated by \textcite{Chevallier2024} who report prior benchmark results.
-For \ac{erp} decoding, these include Riemannian Geometry-based
+For \ac{erp} decoding, these included Riemannian Geometry-based
 classifiers ERPCov+MDM, ERPCovSVD+MDM, XDAWNCov+MDM, XDAWNCov+TS+SVM and the linear
 classifier XDAWN+LDA.
-For \ac{mi}, Riemannian classifiers ACM+TS+SVM, FgMDM, TS+EL, and the deep
-learning classifiers EEGTCNet and ShallowConvNet were used.
-We refer to \textcite{Chevallier2024} for description, implementation details
+For \ac{mi}, Riemannian classifiers ACM+TS+SVM, FgMDM, TS+EL, and the deep learning classifiers EEGTCNet and ShallowConvNet were used.
+We refer to \textcite{Chevallier2024} for the description, implementation details
 and references of these methods.
 
 \subsection{Event-Related Potentials}
@@ -645,9 +647,9 @@ For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were further
 downsampled to 48 Hz.
 
 Based on grand average \ac{rocauc} of scores reported in
-\cref{tab:results/erp/score}, BTTDA+LDA (avg. \ac{rocauc}: 91.25$\pm$6.77\%)
-outperforms PARAFAC+LDA (90.94$\pm$6.90\%) and both outperform HODA+LDA (88.89$\pm$7.04\%).
-Meta-analysis shown in \cref{fig:results/meta} revealed the following
+\cref{tab:results/erp/score}, BTTDA+LDA (avg. \ac{rocauc}: 91.25$\pm$6.77\%) outperforms PARAFAC+LDA
+(90.94$\pm$6.90\%), and both in turn outperform HODA+LDA (88.89$\pm$7.04\%).
+The meta-analysis shown in \cref{fig:results/meta} revealed the following
 significant effects:
 BTTDA+LDA > HODA+LDA ($p=\num{5.65e-65}$, SMD=$1.17$),
 PARAFACDA+LDA > HODA+LDA ($p=\num{2.47e-58}$, SMD=$1.06$), and
@@ -681,36 +683,37 @@ BTTDA+LDA significantly outperforms PARAFACDA+LDA for 9 out of 14 datasets.
 	}
 	\label{tab:results/erp/score}
 \end{table*}
-BTTDA+LDA exceeds state-of-the-art decoder XDAWNCov+TS+SVM in 8 out of 14
-datasets, moderately increasing grand-average score (91.25 > 90.82).
+BTTDA+LDA outperforms state-of-the-art decoder XDAWNCov+TS+SVM in 8 out of 14
+datasets, resulting in a moderate increase in grand average \ac{rocauc}
+($91.25 > 90.82$).
 
 
 \subsection{Motor Imagery}
 
-Discriminatory \ac{mi} information is encoded in the \ac{eeg} as
+\Ac{mi} discriminatory information is encoded in the \ac{eeg} data as
 \acp{ersd}.
 Contrary to time-domain analysis, \acp{ersd} are expressed in changes in
-time-frequency power, forming a third-order tensors with $K=3$ modes
-representing channels, frequencies, and time bins.
+time-frequency power, forming a third-order tensors, with $K=3$ modes
+respectively representing channels, frequencies, and time bins.
 \Ac{eeg} signals were first processed using the \ac{moabb} motor imagery pipeline.
 They were band-pass filtered between 8 Hz
 and 32 Hz and cut into epochs from stimulus onset with their corresponding
 dataset-specific length.
-Custom time-frequency postprocessing extracted complex
-Morlet wavelet magnitude for 17 logarithmically spaced frequencies (8 - 32 Hz)
-and a varying number of logarithmically spaced cycles (4 - 16).
+Custom time-frequency postprocessing extracted the magnitude of the complex
+Morlet-wavelets with 17 logarithmically spaced frequencies from 8 Hz
+to 32 Hz and a varying number of cycles logarithmically spaced from 4 to 16.
 Finally, the magnitude envelope was downsampled to 32 Hz by anti-aliasing
 and decimation.
 
 In line with the \ac{moabb} method, only the first three classes per dataset were
 used.
 Based on grand-average accuracy of scores reported in \cref{tab:mi-score},
-BTTDA+LDA (avg.\ accuracy: 64.52$\pm$12.23\%)
-outperforms PARAFACDA+LDA (58.89$\pm$11.27\%) and HODA+LDA
-(61.00$\pm$11.11\%).
-Meta-analysis shown in \cref{fig:results/meta} revealed the following significant effects:
-BTTDA+LDA > HODA+LDA ($p=\num{6.20e-5}$, SMD=0.75),
-BTTDA+LDA > PARAFAC+LDA ($p=\num{4.00e-6}$, SMD=1.48).
+BTTDA+LDA (avg.\ accuracy: $64.52\pm12.23$\%)
+outperforms PARAFACDA+LDA ($58.89\pm11.27$\%) and HODA+LDA
+($61.00\pm11.11$\%).
+The meta-analysis shown in \cref{fig:results/meta} revealed the following significant effects:
+BTTDA+LDA > HODA+LDA ($p=\num{6.20e-5}$, SMD=$0.75$),
+BTTDA+LDA > PARAFAC+LDA ($p=\num{4.00e-6}$, SMD=$1.48$).
 BTTDA+LDA outperforms HODA+LDA except for datasets Zhou2016 and AlexandreMotorImagery.
 PARAFACDA+LDA outperforms HODA+LDA for dataset Schirrmeister2017.
 BTTDA+LDA outperforms PARAFACDA+LDA except for datasets Zhou2016 and AlexandreMotorImagery.
@@ -726,9 +729,9 @@ BTTDA+LDA outperforms PARAFACDA+LDA except for datasets Zhou2016 and AlexandreMo
 		Accuracies for other decoders were taken from \textcite{Chevallier2024}.}%
 	\label{tab:mi-score}%
 \end{table*}
-All of HODA+LDA (avg.\ accuracy 61.00$\pm$11.11), PARAFACDA+LDA
-(58.89$\pm$11.27) and BTTDA+LDA (64.52$\pm$12.23) score
-substantially lower than state-of-the-art decoder ACM+TS+SVM (75.77$\pm$11.12).
+All of HODA+LDA (avg.\ accuracy $61.00\pm11.11$), PARAFACDA+LDA
+($58.89\pm11.27$) and BTTDA+LDA ($64.52\pm12.23$) score
+substantially lower than state-of-the-art decoder ACM+TS+SVM ($75.77\pm11.12$).
 
 \subsection{Impact of block dimension and number of blocks}
 
@@ -748,7 +751,8 @@ $\theta\in\left\{0.0, 0.1, 0.2,\ldots, 1.0\right\}$.
 		and the hyperparameter $\theta$	which controls the block dimensions.
 		Class separation effectiveness increases as $b$ increases while \ac{nmse}
 		decreases. Eventually, overfitting occurs and class separation performance
-		drops or plateaus depending on feature selection effectiveness.
+		drops or plateaus depending on the effectiveness of feature selection as
+		shown here.
 	}
 	\label{fig:blocks}
 \end{figure}
@@ -766,8 +770,9 @@ the at $b=3$ (avg.\ \ac{rocauc} 85.74\% and 85.71\% respectively), with lower
 reduced dimension then the high optimal dimension for \ac{hoda}.
 Eventually, BTTDA+LDA reaches optimal overall \ac{rocauc} over all decoders at
 $b=8$ (avg.\ \ac{rocauc} 86.23\%).
-In general, optimal reduced dimensions should be high when $b$ is low and can be lowered
-when $b>1$ to increase performance.
+In general, the reduced dimension should be high when $b$ is low.
+This can be reduced with $b>1$ to a point where the total reduced
+dimension is lower and performance is higher.
 
 Additionally, \cref{fig:blocks} (right) shows forward modeling effectiveness
 measured as the cross-validated \ac{nmse} between the original input tensors
@@ -865,8 +870,8 @@ sum of multilinear rank-1 terms.
 consistently scored on par or significantly higher than
 \ac{hoda} in supervised dimensionality for \ac{bci} decoding, with an average
 increase of 2.36\%pt.\ for \ac{erp} and 2.75\%pt.\ for \ac{mi} datasets.
-This exceeds state-of-the-art decoding performance for \ac{erp}
-datasets in the \ac{moabb} benchmark, but is subpar scores for \ac{mi}.
+This improvement results in state-of-the-art decoding performance for \ac{erp}
+datasets in the \ac{moabb} benchmark, but subpar scores for \ac{mi}.
 
 Poor \ac{mi} performance can partially be attributed to low base \ac{hoda}
 \ac{mi} performance of \ac{hoda}.
@@ -989,12 +994,16 @@ Applications such as light-weight or mobile brain-computer interfaces should
 carefully weigh this computational demand against potential performance gains.
 
 Finally, we note that \ac{bttda} or the accompanying model selection procedure
-does not guarantee that coherent projection are grouped within one block;
-features across blocks can be heavily correlated.
+does not guarantee that coherent projection are grouped within one block and
+can result in heavily correlated features across blocks.
+Currently, this is corrected  post-hoc by applying whitening and PCA.
 Solutions imposing subspace orthogonality between blocks
 blocks could lead to a more effective feature extraction solution.
 Other examples include block, sparsity, pattern interpretability, minimal or maximal
 within-block feature correlation and block ordering by discriminability.
+
+
+
 
 \section{Conclusion}
 
@@ -1004,7 +1013,7 @@ Because of its general implementation and minimal assumptions on data structure,
 \ac{bttda} can equally be applied to classification for other neuroimaging modalities
 (MEG, ECoG, fNIRS, fMRI, EMG, etc.), or to tensor classification problems in other
 domains.
-\ac{bttda} also inherently provides interpretable projections.
+The resulting model inherently provides interpretable projections.
 Moving from the rigid Tucker structure to more flexible
 block-term tensors shifts the focus of tensor discriminant analysis
 from projection optimization to model and feature selection.
