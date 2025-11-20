@@ -1,16 +1,37 @@
 \documentclass[journal,twoside,web]{ieeecolor}
 \usepackage{generic}
 
+% TODO: subfigures
+% TODO: update subfigure references
+% TODO: change graph roc-auc to percentage
+% TODO: check
+%The maximum depth a graphic can be
+%is 8.5 inches (216 millimeters/54 picas). When choosing the
+%depth of a graphic, please allow space for a caption
+% TODO: check png dpi 300dpi.
+% TODO: check data->plural
+% TODO: check issue->problem
+% TODO: remove duplicate references
+% TODO: remove unused references
+% TODO: Other than books, capitalize only the first word in a paper
+% title, except for proper nouns and element symbols.
+% TODO: punctuate equations
+% TODO: IEEE-style graphs
 % TODO: use algorithmic
 % TODO: eqref etc to ensure Fig. 1 format
-% TODO: footnotesize in all figures and tables
 % TODO: Remove textcite
 % TODO: abbreviate journals/conferences in bib
 % TODO: only capitalize first word in references
 % TODO: replace latent by core if not talking about forward/backward model
-
-% TODO: find 'yield', 'result', 'achieve', 'obtain', 'get'
-
+% TODO: LLM spellcheck
+% TODO: vim spellcheck
+% TODO: compile figures independently to pdf
+%Figures (line artwork or photographs) should be named
+%starting with the first 5 letters of the author’s last name. The
+%next characters in the filename should be the number that
+%represents the sequential location of this image in your article.
+%For example, in author “Anderson’s” paper, the first three
+%figures would be named ander1.tif, ander2.tif, and ander3.ps.
 
 \usepackage{bttda-paper}
 
@@ -125,16 +146,15 @@ Tensor methods often decompose a tensor into a lower dimensional
 core tensor and set of factor matrices, adhering to either the Tucker
 or PARAFAC structure.
 A Tucker decomposition reduces an input tensor of order $K$ with dimensions
-$(D_1,D_2,\ldots,D_K)$ to a dense tensor with dimensions $(R_1,R_2,\ldots,R_K)$,
+$(D_1,D_2,\ldots,D_K)$ to a dense core with dimensions $(R_1,R_2,\ldots,R_K)$,
 with $R_k \leq D_k$ for $k=1, 2, \ldots K$ using per-mode factor matrices.
 The \ac{hosvd}~\cite{DeLathauwer2000,SoleCasals2018} performs unsupervised
-Tucker tensor decomposition and approximation.
-Alternatively, the \ac{parafac} methods decompose a tensor in a sum of rank-1
+Tucker decomposition and approximation.
+Alternatively, \ac{parafac} methods decompose a tensor in a sum of rank-1
 tensors, each the product of a scalar and per-mode factor vectors.
 This is equivalent to the Tucker structure with all core elements off the hyperdiagonal
 set to 0, as shown in \cref{fig:bttda/sparse}.
-Unsupervised PARAFAC decomposition is performed through the Canonical Polyadic
-Decomposition~\cite{Hitchcock1927,Nazarpour2006}.
+Canonical Polyadic Decomposition is an unsupervised \ac{parafac} method~\cite{Hitchcock1927,Nazarpour2006}.
 These decompositions can extract features vectors from input data using the
 flattened core tensors.
 These can subsequently be classified to predict class labels, most
@@ -146,7 +166,7 @@ commonly using \ac{lda} or a \ac{svm}.
 	\hfill\vrule\hfill%
 	\input{figures/tensor_core_structures_2.tikz.tex}%
 	\hfill%
-	\caption[Core tensor(s) of different tensor decomposition structures.]{%
+	\caption{%
 		A tensor decomposition finds core tensor and factor matrices
 		from input tensor.
 		This core tensor can have several structures.
@@ -175,7 +195,7 @@ if the dimensions of each term are equal to 1, it is equivalent to the \ac{paraf
 structure.
 The block-term structure (\cref{fig:bttda/sparse}, right) is more flexible than
 either Tucker or \ac{parafac} structures and strikes a better
-balance between maximally extracting relevant features and minimally extractin
+balance between extracting maximal relevant and minimal
 irrelevant features.
 However, this comes with a cost of more hyperparameters, as now
 both the number of block terms and the dimensions of each term must be specified.
@@ -285,29 +305,33 @@ tensor-matrix mode products:
 	\ten{G}  = \ten{X}\mmpr{\mat{U}}
 	\label{eq:HODA-backward}
 \end{equation}
-as visualized in \cref{fig:hoda} (left).
-\begin{figure*}[t]
-	\centering%
+as visualized in \cref{fig:hoda/bw}.
+\begin{figure*}
 	\hfill%
-	\input{figures/hoda_bw.tikz.tex}%
-	\hfill\vrule\hfill%
-	\input{figures/hoda_fw.tikz.tex}%
+	\begin{subfigure}{0.35\linewidth}%
+		\centering%
+		\input{figures/hoda_bw.tikz.tex}%
+		\caption{\Acs{hoda} backward model.}\label{fig:hoda/bw}%
+	\end{subfigure}%
+	%\hfill\vrule\hfill%
 	\hfill%
-	\caption[A \acs{hoda} backward projection.]{%
-		Left: The multilinear \acf{hoda} projection applied to a third-order tensor
-		sample $\ten{X}$ with dimensions $(D_1,D_2, D_3)$.
+	\begin{subfigure}{0.5\linewidth}%
+		\centering%
+		\input{figures/hoda_fw.tikz.tex}%
+		\caption{\ac{hoda} Forward model.}\label{fig:hoda/fw}
+	\end{subfigure}%
+	\hfill%
+	\caption{%
+		\Acf{hoda}.
+		\subref{fig:hoda/bw} The multilinear projection applied
+		to a third-order tensor sample $\ten{X}$ with dimensions $(D_1,D_2, D_3)$.
 		\Ac{hoda} finds projection matrices $\mat{U}_k$ such that maximal
 		discriminability between classes is achieved in the projected latent tensors
 		$\ten{G}$ with reduced dimension $(R_1,R_2,R_3)$.
-		Right: The forward projection for HODA.
-		By calculating activation patterns $\mat{A}_k$, the original tensor $\ten{X}$ can approximately be
-		reconstructed from projected latent tensor $\ten{G}$.
+		\subref{fig:hoda/fw} By calculating activation patterns $\mat{A}_k$, the original tensor
+		$\ten{X}$ can approximately be reconstructed from projected latent tensor $\ten{G}$.
 		The reconstruction is accurate up to an error term $\ten{E}$.
-		%$\mat{A}_k$ are chosen such that the variability captured in the latent tensor is
-		%maximally explained by the reconstructed tensor $\hat{\ten{X}}$ and not by
-		%the error term $\ten{E}$.
 	}
-	\label{fig:hoda}%
 \end{figure*}
 Since \ac{hoda} extracts latent features $\ten{G}$ from the observed data
 $\ten{X}$ based a task-related criterion, it can be referred to as a
@@ -333,7 +357,7 @@ to find the discriminant projection matrices:
 \begin{equation}
 	\left\{\mat{U}^*\right\} =  \argmax_{\{\mat{U}\}}\phi\left(\left\{\mat{U}\right\}\right)
 \end{equation}
-solved through the backward HODA algorithm.
+solved by \cref{alg:HODA}.
 
 First, $\mat{U}_k$ are initialized to orthogonal matrices, e.g.,\ as random
 orthonormal matrices, a per-mode \ac{svd}, or the partial \ac{hosvd} of the dataset.
@@ -375,7 +399,6 @@ and finding the $R_k$ leading eigenvectors of:
 \end{equation}
 The iterative process halts when each $\mat{U}_k$ update drops below a
 predetermined threshold $\epsilon$ or after predetermined $I_\text{max}$ iterations.
-The full procedure is summarized in \cref{alg:HODA}.
 \begin{algorithm}
 	\caption[The \acs{hoda} backward solution.]{The \acs{hoda} backward solution.}
 	\label{alg:HODA}
@@ -413,7 +436,7 @@ terms of given latent features.
 Forward models are useful for interpretability and data compression,
 but \ac{bttda} relies on reconstruction with minimal error.
 \Cref{eq:HODA-forward} gives a straightforward and computationally efficient
-\ac{hoda} forward model candidate, visualized in \cref{fig:hoda} (right):
+\ac{hoda} forward model candidate, visualized in \cref{fig:hoda/fw}:
 \begin{equation}
 	\ten{X} = \ten{G}\mmpr{\mat{A}^\intercal} + \ten{E} =
 	\hat{\ten{X}} + \ten{E}
@@ -436,7 +459,8 @@ $\left\|\ten{E}\right\|_F$.
 %		\right]_n
 %\end{equation}
 %or, equivalently~\cite{Parra2005,Haufe2014},
-Hence, activation patterns are found as~\cite{Parra2005, Haufe2014}
+Hence, \cref{alg:HODA-fw} finds activation patterns~\cite{Parra2005, Haufe2014}
+as
 \begin{align}
 	\left\{\mat{A}^*\right\}
 	 & = \argmin_{\{\mat{A}\}}\sum_n^N\left[\ten{X}(n) -
@@ -457,7 +481,6 @@ backward model.
 Similar to fitting the backward model, the iterative process for the forward
 model halts after a iterations $I_\text{max}$ iterations or when the update of each
 $\mat{A}_k$ drops below $\epsilon$.
-\Cref{alg:HODA-fw} lists the full procedure.
 \begin{algorithm}
 	\caption[A \acs{hoda} forward solution.]{The \acs{hoda} forward solution.}
 	\label{alg:HODA-fw}
@@ -527,7 +550,6 @@ reconstruction after backward and forward \ac{hoda} projection:
 	= \ten{E}^{(b-1)} - \ten{G}^{(b)}\mmpr{\mat{A}^{\intercal(b)}}
 \end{align}
 with $\ten{E}^{(0)}=\ten{X}$.
-
 Resulting latent tensors can be vectorized and concatenated
 \begin{equation}
 	\mat{g}
@@ -536,7 +558,7 @@ Resulting latent tensors can be vectorized and concatenated
 		\cdots\
 		\vect\left(\ten{G}^{(B)}\right)\right]
 \end{equation}
-for classification similarly to \ac{hoda}.
+for classification similar to \ac{hoda}.
 
 
 \subsection{Model and feature selection}
@@ -646,10 +668,10 @@ BTTDA+LDA > HODA+LDA ($p=\num{5.65e-65}$, SMD=$1.17$),
 PARAFACDA+LDA > HODA+LDA ($p=\num{2.47e-58}$, SMD=$1.06$), and
 BTTDA+LDA > PARAFAC+LDA ($p=\num{4.90e-15}$, SMD=$0.50$).
 \begin{figure*}[t]
-	\input{figures/pairwise_erp.tikz.tex}
-	\vskip-1em
-
-	\hskip-2em\input{figures/pairwise_mi.tikz.tex}
+	\input{figures/pairwise_erp.tikz.tex}%
+	\smallskip%
+	\hskip-2em\input{figures/pairwise_mi.tikz.tex}%
+	\caption{\Acf{mi} decoding.}\label{fig:results/meta/mi}
 	\caption{%
 		Meta-analysis of decoder classification performance comparisons per dataset.
 		Analyses were performed on \ac{rocauc} score for \ac{erp} datasets (top) and
@@ -728,22 +750,31 @@ substantially lower than state-of-the-art decoder ACM+TS+SVM (75.77$\pm$11.12).
 The following analysis investigates the contribution of additional BTTDA blocks
 over the first HODA block.
 \Ac{erp} dataset BNCI2014-008 was chosen for its minimal computational requirements.
-\Cref{fig:blocks} (left) reports a selection of cross-validated within-session
+\Cref{fig:blocks/score} reports a selection of cross-validated within-session
 \ac{rocauc} scores as function of number of blocks ($b$) and hyperparameter
 $\theta$, averaged over all subjects with $b\in\left\{1,2,\ldots,16\right\}$ and
 $\theta\in\left\{0.0, 0.1, 0.2,\ldots, 1.0\right\}$.
 \begin{figure}[t]
 	\footnotesize
-	\input{figures/gridsearch.tikz.tex}
+	\begin{subfigure}{0.425\linewidth}%
+		\input{figures/blocks_rocauc.tikz.tex}%
+		\caption{Classification score.}\label{fig:blocks/score}
+	\end{subfigure}%
+	\hfill%
+	\begin{subfigure}{0.425\linewidth}%
+		\input{figures/blocks_nmse.tikz.tex}%
+		\caption{Reconstruction error.}\label{fig:blocks/error}
+		\label{fig:blocks/error}
+	\end{subfigure}%
 	\caption{%
-		Cross-validated BTTDA+LDA \ac{rocauc} (left) and \ac{bttda} \ac{nmse}
-		(right) for dataset BNCI2014-008 as a function of the number of blocks $b$
-		and the hyperparameter $\theta$	which controls the block dimensions.
-		Class separation effectiveness increases as $b$ increases while \ac{nmse}
-		decreases. Eventually, overfitting occurs and class separation performance
-		drops or plateaus depending on feature selection effectiveness.
-	}
-	\label{fig:blocks}
+		Cross-validated BTTDA+LDA performance for dataset BNCI2014-008 in function
+		of the number of blocks $B$ and hyperparameter $\theta$	controlling block
+		dimension.
+		Classification score (\acs{rocauc}) increases as $B$ increases while the reconstruction
+		error (\acs{nmse}) decreases.
+		Eventually, overfitting occurs and classification score drops or plateaus,
+		depending on feature selection effectiveness.
+	}\label{fig:blocks}
 \end{figure}
 BTTDA+LDA is equivalent to PARAFACDA+LDA and HODA+LDA respectively when $theta=0$ or $b=1$.
 At $\theta=1$, no blocks other than the initial block can be modeled, since this
@@ -762,7 +793,7 @@ $b=8$ (avg.\ \ac{rocauc} 86.23\%).
 In general, optimal reduced dimensions should be high when $b$ is low and can be lowered
 when $b>1$ to increase performance.
 
-Additionally, \cref{fig:blocks} (right) shows forward modeling effectiveness
+Additionally, \cref{fig:blocks/error} shows forward modeling effectiveness
 measured as the cross-validated \ac{nmse} between the original input tensors
 $\ten{X}$ and the reconstruction $\textstyle{\hat{\ten{X}}^{(B)}=\sum_b^B\ten{G}^{(b)}\mmpr{\mat{U}^{(b)}}}$.
 \Ac{nmse} decreases monotonically with $b$ and more steeply so as $\theta$ increases.
@@ -797,18 +828,16 @@ imagery and $c_1$ rest for \ac{mi}.
 A full reconstruction contrast calculated as $\bar{\ten{X}}_{c_2-c_1} - \hat{\bar{\ten{X}}}^{(B)}_{c_2-c_1}$
 \Cref{fig:results/interpret} shows these contrasts together with with the grand-average contrast.
 \begin{figure*}
-	\input{figures/interpretability/erp_contrast.tikz.tex}
-
-	\input{figures/interpretability/mi_contrast.tikz.tex}
-
+	\input{figures/interpretability/erp_contrast.tikz.tex}%
+	\smallskip%
+	\input{figures/interpretability/mi_contrast.tikz.tex}%
 	\caption{%
 		Per-block forward \ac{bttda} model activation pattern contrasts and
-		overall grand-average contrast for \ac{erp} dataset BNCI2014-008 (top) and
-		\ac{mi} dataset AlexMI (bottom).
-		Red lines indicate the slices generating the scalp plot.
-		In the bottom row, the white dot indicates for which channel the time-frequency
-		spectrum was plotted.
-		The \ac{erp} is decomposed in parieto-occipital components (P1, N1, N2)
+		overall grand-average contrast for \ac{erp} dataset BNCI2014-008 (top)
+		and \ac{mi} dataset AlexMI (bottom).
+		Red lines indicate the slices generating the scalp plots.
+		White dots indicate channels generating the time-frequency plots.
+		The \ac{erp} in \subref{fig:results/interpret/erp} is decomposed in parieto-occipital components (P1, N1, N2)
 		corresponding to visual processing and fronto-central components (P3a, P3b)
 		related to task processing.
 		The right-hand \acf{mi} \ac{ersd} is decomposed in mostly contralateral high-$\mu$ band
@@ -916,7 +945,7 @@ a benefit or a drawback depending on the amount of regularization required or th
 underlying data structure.
 While \ac{bttda} with a few, low-dimensional blocks might initially perform
 worse than a high-dimensional \ac{hoda} model, adding extra \ac{bttda} blocks
-eventually overpasses the \ac{hoda} solution as shown by~\cref{fig:blocks}.
+eventually overpasses the \ac{hoda} solution as shown by~\cref{fig:blocks/score}.
 
 Improved \ac{bci} performance could also stem from the internal data
 covariance (or scatter) model.

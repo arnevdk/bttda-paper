@@ -1,0 +1,23 @@
+\footnotesize
+\noindent\begin{tikzpicture}[trim axis left]
+	\begin{axis}[
+			width=\linewidth,
+			scale only axis,
+			xlabel=$B$,
+			legend style={at={(0.98,0.02)},anchor=south east},
+			ylabel={ROC-AUC (\%)},
+			%ymin=0.9475, ymax=1,
+			ytick={0.83, 0.84, 0.85, 0.86},
+			yticklabels={83, 84, 85, 86},
+		]
+
+		\addPlotTheta{test_score}{0}
+		\addlegendentry{$\theta=0.0$}
+		\addPlotTheta{test_score}{0.1}
+		\addlegendentry{$\theta=0.1$}
+		\addPlotTheta{test_score}{1}
+		\addlegendentry{$\theta=1.0$}
+		\addplot[mark=none,brown!60!black] coordinates {(1,0.8540042316897378) (16,0.8540042316897378)};
+
+	\end{axis}
+\end{tikzpicture}

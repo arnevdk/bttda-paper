@@ -31,6 +31,7 @@
 
 % Layout
 \renewcommand*{\bibfont}{\footnotesize}
+\captionsetup{subrefformat=parens}%
 
 % Setup PGF plots
 \RequirePackage{pgfplots}
@@ -150,4 +151,15 @@
 	\draw (F) -- (B) node[midway,xshift=.5em, yshift=.5em] {#3};
 	\draw (F) -- (G) node[midway,xshift=-.5em, yshift=.5em] {#2};
 	\draw (C) -- (G);
+}
+
+\newcommand{\addPlotTheta}[2]{%
+	\addplot+ table [
+			color=red,
+			x=n_blocks,
+			y=#1,
+			col sep=comma,
+			restrict expr to domain={\thisrow{theta}}{#2:#2},
+			unbounded coords=discard, % <-- important
+		]{data/gridsearch_erp_processed.csv};
 }

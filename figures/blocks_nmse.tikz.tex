@@ -1,0 +1,19 @@
+\footnotesize
+\noindent\begin{tikzpicture}[trim axis left]
+	\begin{axis}[
+			width=\linewidth,
+			scale only axis,
+			xlabel=$B$,
+			legend style={at={(0.98,0.02)},anchor=south east},
+			ymin=0.9475, ymax=1,
+			ylabel={NMSE (\%)},
+			ytick={0.95, 0.97, 0.99},
+			yticklabels={95, 97, 99}
+		]
+
+		\addPlotTheta{test_mse}{0}
+		\addPlotTheta{test_mse}{0.1}
+		\addPlotTheta{test_mse}{1}
+
+	\end{axis}
+\end{tikzpicture}
