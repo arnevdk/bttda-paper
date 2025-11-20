@@ -37,7 +37,7 @@ def save_topomap(evoked, name, t=0):
         bbox_inches="tight",
         pad_inches=0,
         transparent=True,
-        dpi=1000,
+        dpi=300,
     )
 
 

@@ -35,7 +35,7 @@ def viz_tfr(evoked, name, chan="C3", t=1, f=10):
         f"figures/interpretability/mi_contrast_{name}_spec.png",
         bbox_inches="tight",
         pad_inches=0,
-        dpi=1000,
+        dpi=300,
         transparent=True,
     )
 
@@ -50,7 +50,7 @@ def viz_tfr(evoked, name, chan="C3", t=1, f=10):
         f"figures/interpretability/mi_contrast_{name}_topo.png",
         bbox_inches="tight",
         pad_inches=0,
-        dpi=1000,
+        dpi=300,
         transparent=True,
     )
 
