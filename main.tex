@@ -1,7 +1,6 @@
 \documentclass[journal,twoside,web]{ieeecolor}
 \usepackage{generic}
 
-% TODO: check png dpi 300dpi.
 % TODO: check data->plural
 % TODO: remove duplicate references
 % TODO: remove unused references
@@ -119,7 +118,7 @@ analytic domains.
 Common examples include time-frequency transformation, time-binning, or
 integrating information across multiple subjects or conditions.
 These high-dimensional datasets which are usually flattened
-into a set of sample vectors, stripping the original data of its structure.
+into a set of sample vectors, stripping the original data of their structure.
 \emph{Tensors}, multiway arrays with each domain
 corresponding to a tensor \emph{mode}, are a more suitable and structured
 representation exploiting the intrinsic multiway structure of neural
@@ -501,7 +500,7 @@ $\ten{E}$ as illustrated by~\cref{fig:BTTDA}.
 		than \ac{hoda} by iteratively finding latent tensors $\ten{G}^{(b)}$ in using
 		deflation.
 		The \ac{hoda} backward projection is first applied. Next, the
-		input data is reconstructed via the HODA forward model and the
+		input data are reconstructed via the HODA forward model and the
 		difference between the two is found.
 		Finally, this process is repeated with this difference as input data, until a
 		desired number of blocks $B$ has been found.}
@@ -639,9 +638,9 @@ and references of these methods.
 \subsection{Event-Related Potentials}
 \Acp{erp} are spatiotemporal, with each epoch a second-order tensor (matrix)
 with $K=2$ modes representing \ac{eeg} channels and time samples.
-\Ac{eeg} data is first processed according to the \ac{moabb} framework.
-\Ac{eeg} signals were band-pass filtered between 1 Hz
-and 24 Hz and cut into epochs starting from stimulus onset with their corresponding
+\Ac{eeg} signals are first processed according to the \ac{moabb} framework by
+band-pass filtering between 1 Hz
+and 24 Hz and cutting epochs from stimulus onset with corresponding
 dataset-specific length.
 For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were further
 downsampled to 48 Hz.
@@ -940,7 +939,7 @@ Since \ac{hoda} estimates one within-class scatter matrix
 $\mat{S}_{-k,\text{w}}\in\mathbb{R}^{D_k\times D_k}$ per mode,
 its overall model of the core tensor scatter is constrained by these per-mode scatter
 matrices as a Kronecker product $\mat{S}_{-1,\text{w}}\otimes \mat{S}_{-2,\text{w}}\otimes\cdots\otimes \mat{S}_{-K,\text{w}}$,
-which assumes that the data is drawn from a multilinear normal
+which assumes that data are drawn from a multilinear normal
 distribution~\cite{Ohlson2013}.
 Similar assumptions are made in \ac{erp} decoding algorithms such as
 Spatial-Temporal Discriminant-Analysis~\cite{Zhang2013} and LCMV-beamforming
