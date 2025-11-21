@@ -1,7 +1,6 @@
 \documentclass[journal,twoside,web]{ieeecolor}
 \usepackage{generic}
 
-% TODO: LLM spellcheck
 % TODO: vim spellcheck
 % TODO: proofread
 % TODO: compile figures independently to pdf
@@ -40,7 +39,7 @@
 		and the Hauts-de-France Region Council.
 	}
 	\thanks{%
-		Arne Van Den Kerchove is with the Department of Neuroscience, KU Leuven,
+		Arne Van Den Kerchove is with the Department of Neurosciences, KU Leuven,
 		BE-3000 Leuven, Belgium.
 		He is affiliated with the CRIStAL joint research group at the University of Lille,
 		CNRS, and Centrale Lille, France(e-mail: arne.vandenkerchove.com).
@@ -52,7 +51,7 @@
 		Lille, FR-59655 Villeneuve d'Ascq, France.
 	}
 	\thanks{%
-		Marc M. Van Hulle is with the Department of Neuroscience, KU Leuven.
+		Marc M. Van Hulle is with the Department of Neurosciences, KU Leuven.
 		He is a senior member of the Leuven Brain Institute and the Leuven.AI institute
 		for Artificial Intelligence (email: marc.vanhulle@kuleuven.be).
 	}
@@ -156,7 +155,7 @@ commonly using \ac{lda} or a \ac{svm}.
 		Tucker-structured blocks $\ten{G}^{(b)}$.
 		Both the \ac{parafac} and block-term structures are more sparse than the full
 		Tucker structure, yet the block-term structure is more flexible as it
-		allows blocks of variable tensor dimensionality instead of fixed rank-1 terms.
+		allows blocks with variable tensor dimensions instead of fixed rank-1 terms.
 	}\label{fig:bttda/sparse}%
 \end{figure*}
 
@@ -193,7 +192,7 @@ for Fisher-sense class separability, analogous to Linear Discriminant Analysis.
 Variants of \ac{hoda} have been applied to \ac{bci} problems such as \ac{erp}~\cite{Onishi2012,Higashi2016} and \ac{mi}~\cite{Liu2015,Cai2021} decoding, with positive
 results~\cite{Lotte2018}.
 Further work proposes optimized objective functions or
-regularizations~\cite{Li2010,JamshidiIdaji2017,Jorajuria2022,Aghili2023}.
+regularization~\cite{Li2010,JamshidiIdaji2017,Jorajuria2022,Aghili2023}.
 \Ac{parafac}-structured discriminant tensor decomposition has also been
 applied~\cite{Froelich2018}, but it is not trivial whether Tucker or \ac{parafac}
 is most suited for neural data in \ac{bci} decoding.
@@ -251,8 +250,8 @@ state-of-the-art decoders.
 
 \subsection{Notation}
 Bold letters $\mat{U}$ indicate matrices,  bold underlined letters $\ten{X}$
-indicate tensors. Uppercase letters $K$ represent fixed scalars and lowercase letters $k$.
-variable scalars.
+indicate tensors. Uppercase letters $K$ represent fixed scalars and lowercas
+letters $k$ variable scalars.
 The $n^\text{th}$ sample of a tensor dataset with $N$ samples is written as
 $\ten{X}(n)$, the dataset itself as ${\{\ten{X}(n)\}}_n^N$.
 A tensor $\smash{\ten{X}\in \mathbb{R}^{D_1\times D_2 \times \cdots \times D_K}}$ can be
@@ -615,8 +614,8 @@ the \ac{smd}.
 To compare with generally accepted state-of-the-art, we selected a subset of
 the decoders evaluated by \textcite{Chevallier2024} who report prior benchmark results.
 For \ac{erp} decoding, these include Riemannian Geometry-based
-classifiers ERPCov+MDM, ERPCovSVD+MDM, XDAWNCov+MDM, XDAWNCov+TS+SVM and the linear
-classifier XDAWN+LDA.
+classifiers ERPCov+MDM, ERPCovSVD+MDM, xDAWNCov+MDM, xDAWNCov+TS+SVM and the linear
+classifier xDAWN+LDA.
 For \ac{mi}, Riemannian classifiers ACM+TS+SVM, FgMDM, TS+EL, and the deep
 learning classifiers EEGTCNet and ShallowConvNet were used.
 We refer to \textcite{Chevallier2024} for implementation details
@@ -665,11 +664,11 @@ BTTDA+LDA significantly outperforms PARAFACDA+LDA for 9 out of 14 datasets.
 		Scores for other decoders were taken from \textcite{Chevallier2024}.
 		BTTDA+LDA always outperforms HODA+LDA and PARAFACDA+LDA, except for datasets,
 		and consistently is nearly on par with or outperforms
-		the state-of-the-art XDAWNCov+TS+SVM decoder.
+		the state-of-the-art xDAWNCov+TS+SVM decoder.
 	}
 	\label{tab:results/erp/score}
 \end{table*}
-BTTDA+LDA exceeds state-of-the-art decoder XDAWNCov+TS+SVM in 8 out of 14
+BTTDA+LDA exceeds state-of-the-art decoder xDAWNCov+TS+SVM in 8 out of 14
 datasets, moderately increasing grand-average score (91.25 > 90.82).
 
 
@@ -882,7 +881,7 @@ Third, proper hyperparameter selection could require more candidates or
 cross-validation folds due to the high data dimensionality and higher tensor order
 $K=3$ after time-frequency transformation, but this is computationally expensive.
 Finally, \ac{parafacda} or low-dimensional \ac{bttda} solutions are not suited for
-multi-class problems, since reduced block dimensionalities might be too low
+multi-class problems, since reduced block dimensions might be too low
 to separate the classes.
 
 
@@ -1019,24 +1018,6 @@ computational experiments on their systems.
 We also wish to acknowledge Dr.\ Axel Faes for his inspiration in
 conceptualizing this work.
 
-
 \printbibliography%
-
-%\appendix
-%
-%\begin{table*}[h]
-%	\footnotesize
-%	\input{tables/moabb_datasets.tex}
-%	\caption{MOABB datasets used for evaluation, with the number of
-%		subjects (\# Sub.), the number of EEG channels (\# Chan.), the number of trials or trials per class for ERP
-%		datasets (\# Trials), the epoch length (Epoch len.), the sampling
-%		frequency (S. freq.), the number of sessions per subject (\# Sess.) and the
-%		number of runs (\# Runs). \ac{erp} datasets contain 2 classes, for \ac{mi} datasets the first 3 classes were retained. \Ac{erp} dataset Sosulski2019 was omitted due to technical problems.
-%		\Ac{mi} dataset PhysionetMI was omitted due to its high computational and
-%		storage demands.
-%		Adapted from~\cite{Aristimunha2023}
-%		and~\cite{Chevallier2024}.}%
-%	\label{tab:moabb}
-%\end{table*}
 
 \end{document}
