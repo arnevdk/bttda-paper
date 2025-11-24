@@ -7,12 +7,12 @@
 	\State $\ten{G}^{(b)}(n)\gets\ten{E}(n)\mmpri{\mat{U}^{(b)}}\
 		\forall n$
 	\State $\{\mat{A}^{(b)}\}\gets$ \parbox[t]{5cm}{Forward \textsc{hoda} on
-		$\{\ten{G}^{(b)}(n)\}_n^N$ and $\ten{E}$}
+		$\{\ten{G}^{(b)}(n)\}_n^N$ and $\{\ten{E}(n)\}_n^N$}
 	\State
 	$\hat{\ten{E}}(n)\gets\ten{G}^{(b)}(n)\mmpri{\mat{A}^{\intercal(b)}}\
 		\forall n$
 	\State
-	$\ten{E}(n)\gets \ten{E}(n) - \hat{\ten{E}}(n) \forall n$
+	$\ten{E}(n)\gets \ten{E}(n) - \hat{\ten{E}}(n)\ \forall n$
 
 	\EndFor
 \end{algorithmic}
