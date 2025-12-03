@@ -1,16 +1,9 @@
-\documentclass[journal,twoside,web]{ieeecolor}
-\usepackage{generic}
-
-% TODO: proofread
-% TODO: compile figures independently to pdf
-%Figures (line artwork or photographs) should be named
-%starting with the first 5 letters of the author’s last name. The
-%next characters in the filename should be the number that
-%represents the sequential location of this image in your article.
-%For example, in author “Anderson’s” paper, the first three
-%figures would be named ander1.tif, ander2.tif, and ander3.ps.
-
+\documentclass[journal]{IEEEtran}
 \usepackage{bttda-paper}
+
+
+%TODO: large cap
+
 
 \addbibresource{references.bib}
 \addbibresource{moabb_datasets.bib}
@@ -22,8 +15,8 @@
 \author{%
 	Arne Van Den Kerchove,
 	Hakim Si-Mohammed,
-	Fran\c{c}ois Cabestaing,
-	Marc M. Van Hulle, \IEEEmembership{Fellow, IEEE}
+	Fran\c{c}ois Cabestaing, \IEEEmembership{Senior Member, IEEE}
+	Marc M. Van Hulle, \IEEEmembership{Senior Member, IEEE}
 	\thanks{%
 		Submitted for review on \today.
 		This work was supported in part by the special research fund of the KU Leuven
@@ -39,14 +32,14 @@
 	}
 	\thanks{%
 		Arne Van Den Kerchove is with the Department of Neurosciences, KU Leuven,
-		BE-3000 Leuven, Belgium.
-		He is affiliated with the CRIStAL joint research group (UMR 9189) at the University of Lille,
-		CNRS, and Centrale Lille, France(e-mail: arne.vandenkerchove.com).
+		BE-3000 Leuven, Belgium and the CRIStAL joint research group (UMR CNRS 9189)
+		co-administered by the University of Lille,
+		CNRS, and Centrale Lille, France (e-mail: arne.vandenkerchove@kuleuven.be).
 	}
 	\thanks{%
 		Hakim Si-Mohammed (e-mail: hakim.si-mohammed@univ-lille.fr) and Fran\c{c}ois
 		Cabestaing (e-mail: francois.cabestaing@univ-lille.fr) are with the CRIStAL
-		joint research group  (UMR 9189) at University of Lille, CNRS, and Centrale
+		joint research group  (UMR CNRS 9189) co-administered by the University of Lille, CNRS, and Centrale
 		Lille, FR-59655 Villeneuve d'Ascq, France.
 	}
 	\thanks{%
@@ -69,10 +62,13 @@
 	MOABB
 
 \end{IEEEkeywords}
+\newpage
 
 \section{Introduction}
 
-\Acp{bci} have the potential to bypass
+%\Acp{bci}
+\IEEEPARstart{B}{rain}-computer interfaces (BCIs)
+have the potential to bypass
 defective neural pathways by providing an alternative communication channel
 between the brain and an external device, with applications in
 neuroprosthetics, assistive technologies, and rehabilitation~\cite{Wolpaw2020}.
@@ -589,8 +585,7 @@ We evaluated our proposed model in offline \ac{eeg}-based \acf{erp} and \acf{mi}
 paradigm \ac{bci} decoding problems  using the openly available \ac{moabb}
 framework and datasets (version 1.2.0)~\cite{Aristimunha2023},
 allowing fair comparison across classifiers.
-We refer to \textcite{Chevallier2024} for dataset details
-(\# subjects, \# sessions, \# channels, \# trials, epoch length, sampling freq., etc.).
+\Cref{tab:app/moabb-datasets} lists details about these datasets.
 \Ac{erp} decoding distinguishes target from non-target \acp{erp},
 while \ac{mi} decoding distinguishes different imagined or performed
 limb movements.
@@ -632,7 +627,7 @@ with $K=2$ modes representing \ac{eeg} channels and time samples.
 \Ac{eeg} signals are first processed according to the \ac{moabb} framework by
 band-pass filtering between 1 Hz
 and 24 Hz, and cutting epochs from stimulus onset with corresponding
-dataset-specific length.
+dataset-specific length (see \cref{tab:app/moabb-datasets}).
 For HODA+LDA, PARAFACDA+LDA, and BTTDA+LDA decoders, epochs were further
 downsampled to 48 Hz.
 
@@ -687,7 +682,7 @@ representing channels, frequencies, and time bins.
 \Ac{eeg} signals were first processed using the \ac{moabb} motor imagery pipeline.
 They were band-pass filtered between 8 Hz
 and 32 Hz and cut into epochs from stimulus onset with their corresponding
-dataset-specific length.
+dataset-specific length (see \cref{tab:app/moabb-datasets}).
 Custom time-frequency postprocessing extracted complex
 Morlet wavelet magnitudes for 17 logarithmically spaced frequencies (8 - 32 Hz)
 and a varying number of logarithmically spaced cycles (4 - 16).
@@ -968,6 +963,7 @@ cross-validation folds.
 	\mathcal{O}\left(\left|\Theta\right|FB_\text{max}I_\text{max}NK^2D^{K+1}\right)
 \end{equation}
 when efficiently using a grid search over $\theta$ combined with a line search over $B\leq B_\text{max}$.
+Time complexity is derived in \cref{app:complexity}.
 Overall, the \ac{bttda} approach shifts the focus of tensor discriminant analysis
 from finding optimal projections to model selection driven by computation.
 
@@ -1019,6 +1015,96 @@ computational experiments on their systems.
 We also wish to acknowledge Dr.\ Axel Faes for his inspiration in
 conceptualizing this work.
 
-\printbibliography%
+\appendix
+\subsection{Time complexity derivation}
+\label{app:complexity}
+\input{complexity_derivation.tex}
 
+\subsection{\Ac{moabb} benchmarking datasets}
+\begin{table}[H]
+	\input{tables/moabb_datasets.tex}
+
+	{\footnotesize%
+		S: number of subjects,
+		C: number of channels,
+		T/c: number of trials per class,
+		L: epoch length (s),
+		F: sampling frequency (Hz),
+		s: number of sessions,
+		R: reference.
+	}
+	\caption{
+		\Ac{moabb} benchmark datasets, adapted from \cite{Aristimunha2023} and
+		\textcite{Chevallier2024}.
+		\Ac{erp} datasets contain 2 classes.
+		For \ac{mi} datasets, the first 3 classes were retained.
+		\Ac{erp} dataset Sosulski2019 was omitted due to technical problems.
+		\Ac{mi} dataset PhysionetMI was omitted due to high computational and storage demands.
+	}
+	\label{tab:app/moabb-datasets}
+\end{table}
+
+\printbibliography%
+\vskip -2\baselineskip plus -1fil
+\begin{IEEEbiographynophoto}{Arne Van Den Kerchove}
+	received the B.Sc.\ degree in Informatics and the M.Sc.\ in Computer Science
+	from KU Leuven, Belgium in 2017 and 2020 respectively.
+	In 2024, he received a joint\ Ph.D. degree in Biomedical Sciences and Control
+	Sciences \& Signal Processing from KU Leuven and the University of Lille, France.
+	He is currently with the Computational Neuroscience Research Group of the
+	Laboratory for Neuro- and Psychophysiology at KU Leuven and affiliated with
+	the Lille Joint Research Center for Informatics, Signal Processing and Control Science
+	(CRIStAL, UMR CNRS 9189).
+	His research focuses on machine learning methods and applied experimental research
+	for assistive brain-computer interfaces and cognitive decline screening.
+\end{IEEEbiographynophoto}
+\vskip -2\baselineskip plus -1fil
+\begin{IEEEbiographynophoto}{Hakim Si-Mohammed}
+	is Associate Professor (Maître de Conférences) at the University of Lille,
+	France and a member of the BCI research group of the Lille Joint Research
+	Center for Informatics, Signal Processing and Control Science (CRIStAL,
+	UMR CNRS 9189).
+	His research lies at the intersection of brain-computer interfaces and
+	immersive technologies (Augmented and Virtual Reality).
+	He received an Engineering degree and M.Sc. from ESI Algiers, Algeria, in 2016,
+	and a Ph.D. from INSA Rennes and Inria Rennes, France, in 2019.
+	He was awarded the Rennes 1 Foundation Ph.D. Prize in 2020 and is Deputy
+	Director of the SCV Research Federation since 2026.
+\end{IEEEbiographynophoto}
+\vskip -2\baselineskip plus -1fil
+\begin{IEEEbiographynophoto}{François Cabestaing}
+	(Senior Member, IEEE) received the B.S. degree in Mathematics in 1987 from
+	USTL, the M.Sc. degree in Engineering and Control Science in 1987 from ISEN,
+	and the Ph.D. degree in Signal Processing and Control Science in 1991 from the
+	University of Lille, France. He holds an Habilitation à Diriger des Recherches
+	obtained in 2003 from ULille. He has been an associate professor at ULille since
+	1992 and became full professor in 2006 in the same university. He is a
+	researcher at the Lille Joint Research Center for Informatics, Signal
+	Processing and Control Science (CRIStAL, UMR CNRS 9189), where he heads the
+	BCI (Brain-Computer Interfaces) research team. He studies physiological signal
+	processing techniques, mainly electroencephalogram, and classification techniques,
+	particularly to estimate the mental states of brain-machine interface users.
+	He contributed to the creation of the COllectif pour la Recherche
+	Transdisciplinaire sur les Interfaces Cerveau-Ordinateur (CORTICO), a
+	learned society of which he was president from 2017 to 2024.
+\end{IEEEbiographynophoto}
+\vskip -2\baselineskip plus -1fil
+\begin{IEEEbiographynophoto}{Marc M. Van Hulle}(Senior Member, IEEE)
+	received the B.S. degree in Economics and the
+	MBA degree from Hasselt University,
+	Belgium, in 1986 and 1991, respectively, and the
+	M.Sc. degree in electrotechnical engineering and the
+	Ph.D. degree in applied sciences from KU Leuven, Belgium.
+	Prof. Van Hulle received the Doctor Technices degree from Queen Margrethe
+	II of Denmark, in 2003, and Honorary Doctoral degrees from Brest State
+	University (BrSU), Brest, Belarus, in 2009, Yerevan
+	State Medical University, Yerevan, Armenia, in 2013, and the Aurel
+	Vlaicu University of Arad, Romania, in 2022.
+	He is currently a Full Professor at the Medical
+	School, KU Leuven, where he heads the Computational Neuroscience Research Group of the
+	Laboratory for Neuro- and Psychophysiology.
+	Prof. Van Hulle is member of the Belgian Royal Academy
+	of Medicine and the Spanish Royal National Academy of Pharmacy,
+	Institute of Spain.
+\end{IEEEbiographynophoto}
 \end{document}

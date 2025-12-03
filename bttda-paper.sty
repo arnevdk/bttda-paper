@@ -28,10 +28,26 @@
 \RequirePackage{acro}
 \RequirePackage{cleveref}
 \RequirePackage{microtype}
+\RequirePackage{changepage}
 
 % Layout
 \renewcommand*{\bibfont}{\footnotesize}
 \captionsetup{subrefformat=parens}%
+
+\makeatletter
+\let\@leftfloatplacement=\@floatplacement
+\def\@rightfloatplacement{\global\@topnum=0
+	% Textpage bit, global:
+	\global\@toproom=\z@
+	\global\@botnum=0
+	\global\@botroom=\z@
+	\global\@colnum=0
+	% Floatpage bit, local:
+	\@fpmin=\@colht}
+\def\@floatplacement{\if@firstcolumn\@leftfloatplacement
+	\else\@rightfloatplacement
+	\fi}
+\makeatother
 
 % Setup PGF plots
 \RequirePackage{pgfplots}
@@ -43,6 +59,19 @@
 	group/yticklabels at=edge left,
 	group/xlabels at=edge bottom,
 	group/ylabels at=edge left,
+}
+\pgfplotscreateplotcyclelist{colorTriangle}{
+	blue,every mark/.append style={fill=blue!80!black},mark=*\\
+	red,every mark/.append style={fill=red!80!black},mark=square*\\
+	brown!60!black,every mark/.append style={fill=brown!80!black},mark=triangle*\\
+	black,mark=star\\
+	blue,every mark/.append style={fill=blue!80!black},mark=diamond*\\
+	red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=*\\
+	brown!60!black,densely dashed,every mark/.append style={
+			solid,fill=brown!80!black},mark=square*\\
+	black,densely dashed,every mark/.append style={solid,fill=gray},mark=otimes*\\
+	blue,densely dashed,mark=star,every mark/.append style=solid\\
+	red,densely dashed,every mark/.append style={solid,fill=red!80!black},mark=diamond*\\
 }
 
 % Math declarations

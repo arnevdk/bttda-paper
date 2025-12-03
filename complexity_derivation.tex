@@ -1,30 +1,33 @@
-To obtain time complexity of the \ac{hoda} backward model algorithm, we start
-by determining the number of operations within a single inner loop
+\subsubsection{\Ac{hoda} backward complexity}
+To obtain the time complexity of the \ac{hoda} backward model algorithm, we initially
+determine the number of computations within a single inner loop
 for given $i$ and $k$.
-Since we are interested in worst-case complexity, assume all input dimensions $D_k$
+For worst-case asymptotic complexity, assume all input dimensions $D_k$
 are equal to $\max_k(D_k) = D$ and all reduced dimensions $R_k$ take their maximum
 value $R_k=D_k = D$.
-
-The multi-mode products $\smash{\ten{X}(n)\mmprsi{U}{k}}$ require
+The partial multi-mode products $\smash{\ten{X}(n)\mmprsi{U}{k}}$ require
 \begin{equation}
 	\begin{split}
-		\left(K-1\right)\left[DD\left(ND^{K-1}\right)\right] = N\left(K-1\right)D^{K+1}
+		\left(K-1\right)\left[DD\left(ND^{K-1}\right)\right] =
+		%N\left(K-1\right)D^{K+1}
+		NKD^{K+1} - ND^{K+1}
 	\end{split}
+	\label{eq:app/complexity/mmpr-k}
 \end{equation}
-operations.
+computations.
 Calculating class means and centering the data requires
 \begin{equation}
 	\begin{split}
-		& C\left(DD^{K-1} + D + DD^{K-1}\right) \\
-		& = ND^K + D + ND^K \\
-		& = 2ND^K + D
+		C\left(DD^{K-1} + D + DD^{K-1}\right)  = 2ND^K + D
 	\end{split}
+	\text{.}
 \end{equation}
-From this, the number of operations for the within-subject scatter matrix $\mat{S}_{-k, \text{w}}$
+From this, the number of computations for the within-subject scatter matrix $\mat{S}_{-k, \text{w}}$
 \begin{equation}
 	\begin{split}
 		D(ND^{K-1})D = ND^{K+1}
 	\end{split}
+	\text{,}
 \end{equation}
 and the between-class scatter matrix $\mat{S}_{-k, \text{b}}$
 \begin{equation}
@@ -37,153 +40,99 @@ $\varphi_k$ can be calculated as $\tr\left(\mat{U}_k^\intercal \mat{S}_{-k,\text
 \begin{equation}
 	\begin{split}
 		& \left(DDD + DDD + D\right) + \left(DDD + DDD + D\right)+1 \\
-		& =  2\left(2D^3 D\right) + 1
-		= 4D^3+2D + 1
+		&\quad = 4D^3+2D + 1
 	\end{split}
 \end{equation}
-operations.
+computations.
 The difference of the scatter matrices
 $\mat{S}_{-k, \text{w}} - \varphi - \mat{S}_{-k,\text{b}}$
 then yields
 \begin{equation}
 	D^2 + D^2 + D^2 = 3D^2
 \end{equation}
-operations,
-and its eigendecomposition
-\begin{equation}
-	D^3
-\end{equation}
+computations,
+and its eigendecomposition $D^3$.
 Finally,  the projection for orthogonalization
 $\mat{V}_k\mat{V}_k^\intercal\mat{S}_{k,\text{t}}\mat{V}_k\mat{V}_k^\intercal$
 adds
 \begin{equation}
 	DDD + DDD + DDD +DDD = 4D^3
+	\text{,}
 \end{equation}
-and its eigendecomposition
+and its eigendecomposition $D^3$.
+Assuming $C < N$, \cref{eq:app/complexity/mmpr-k} is the dominant term for a single iteration, with
+asymptotic time complexity
 \begin{equation}
-	D^3
+	\mathcal{O}\left(NKD^{K+1} \right)
+	\label{eq:app/complexity/backward-single}
+	\text{.}
 \end{equation}
-
-Together, this forms
-\begin{equation}
-	\begin{split}
-		& N(K-1)D^{K+1} + 2ND^K + D + 2CD^2 + 4D^3 \\
-		& \quad + 2D +1 +3D^2 + D^3 + 4D^3 + D^3 \\
-		& = NKD^{K+1} -ND^{K+1} + 2ND^K + 10D^3 \\
-		& \quad +(3+2C)D^2 + 3D+1
-	\end{split}
-\end{equation}
-From the number of operations, the time complexity can be derived as
-\begin{equation}
-	\begin{split}
-		& \mathcal{O}\left[ NKD^{K+1} -ND^{K+1} + 2ND^K + 10D^3\right. \\
-		& \left. \quad +(3+2C)D^2 + 3D+1 \right] \\
-		& = \mathcal{O}\left(NKD^{K+1} \right)
-	\end{split}
-\end{equation}
-assuming $C < N$.
 The procedure in the inner loop over $k$ and the outer loop over $i$ is
-executed $I_\text{max}K$ times, yielding
+maximally executed $I_\text{max}K$ times, yielding
 \begin{equation}
 	\begin{split}
 		\mathcal{O}\left(I_\text{max}KNKD^{K+1}\right)
 		= \mathcal{O}\left(I_\text{max}K^2ND^{K+1}\right)
 	\end{split}
-	\label{eq:complexity/backward}
+	\text{.}
+	\label{eq:app/complexity/backward}
 \end{equation}
 
-Similar to the previous derivation, the derivation of the time complexity of \ac{hoda} forward model training  starts by determining the operations
-within a single iteration of a nested over the $i$ and $k$.
-
-The first step is again a multi-mode product, $\smash{\ten{G}(n)\mmprsi{\mat{A}}{k}}$:
-\begin{equation}
-	\begin{split}
-		\left(K-1\right)\left[DD\left(ND^{K-1}\right)\right] = N\left(K-1\right)D^{K+1}
-	\end{split}
-\end{equation}
-The second step requires least squares regression which can be solved in
+\subsubsection{\Ac{hoda} forward complexity}
+Similarly to the backward model, we initially determine the
+forward model training complexity for a single iteration of the nested loops over $i$ and $k$.
+The first step is again a partial multi-mode product, $\smash{\ten{G}(n)\mmprsi{\mat{A}}{k}}$
+with computations as in \cref{eq:app/complexity/mmpr-k}.
+The second step requires least squares regression, solved in
 \begin{equation}
 	\begin{split}
 		& D\left(ND^{K-1}\right)D + D\left(ND^{K-1}\right)D + D^3 \\
 		& = 2ND^{K+1} +D^3
 	\end{split}
 \end{equation}
-operations.
+computations.
+The computation of the forward model is, again, dominated by the multi-mode product,
+resulting in asymptotic time complexity as in \cref{eq:app/complexity/backward-single}
+for a single iteration,
+and \cref{eq:app/complexity/backward} when integrating it in the inner and outer loops over $i$ and $k$.
 
-Together, this forms
-\begin{equation}
-	\begin{split}
-		& N(K-1)D^{K+1} + 2ND^{K+1} +D^3 \\
-		& = NKD^{K+1} - ND^{K+1} + 2ND^{K+1} + D^3
-	\end{split}
-\end{equation}
-The time complexity to fit one iteration of the algorithm for the forward model
-is then
-\begin{equation}
-	\begin{split}
-		& \mathcal{O}\left(NKD^{K+1} - ND^{K+1} + 2ND^{K+1} + D^3\right) \\
-		& = \mathcal{O}\left(NKD^{K+1}\right)
-	\end{split}
-\end{equation}
-and, when integrating it in the inner and outer loops over $i$ and $k$,
-\begin{equation}
-	\mathcal{O}\left(I_\text{max}KNKD^{K+1}\right)
-	= \mathcal{O}\left(I_\text{max}NK^2D^{K+1}\right)
-	\label{eq:complexity/forward}
-\end{equation}
-
-
-This is the same asymptotic time complexity as the backwards modeling algorithm,
-since they are both dominated by the multi-mode product.
-
-Fitting the \ac{bttda} model involves a loop over blocks $b$.
+\subsubsection{\Ac{bttda} backward complexity}
+Fitting the \ac{bttda} backward model involves looping over blocks $b$.
 At each iteration, a backward model is fit with complexity as in
-\cref{eq:complexity/backward}
+\cref{eq:app/complexity/backward}
 The core tensors $\smash{\ten{G}^\text{(b)}(n)}$
-are extracted with the multi-mode product using
+are extracted with an additional, full multi-mode product with
 \begin{equation}
-	K\left[DD\left(ND^{K-1}\right)\right] = KND^{K+1}
-	\label{eq:complexity/mmpr}
+	K\left[DD\left(ND^{K-1}\right)\right] = NKD^{K+1}
+	\label{eq:app/complexity/mmpr}
 \end{equation}
-operations
-
-Next, the forward model is fit on these core tensors, with complexity as in
-\cref{eq:complexity/forward}.
-The number of steps for the reconstructed tensors can similarly be obtained using
-\cref{eq:complexity/mmpr},
-and calculating the residual requires
-\begin{equation}
-	ND^K
-\end{equation}
-operations.
-
-
-A single block $b$ can thus be fit with complexity
-\begin{equation}
-	\begin{split}
-		& \mathcal{O}\left(
-		I_\text{max}NK^2D^{K+1}
-		+ KND^{K+1} \right. \\
-		& \left. \quad + I_\text{max}NK^2D^{K+1}
-		+ KND^{K+1}
-		+ ND^K
-		\right) \\
-		& = \mathcal{O}\left(I_\text{max}NK^2D^{K+1}\right)
-	\end{split}
-\end{equation}
-The complexity when calculating all blocks is
+computations.
+The forward model is then fit, and the
+reconstructed tensor is calculated with another full multi-mode product.
+Since complexity of backward and forward fitting are equal and
+dominate finding core and reconstructed tensors, the asymptotic time complexity
+of a single block iteration also equals \cref{eq:app/complexity/backward}.
+The complexity for calculating all $B$ blocks is then
 \begin{equation}
 	\mathcal{O}\left(BI_\text{max}NK^2D^{K+1}\right)
+	\text{.}
 \end{equation}
 
-Finally, proper decoding training relies heavily on tuning the hyperparameters
+\subsubsection{Hyperparameter tuning complexity}
+Proper decoder training heavily relies on tuning hyperparameters
 $\theta$ and $B$ through cross-validation.
 Let $F$ be the number of cross-validation folds and $\Theta$ a set of $\theta$
 candidates.
-We can take advantage of the fact that the \ac{bttda} model can be fit on a fixed
+A full grid search over over $B$ and $\Theta$ would require complexity
+\begin{equation}
+	\mathcal{O}\left(\left|\Theta\right|BFBI_\text{max}NK^2D^{K+1}\right)
+	\text{.}
+\end{equation}
+We take advantage of the fact that the \ac{bttda} model can be fit on a fixed
 amount of blocks $B$, but intermediary blocks $1, 2, \cdots B$ can easily be extracted.
 This way, no second iteration over candidates for $B$ is necessary and complexity
-can be kept at
+is reduced to
 \begin{equation}
 	\mathcal{O}\left(\left|\Theta\right|FBI_\text{max}NK^2D^{K+1}\right)
+	\text{.}
 \end{equation}

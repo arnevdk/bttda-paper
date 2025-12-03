@@ -2,32 +2,36 @@ Dear Editor,
 
 We are pleased to submit our manuscript, titled "Block-Term Tensor Discriminant
 Analysis for Brain-Computer Interfacing," for consideration as an original
-research article in Journal of Neural Engineering. Our study introduces a novel
-tensor-based supervised feature extraction method, Block-Term Tensor
-Discriminant Analysis (BTTDA), which addresses key challenges in dimensionality
-reduction for brain-computer interfaces (BCIs).
+research article in IEEE Transactions on Neural Systems and Rehabilitation
+Engineering. Our study introduces a novel tensor-based supervised feature
+extraction method, Block-Term Tensor Discriminant Analysis (BTTDA), which
+addresses key challenges in dimensionality reduction for brain-computer
+interfaces (BCIs).
 
 The field of BCI demands robust approaches that enhance the classification of
-complex neural signals. BTTDA, a generalization of Higher Order Discriminan
+complex neural signals. BTTDA, a generalization of Higher Order Discriminant
 Analysis, integrates a block-term tensor structure to provide flexible
 multilinear dimensionality reduction. Our model demonstrates enhanced
-classification accuracy on electroencephalography (EEG) datasets, outperforming
-existing methods on ERP classification and yielding competitive results for
-motor imagery tasks. This approach offers significant advancements by balancing
-effective dimensionality reduction with high discriminative power, marking a
-step forward in BCI feature extraction methods.
+classification accuracy on electroencephalography (EEG) benchmark datasets,
+outperforming existing methods for ERP classification and yielding results
+competitive with other tensor methods for motor imagery tasks. Additionally, our
+model's structure allows for interpretation of the contribution of extracted
+features and patterns in the original data. In general, this approach offers
+significant advancements by balancing effective dimensionality reduction and
+discriminative feature extraction in the presence of high-dimensional data,
+marking a step forward in tensor and BCI classification techniques.
 
-We believe that BTTDA aligns with the interests of the Journal of Neural
-Engineering audience due to its potential applications in neuroprosthetics and
-BCI assistive technology development, as well as its broader applicability to
-neural signal processing. We confirm that this work is original, has not been
-published elsewhere, and is not under consideration by any other journal.
-Additionally, all authors have approved this submission.
+We believe that BTTDA aligns with the interests of IEEE TNSRE audience due to
+its potential applications in neuroprosthetics and BCI assistive technology
+development, as well as its broader applicability to neural signal processing.
+We confirm that this work is original, has not been published elsewhere, and is
+not under consideration by any other journal. All authors have approved this
+submission.
 
 Thank you for considering our manuscript. We look forward to the possibility of
-contributing to Journal of Neural Engineering.
+contributing to IEEE TNSRE.
 
 Arne Van Den Kerchove
 Lab for Neuro- and Psychophysiology, KU Leuven
-UMR CRIStAL, Université de Lille
+UMR 9189 CRIStAL, Université de Lille
 arne.vandenkerchove@kuleuven.be
